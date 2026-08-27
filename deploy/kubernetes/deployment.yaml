@@ -1,12 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nexi-erp
+  name: nexi-erp-frontend
   namespace: default
   labels:
-    app: nexi-erp
+    app: nexi-erp-frontend
+    tier: frontend
 spec:
-  replicas: 3
+  replicas: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -14,104 +15,85 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app: nexi-erp
+      app: nexi-erp-frontend
   template:
     metadata:
       labels:
-        app: nexi-erp
+        app: nexi-erp-frontend
+        tier: frontend
     spec:
       containers:
         - name: app
-          image: registry.example.com/nexi-erp:latest
+          image: registry.example.com/nexi-erp-frontend:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 9000
+            - containerPort: 3000
           env:
-            - name: APP_ENV
+            - name: NODE_ENV
               value: "production"
-            - name: APP_DEBUG
-              value: "false"
-            - name: DB_HOST
+            - name: NEXT_PUBLIC_API_URL
+              value: "http://nexi-erp:80"
+            - name: SENTRY_DSN
               valueFrom:
                 secretKeyRef:
-                  name: nexi-erp-db
-                  key: host
-            - name: DB_DATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: nexi-erp-db
-                  key: database
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: nexi-erp-db
-                  key: username
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: nexi-erp-db
-                  key: password
-            - name: REDIS_HOST
-              value: nexi-erp-redis
-            - name: APP_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: nexi-erp-app
-                  key: key
+                  name: nexi-erp-secrets
+                  key: sentry-dsn
+                  optional: true
           livenessProbe:
             httpGet:
-              path: /health
-              port: 9000
+              path: /
+              port: 3000
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /health
-              port: 9000
+              path: /
+              port: 3000
             initialDelaySeconds: 5
             periodSeconds: 5
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "250m"
+              memory: "64Mi"
+              cpu: "100m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "256Mi"
+              cpu: "250m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: nexi-erp
+  name: nexi-erp-frontend
   namespace: default
 spec:
   selector:
-    app: nexi-erp
+    app: nexi-erp-frontend
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 9000
+      targetPort: 3000
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nexi-erp
+  name: nexi-erp-frontend
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
 spec:
   rules:
-    - host: api.nexi-erp.com
+    - host: nexi-erp.com
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: nexi-erp
+                name: nexi-erp-frontend
                 port:
                   number: 80
   tls:
     - hosts:
-        - api.nexi-erp.com
-      secretName: nexi-erp-tls
+        - nexi-erp.com
+      secretName: nexi-erp-frontend-tls

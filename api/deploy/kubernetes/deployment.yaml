@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexi-erp
+  namespace: default
+  labels:
+    app: nexi-erp
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: nexi-erp
+  template:
+    metadata:
+      labels:
+        app: nexi-erp
+    spec:
+      containers:
+        - name: app
+          image: registry.example.com/nexi-erp:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9000
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: APP_DEBUG
+              value: "false"
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-db
+                  key: host
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-db
+                  key: database
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-db
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-db
+                  key: password
+            - name: REDIS_HOST
+              value: nexi-erp-redis
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-app
+                  key: key
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexi-erp
+  namespace: default
+spec:
+  selector:
+    app: nexi-erp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9000
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nexi-erp
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  rules:
+    - host: api.nexi-erp.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nexi-erp
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - api.nexi-erp.com
+      secretName: nexi-erp-tls

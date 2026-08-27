@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     environment {
-        APP_ENV = 'testing'
-        DB_CONNECTION = 'sqlite'
-        DB_DATABASE = ':memory:'
+        NODE_ENV = 'test'
+        APP_URL = 'http://localhost:3000'
     }
 
     stages {
@@ -16,81 +15,106 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'composer install --no-interaction --prefer-dist --optimize-autoloader'
                 sh 'npm ci'
             }
         }
 
-        stage('Lint') {
+        stage('Lint & Format') {
             parallel {
-                stage('PHP CS Fixer') {
+                stage('TypeScript') {
                     steps {
-                        sh 'vendor/bin/pint --test'
+                        sh 'npm run typecheck'
                     }
                 }
-                stage('PHPStan') {
+                stage('ESLint') {
                     steps {
-                        sh 'vendor/bin/phpstan analyse --memory-limit=2G'
+                        sh 'npm run lint'
+                    }
+                }
+                stage('Prettier') {
+                    steps {
+                        sh 'npm run format:check'
                     }
                 }
             }
         }
 
-        stage('Tests') {
-            parallel {
-                stage('Unit & Feature') {
-                    steps {
-                        sh 'php artisan config:clear'
-                        sh 'php artisan test --parallel'
-                    }
-                }
-                stage('Static Analysis') {
-                    steps {
-                        sh 'php artisan ide-helper:generate'
-                        sh 'php artisan ide-helper:models -N'
-                    }
+        stage('Unit Tests') {
+            steps {
+                sh 'npm run test -- --coverage'
+            }
+            post {
+                always {
+                    junit 'coverage/junit.xml'
+                    publishHTML(target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'coverage',
+                        reportFiles: 'index.html',
+                        reportName: 'Coverage Report'
+                    ])
                 }
             }
         }
 
         stage('Build') {
             steps {
-                sh 'php artisan optimize'
-                sh 'php artisan lighthouse:cache'
-                sh 'php artisan scribe:generate'
                 sh 'npm run build'
             }
         }
 
-        stage('Deploy') {
+        stage('E2E Tests') {
+            steps {
+                sh 'npx playwright install --with-deps chromium'
+                sh 'npm run test:e2e'
+            }
+            post {
+                always {
+                    playwright {}
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
             when {
                 branch 'main'
             }
             steps {
-                sh 'docker build -t nexi-erp:latest .'
-                sh 'docker tag nexi-erp:latest registry.example.com/nexi-erp:${BUILD_NUMBER}'
-                sh 'docker push registry.example.com/nexi-erp:${BUILD_NUMBER}'
-                // Kubernetes deploy step
-                sh 'kubectl set image deployment/nexi-erp app=registry.example.com/nexi-erp:${BUILD_NUMBER} --record'
+                sh 'docker build -t nexi-erp-frontend:latest .'
+                sh 'docker tag nexi-erp-frontend:latest registry.example.com/nexi-erp-frontend:${BUILD_NUMBER}'
+                sh 'docker push registry.example.com/nexi-erp-frontend:${BUILD_NUMBER}'
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            when {
+                branch 'main'
+            }
+            steps {
+                sh """
+                    kubectl set image deployment/nexi-erp-frontend \
+                        app=registry.example.com/nexi-erp-frontend:${BUILD_NUMBER} \
+                        --record
+                """
             }
         }
     }
 
     post {
         always {
-            junit 'storage/logs/test-results/*.xml'
-            archiveArtifacts artifacts: 'storage/logs/*.log', allowEmptyArchive: true
+            cleanWs()
         }
         failure {
             slackSend(
                 color: '#FF0000',
-                message: "Pipeline failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]"
+                message: "Frontend pipeline failed: ${env.JOB_NAME} [${env.BUILD_NUMBER}]"
             )
         }
         success {
             slackSend(
                 color: '#00FF00',
-                message: "Pipeline succeeded: ${env.JOB_NAME} [${env.BUILD_NUMBER}]"
+                message: "Frontend pipeline succeeded: ${env.JOB_NAME} [${env.BUILD_NUMBER}]"
             )
         }
     }
