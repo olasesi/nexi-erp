@@ -104,6 +104,12 @@ return [
             'days' => 7,
         ],
 
+        'sentry' => [
+            'driver' => 'sentry',
+            'level' => 'error',
+            'bubble' => true,
+        ],
+
     ],
 
 ];

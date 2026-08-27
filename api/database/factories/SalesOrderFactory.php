@@ -26,7 +26,7 @@ class SalesOrderFactory extends Factory
             'company_id' => Company::factory(),
             'contact_id' => Contact::factory(),
             'warehouse_id' => Warehouse::factory(),
-            'order_number' => 'SO-' . now()->format('Ymd') . '-' . fake()->unique()->numerify('#####'),
+            'order_number' => 'SO-'.now()->format('Ymd').'-'.fake()->unique()->numerify('#####'),
             'status' => OrderStatus::Draft->value,
             'payment_status' => PaymentStatus::Pending->value,
             'subtotal' => $subtotal,

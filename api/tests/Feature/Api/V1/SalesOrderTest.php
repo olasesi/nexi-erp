@@ -4,6 +4,7 @@ use App\Models\Company;
 use App\Models\Contact;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\SalesOrder;
 use App\Models\User;
 use App\Models\Warehouse;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,7 +21,7 @@ it('lists sales orders', function () {
     $company = Company::factory()->create();
     $contact = Contact::factory()->create(['company_id' => $company->id]);
     $warehouse = Warehouse::factory()->create(['company_id' => $company->id]);
-    \App\Models\SalesOrder::factory()->create([
+    SalesOrder::factory()->create([
         'company_id' => $company->id,
         'contact_id' => $contact->id,
         'warehouse_id' => $warehouse->id,
@@ -62,7 +63,7 @@ it('creates a sales order with items', function () {
 });
 
 it('shows a sales order', function () {
-    $order = \App\Models\SalesOrder::factory()->create();
+    $order = SalesOrder::factory()->create();
 
     $response = $this->getJson("/api/v1/sales-orders/{$order->id}");
 
@@ -71,7 +72,7 @@ it('shows a sales order', function () {
 });
 
 it('updates a sales order', function () {
-    $order = \App\Models\SalesOrder::factory()->create();
+    $order = SalesOrder::factory()->create();
 
     $response = $this->putJson("/api/v1/sales-orders/{$order->id}", [
         'notes' => 'Updated notes',
@@ -82,7 +83,7 @@ it('updates a sales order', function () {
 });
 
 it('deletes a sales order', function () {
-    $order = \App\Models\SalesOrder::factory()->create();
+    $order = SalesOrder::factory()->create();
 
     $response = $this->deleteJson("/api/v1/sales-orders/{$order->id}");
 
@@ -92,8 +93,8 @@ it('deletes a sales order', function () {
 
 it('filters sales orders by status', function () {
     $company = Company::factory()->create();
-    \App\Models\SalesOrder::factory()->create(['company_id' => $company->id, 'status' => 'draft']);
-    \App\Models\SalesOrder::factory()->confirmed()->create(['company_id' => $company->id]);
+    SalesOrder::factory()->create(['company_id' => $company->id, 'status' => 'draft']);
+    SalesOrder::factory()->confirmed()->create(['company_id' => $company->id]);
 
     $response = $this->getJson('/api/v1/sales-orders?status=draft');
 

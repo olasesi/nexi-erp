@@ -13,6 +13,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "nuwave/lighthouse": "^6.66",
+        "sentry/sentry-laravel": "^4.27",
         "spatie/laravel-permission": "^6.25"
     },
     "require-dev": {

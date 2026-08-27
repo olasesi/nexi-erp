@@ -5,13 +5,14 @@ namespace App\Services;
 use App\Models\Inventory;
 use App\Models\PurchaseOrderItem;
 use App\Models\SalesOrderItem;
-use Illuminate\Support\Facades\DB;
 
 class InventoryService
 {
     public function reserveStock(SalesOrderItem $item): void
     {
-        if (! $item->product_id) return;
+        if (! $item->product_id) {
+            return;
+        }
 
         $inventory = Inventory::firstOrCreate(
             ['product_id' => $item->product_id, 'warehouse_id' => $item->salesOrder->warehouse_id],
@@ -23,7 +24,9 @@ class InventoryService
 
     public function deductStock(SalesOrderItem $item): void
     {
-        if (! $item->product_id) return;
+        if (! $item->product_id) {
+            return;
+        }
 
         $inventory = Inventory::where('product_id', $item->product_id)
             ->where('warehouse_id', $item->salesOrder->warehouse_id)
@@ -37,7 +40,9 @@ class InventoryService
 
     public function releaseReservedStock(SalesOrderItem $item): void
     {
-        if (! $item->product_id) return;
+        if (! $item->product_id) {
+            return;
+        }
 
         $inventory = Inventory::where('product_id', $item->product_id)
             ->where('warehouse_id', $item->salesOrder->warehouse_id)
@@ -50,7 +55,9 @@ class InventoryService
 
     public function receiveStock(PurchaseOrderItem $item): void
     {
-        if (! $item->product_id) return;
+        if (! $item->product_id) {
+            return;
+        }
 
         $inventory = Inventory::firstOrCreate(
             ['product_id' => $item->product_id, 'warehouse_id' => $item->purchaseOrder->warehouse_id],
@@ -62,7 +69,9 @@ class InventoryService
 
     public function reverseStockReceipt(PurchaseOrderItem $item): void
     {
-        if (! $item->product_id) return;
+        if (! $item->product_id) {
+            return;
+        }
 
         $inventory = Inventory::where('product_id', $item->product_id)
             ->where('warehouse_id', $item->purchaseOrder->warehouse_id)

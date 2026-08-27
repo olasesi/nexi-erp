@@ -38,7 +38,7 @@ class SalesOrderController extends BaseController
         $request = app($this->storeRequestClass);
         $data = $request->validated();
 
-        $data['order_number'] = 'SO-' . now()->format('Ymd') . '-' . str_pad((string) (SalesOrder::max('id') + 1), 5, '0', STR_PAD_LEFT);
+        $data['order_number'] = 'SO-'.now()->format('Ymd').'-'.str_pad((string) (SalesOrder::max('id') + 1), 5, '0', STR_PAD_LEFT);
 
         $item = $this->model->create($data);
 

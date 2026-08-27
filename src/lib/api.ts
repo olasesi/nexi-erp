@@ -1,5 +1,5 @@
+import { logger } from "@/lib/logger";
 import type {
-  Address,
   Company,
   Contact,
   PaginatedResponse,
@@ -50,6 +50,8 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
+  logger.debug(`Request ${options.method ?? "GET"} ${path}`, { params: options.body });
+
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers,
@@ -57,15 +59,18 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   });
 
   if (res.status === 204) {
+    logger.debug(`Response 204 ${path}`);
     return null as T;
   }
 
   const body = await res.json();
 
   if (!res.ok) {
+    logger.error(`Request failed ${res.status} ${path}`, { message: body.message });
     throw new ApiError(res.status, body.message ?? "Request failed", body);
   }
 
+  logger.debug(`Response ${res.status} ${path}`);
   return body;
 }
 

@@ -18,7 +18,7 @@ class UpdateWarehouseRequest extends FormRequest
         return [
             'company_id' => 'nullable|exists:companies,id',
             'name' => 'nullable|string|max:255',
-            'code' => 'nullable|string|max:50|unique:warehouses,code,' . $warehouseId,
+            'code' => 'nullable|string|max:50|unique:warehouses,code,'.$warehouseId,
             'location' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:50',
             'notes' => 'nullable|string',

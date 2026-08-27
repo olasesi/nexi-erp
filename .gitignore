@@ -38,6 +38,3 @@ next-env.d.ts
 
 # docker
 .dockerignore
-
-# Laravel API (separate .gitignore)
-/api

@@ -4,6 +4,7 @@ use App\Models\Company;
 use App\Models\Contact;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\PurchaseOrder;
 use App\Models\User;
 use App\Models\Warehouse;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,7 +18,7 @@ beforeEach(function () {
 });
 
 it('lists purchase orders', function () {
-    \App\Models\PurchaseOrder::factory()->create();
+    PurchaseOrder::factory()->create();
 
     $response = $this->getJson('/api/v1/purchase-orders');
 
@@ -54,7 +55,7 @@ it('creates a purchase order with items', function () {
 });
 
 it('shows a purchase order', function () {
-    $order = \App\Models\PurchaseOrder::factory()->create();
+    $order = PurchaseOrder::factory()->create();
 
     $response = $this->getJson("/api/v1/purchase-orders/{$order->id}");
 
@@ -63,7 +64,7 @@ it('shows a purchase order', function () {
 });
 
 it('updates a purchase order', function () {
-    $order = \App\Models\PurchaseOrder::factory()->create();
+    $order = PurchaseOrder::factory()->create();
 
     $response = $this->putJson("/api/v1/purchase-orders/{$order->id}", [
         'notes' => 'Updated notes',
@@ -74,7 +75,7 @@ it('updates a purchase order', function () {
 });
 
 it('deletes a purchase order', function () {
-    $order = \App\Models\PurchaseOrder::factory()->create();
+    $order = PurchaseOrder::factory()->create();
 
     $response = $this->deleteJson("/api/v1/purchase-orders/{$order->id}");
 
@@ -83,8 +84,8 @@ it('deletes a purchase order', function () {
 });
 
 it('filters purchase orders by status', function () {
-    \App\Models\PurchaseOrder::factory()->create(['status' => 'draft']);
-    \App\Models\PurchaseOrder::factory()->confirmed()->create();
+    PurchaseOrder::factory()->create(['status' => 'draft']);
+    PurchaseOrder::factory()->confirmed()->create();
 
     $response = $this->getJson('/api/v1/purchase-orders?status=draft');
 

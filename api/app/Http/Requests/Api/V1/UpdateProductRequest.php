@@ -19,7 +19,7 @@ class UpdateProductRequest extends FormRequest
             'company_id' => 'nullable|exists:companies,id',
             'category_id' => 'nullable|exists:product_categories,id',
             'name' => 'nullable|string|max:255',
-            'sku' => 'nullable|string|max:100|unique:products,sku,' . $productId,
+            'sku' => 'nullable|string|max:100|unique:products,sku,'.$productId,
             'barcode' => 'nullable|string|max:100',
             'type' => 'nullable|string|in:product,service,digital,bundle',
             'unit' => 'nullable|string|max:50',

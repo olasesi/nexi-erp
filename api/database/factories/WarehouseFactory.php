@@ -14,7 +14,7 @@ class WarehouseFactory extends Factory
     {
         return [
             'company_id' => Company::factory(),
-            'name' => fake()->unique()->city() . ' Warehouse',
+            'name' => fake()->unique()->city().' Warehouse',
             'code' => strtoupper(fake()->unique()->bothify('WH-???-####')),
             'location' => fake()->address(),
             'phone' => fake()->phoneNumber(),

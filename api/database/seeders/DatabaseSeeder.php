@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Enums\ContactType;
 use App\Models\Company;
 use App\Models\Contact;
 use App\Models\Product;

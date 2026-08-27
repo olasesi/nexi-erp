@@ -38,7 +38,7 @@ class PurchaseOrderController extends BaseController
         $request = app($this->storeRequestClass);
         $data = $request->validated();
 
-        $data['order_number'] = 'PO-' . now()->format('Ymd') . '-' . str_pad((string) (PurchaseOrder::max('id') + 1), 5, '0', STR_PAD_LEFT);
+        $data['order_number'] = 'PO-'.now()->format('Ymd').'-'.str_pad((string) (PurchaseOrder::max('id') + 1), 5, '0', STR_PAD_LEFT);
 
         $item = $this->model->create($data);
 
