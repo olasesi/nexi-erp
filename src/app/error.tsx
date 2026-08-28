@@ -1,6 +1,5 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
 import { useEffect } from "react";
 
 import { logger } from "@/lib/logger";
@@ -14,11 +13,6 @@ export default function GlobalErrorBoundary({
 }) {
   useEffect(() => {
     logger.error("Unhandled application error", { name: error.name, message: error.message });
-    if (error.digest) {
-      Sentry.captureException(error, { tags: { digest: error.digest } });
-    } else {
-      Sentry.captureException(error);
-    }
   }, [error]);
 
   return (
