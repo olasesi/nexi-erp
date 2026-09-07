@@ -1,0 +1,40 @@
+# dependencies
+/node_modules
+
+# build output
+/dist
+
+# misc
+.DS_Store
+*.pem
+.env
+.env.local
+.env.production
+.env*.local
+
+# debug
+npm-debug.log*
+
+# typescript
+*.tsbuildinfo
+
+# IDE
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+
+# testing
+/coverage
+/playwright-report
+/test-results
+
+# docker
+.dockerignore
+
+# vscode debugging logs
+*.log
+
+.next
+.husky
