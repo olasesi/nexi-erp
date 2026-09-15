@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BankAccountController;
 use App\Http\Controllers\Api\V1\BankTransactionController;
+use App\Http\Controllers\Api\V1\BusinessSettingsController;
 use App\Http\Controllers\Api\V1\ChartOfAccountController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\ContactController;
@@ -89,7 +90,7 @@ Route::prefix('v1')->group(function () {
         Route::post('settings/cache/clear', [SettingsController::class, 'clearCache']);
         Route::post('settings/email/test', [SettingsController::class, 'sendTestEmail']);
 
-        // Expenses & Income
+// Expenses & Income
         Route::apiResource('expense-categories', ExpenseCategoryController::class);
         Route::apiResource('expenses', ExpenseController::class);
         Route::apiResource('income-categories', IncomeCategoryController::class);
@@ -105,5 +106,10 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('quotations', QuotationController::class);
         Route::post('quotations/{quotation}/accept', [QuotationController::class, 'accept']);
         Route::post('quotations/{quotation}/reject', [QuotationController::class, 'reject']);
+
+        // Business settings (mirrors UltimatePOS Business Settings surface)
+        Route::get('business-settings', [BusinessSettingsController::class, 'index']);
+        Route::get('business-settings/{group}', [BusinessSettingsController::class, 'show']);
+        Route::put('business-settings/{group}', [BusinessSettingsController::class, 'update']);
     });
 });

@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Mail;
 
 class SettingsService
 {
+    public const APP_NAMESPACE = 'app';
+
+    public const BUSINESS_NAMESPACE = 'business';
+
     /**
      * Resolve the effective scope for the given company id.
      */
@@ -17,41 +21,47 @@ class SettingsService
     }
 
     /**
-     * All settings as grouped array, defaults overridden by global rows,
-     * then by company-specific rows.
+     * All settings as grouped array for a namespace, defaults overridden by
+     * global rows, then by company-specific rows.
+     *
+     * @return array<string, array<string, mixed>>
      */
-    public function values(?int $companyId = null): array
+    public function values(?int $companyId = null, string $namespace = self::APP_NAMESPACE): array
     {
-        $groups = config('settings.groups');
         $values = [];
 
-        foreach ($groups as $group => $definition) {
-            $values[$group] = $this->group($companyId, $group);
+        foreach (array_keys($this->groups($namespace)) as $group) {
+            $values[$group] = $this->group($companyId, $group, $namespace);
         }
 
         return $values;
     }
 
     /**
-     * Single settings group, defaults overridden by stored values (global rows
-     * first, then company-specific rows).
+     * Single settings group for a namespace, defaults overridden by stored
+     * values (global rows first, then company-specific rows).
+     *
+     * @return array<string, mixed>
      */
-    public function group(?int $companyId, string $group): array
+    public function group(?int $companyId, string $group, string $namespace = self::APP_NAMESPACE): array
     {
-        $definition = config("settings.groups.{$group}", null);
+        $definition = $this->definition($namespace, $group);
 
         if ($definition === null) {
             return [];
         }
 
-        $values = $definition['defaults'] ?? [];
+        $values = $definition['defaults'] ?? array_map(
+            fn (array $key) => $key['default'] ?? null,
+            $definition['keys'] ?? []
+        );
 
-        foreach (Setting::where('group', $group)->whereNull('company_id')->get() as $row) {
+        foreach (Setting::where('namespace', $namespace)->where('group', $group)->whereNull('company_id')->get() as $row) {
             $values[$row->key] = $row->decryptedValue();
         }
 
         if ($companyId !== null) {
-            foreach (Setting::where('company_id', $companyId)->where('group', $group)->get() as $row) {
+            foreach (Setting::where('namespace', $namespace)->where('company_id', $companyId)->where('group', $group)->get() as $row) {
                 $values[$row->key] = $row->decryptedValue();
             }
         }
@@ -61,10 +71,12 @@ class SettingsService
 
     /**
      * Upsert a batch of keys for a group in the given scope.
+     *
+     * @param  array<string, mixed>  $values
      */
-    public function set(?int $companyId, string $group, array $values): void
+    public function set(?int $companyId, string $group, array $values, string $namespace = self::APP_NAMESPACE): void
     {
-        $definition = config("settings.groups.{$group}", null);
+        $definition = $this->definition($namespace, $group);
 
         if ($definition === null) {
             return;
@@ -76,6 +88,7 @@ class SettingsService
             }
 
             Setting::persist(
+                $namespace,
                 $companyId,
                 $group,
                 $key,
@@ -133,6 +146,34 @@ class SettingsService
         Mail::raw('This is a test email sent from Nexi ERP. If you can read this, your mail settings work.', function ($message) use ($address) {
             $message->to($address)->subject('Nexi ERP: Test Email');
         });
+    }
+
+    /**
+     * Settings group definitions for the given namespace.
+     *
+     * @return array<string, array<string, mixed>>|null
+     */
+    private function definition(string $namespace, string $group): ?array
+    {
+        return config("{$this->configKey($namespace)}.groups.{$group}", null);
+    }
+
+    /**
+     * All settings group definitions for the given namespace.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    private function groups(string $namespace): array
+    {
+        return config("{$this->configKey($namespace)}.groups", []);
+    }
+
+    /**
+     * Config key that holds the group definitions for a namespace.
+     */
+    private function configKey(string $namespace): string
+    {
+        return $namespace === self::BUSINESS_NAMESPACE ? 'business-settings' : 'settings';
     }
 
     private function directorySize(string $directory): int

@@ -9,7 +9,7 @@ parameters:
         - app/
         - config/
 
-    tmpDir: storage/framework/cache/phpstan
+    tmpDir: storage/framework/phpstan
 
     databaseMigrationsPath:
         - database/migrations/
