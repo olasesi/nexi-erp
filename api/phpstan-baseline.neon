@@ -225,6 +225,126 @@ parameters:
 		-
 			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
 			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/Api/V1/ExpenseCategoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\ExpenseCategoryController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/ExpenseCategoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\ExpenseCategoryController\:\:getSearchableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/ExpenseCategoryController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\ExpenseCategoryController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/ExpenseCategoryController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/Api/V1/ExpenseController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:where\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/ExpenseController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\ExpenseController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/ExpenseController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\ExpenseController\:\:getSearchableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/ExpenseController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\ExpenseController\:\:nextRef\(\) has parameter \$modelClass with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/Api/V1/ExpenseController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\ExpenseController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/ExpenseController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/Api/V1/IncomeCategoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\IncomeCategoryController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/IncomeCategoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\IncomeCategoryController\:\:getSearchableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/IncomeCategoryController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\IncomeCategoryController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/IncomeCategoryController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/Api/V1/IncomeController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:where\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/IncomeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\IncomeController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/IncomeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\IncomeController\:\:getSearchableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/IncomeController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\IncomeController\:\:nextRef\(\) has parameter \$modelClass with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/Api/V1/IncomeController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\IncomeController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/IncomeController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
 			count: 2
 			path: app/Http/Controllers/Api/V1/InvoiceController.php
 
@@ -357,6 +477,42 @@ parameters:
 		-
 			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
 			identifier: method.notFound
+			count: 5
+			path: app/Http/Controllers/Api/V1/QuotationController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:where\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/QuotationController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\QuotationController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/QuotationController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\QuotationController\:\:getSearchableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/QuotationController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\QuotationController\:\:nextRef\(\) has parameter \$modelClass with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/Api/V1/QuotationController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\QuotationController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/QuotationController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
 			count: 3
 			path: app/Http/Controllers/Api/V1/ReconciliationController.php
 
@@ -413,6 +569,72 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Controllers/Api/V1/SettingsController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/StockAdjustmentController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:where\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/StockAdjustmentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\StockAdjustmentController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/StockAdjustmentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\StockAdjustmentController\:\:nextRef\(\) has parameter \$modelClass with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/Api/V1/StockAdjustmentController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\StockAdjustmentController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/StockAdjustmentController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: app/Http/Controllers/Api/V1/StockTransferController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:where\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/V1/StockTransferController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\StockTransferController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/StockTransferController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\StockTransferController\:\:getSearchableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/StockTransferController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\StockTransferController\:\:nextRef\(\) has parameter \$modelClass with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/Api/V1/StockTransferController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\StockTransferController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/StockTransferController.php
 
 		-
 			message: '#^Method App\\Http\\Controllers\\Api\\V1\\WarehouseController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
@@ -481,6 +703,18 @@ parameters:
 			path: app/Http/Requests/Api/V1/StoreContactRequest.php
 
 		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreExpenseRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreExpenseRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreIncomeRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreIncomeRequest.php
+
+		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreInvoiceRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -517,6 +751,12 @@ parameters:
 			path: app/Http/Requests/Api/V1/StorePurchaseOrderRequest.php
 
 		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreQuotationRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreQuotationRequest.php
+
+		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreReconciliationRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -527,6 +767,18 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/StoreSalesOrderRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreStockAdjustmentRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreStockAdjustmentRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreStockTransferRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreStockTransferRequest.php
 
 		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreWarehouseRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
@@ -557,6 +809,18 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/UpdateContactRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateExpenseRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateExpenseRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateIncomeRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateIncomeRequest.php
 
 		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateInvoiceRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
@@ -593,6 +857,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/UpdatePurchaseOrderRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateQuotationRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateQuotationRequest.php
 
 		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateSalesOrderRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
@@ -659,6 +929,30 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Resources/ContactResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\ExpenseCategoryResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/ExpenseCategoryResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\ExpenseResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/ExpenseResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\IncomeCategoryResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/IncomeCategoryResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\IncomeResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/IncomeResource.php
 
 		-
 			message: '#^Method App\\Http\\Resources\\InvoiceItemResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
@@ -769,6 +1063,18 @@ parameters:
 			path: app/Http/Resources/PurchaseOrderResource.php
 
 		-
+			message: '#^Method App\\Http\\Resources\\QuotationItemResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/QuotationItemResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\QuotationResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/QuotationResource.php
+
+		-
 			message: '#^Method App\\Http\\Resources\\ReconciliationItemResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -815,6 +1121,30 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Resources/SalesOrderResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\StockAdjustmentItemResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/StockAdjustmentItemResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\StockAdjustmentResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/StockAdjustmentResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\StockTransferItemResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/StockTransferItemResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\StockTransferResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/StockTransferResource.php
 
 		-
 			message: '#^Method App\\Http\\Resources\\WarehouseResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
@@ -965,6 +1295,90 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Contact.php
+
+		-
+			message: '#^Class App\\Models\\Expense uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Expense.php
+
+		-
+			message: '#^Method App\\Models\\Expense\:\:company\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Expense.php
+
+		-
+			message: '#^Method App\\Models\\Expense\:\:createdBy\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Expense.php
+
+		-
+			message: '#^Method App\\Models\\Expense\:\:expenseCategory\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Expense.php
+
+		-
+			message: '#^Class App\\Models\\ExpenseCategory uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ExpenseCategory.php
+
+		-
+			message: '#^Method App\\Models\\ExpenseCategory\:\:company\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ExpenseCategory.php
+
+		-
+			message: '#^Method App\\Models\\ExpenseCategory\:\:expenses\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/ExpenseCategory.php
+
+		-
+			message: '#^Class App\\Models\\Income uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Income.php
+
+		-
+			message: '#^Method App\\Models\\Income\:\:company\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Income.php
+
+		-
+			message: '#^Method App\\Models\\Income\:\:createdBy\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Income.php
+
+		-
+			message: '#^Method App\\Models\\Income\:\:incomeCategory\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Income.php
+
+		-
+			message: '#^Class App\\Models\\IncomeCategory uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/IncomeCategory.php
+
+		-
+			message: '#^Method App\\Models\\IncomeCategory\:\:company\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/IncomeCategory.php
+
+		-
+			message: '#^Method App\\Models\\IncomeCategory\:\:incomes\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/IncomeCategory.php
 
 		-
 			message: '#^Method App\\Models\\Inventory\:\:product\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
@@ -1213,6 +1627,54 @@ parameters:
 			path: app/Models/PurchaseOrderItem.php
 
 		-
+			message: '#^Class App\\Models\\Quotation uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Quotation.php
+
+		-
+			message: '#^Method App\\Models\\Quotation\:\:company\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Quotation.php
+
+		-
+			message: '#^Method App\\Models\\Quotation\:\:contact\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Quotation.php
+
+		-
+			message: '#^Method App\\Models\\Quotation\:\:createdBy\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Quotation.php
+
+		-
+			message: '#^Method App\\Models\\Quotation\:\:items\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Quotation.php
+
+		-
+			message: '#^Method App\\Models\\Quotation\:\:warehouse\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Quotation.php
+
+		-
+			message: '#^Method App\\Models\\QuotationItem\:\:product\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/QuotationItem.php
+
+		-
+			message: '#^Method App\\Models\\QuotationItem\:\:quotation\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/QuotationItem.php
+
+		-
 			message: '#^Class App\\Models\\Reconciliation uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -1295,6 +1757,96 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/Setting.php
+
+		-
+			message: '#^Class App\\Models\\StockAdjustment uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockAdjustment.php
+
+		-
+			message: '#^Method App\\Models\\StockAdjustment\:\:adjustedBy\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockAdjustment.php
+
+		-
+			message: '#^Method App\\Models\\StockAdjustment\:\:company\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockAdjustment.php
+
+		-
+			message: '#^Method App\\Models\\StockAdjustment\:\:items\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockAdjustment.php
+
+		-
+			message: '#^Method App\\Models\\StockAdjustment\:\:warehouse\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockAdjustment.php
+
+		-
+			message: '#^Method App\\Models\\StockAdjustmentItem\:\:product\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockAdjustmentItem.php
+
+		-
+			message: '#^Method App\\Models\\StockAdjustmentItem\:\:stockAdjustment\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockAdjustmentItem.php
+
+		-
+			message: '#^Class App\\Models\\StockTransfer uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockTransfer.php
+
+		-
+			message: '#^Method App\\Models\\StockTransfer\:\:company\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockTransfer.php
+
+		-
+			message: '#^Method App\\Models\\StockTransfer\:\:fromWarehouse\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockTransfer.php
+
+		-
+			message: '#^Method App\\Models\\StockTransfer\:\:items\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockTransfer.php
+
+		-
+			message: '#^Method App\\Models\\StockTransfer\:\:toWarehouse\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockTransfer.php
+
+		-
+			message: '#^Method App\\Models\\StockTransfer\:\:transferredBy\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockTransfer.php
+
+		-
+			message: '#^Method App\\Models\\StockTransferItem\:\:product\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockTransferItem.php
+
+		-
+			message: '#^Method App\\Models\\StockTransferItem\:\:stockTransfer\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/StockTransferItem.php
 
 		-
 			message: '#^Method App\\Models\\User\:\:company\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'

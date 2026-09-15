@@ -90,7 +90,7 @@ Route::prefix('v1')->group(function () {
         Route::post('settings/cache/clear', [SettingsController::class, 'clearCache']);
         Route::post('settings/email/test', [SettingsController::class, 'sendTestEmail']);
 
-// Expenses & Income
+        // Expenses & Income
         Route::apiResource('expense-categories', ExpenseCategoryController::class);
         Route::apiResource('expenses', ExpenseController::class);
         Route::apiResource('income-categories', IncomeCategoryController::class);
