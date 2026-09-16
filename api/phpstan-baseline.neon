@@ -121,6 +121,12 @@ parameters:
 			path: app/Http/Controllers/Api/V1/BaseController.php
 
 		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\BusinessLocationController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/BusinessLocationController.php
+
+		-
 			message: '#^Method App\\Http\\Controllers\\Api\\V1\\ChartOfAccountController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1205,6 +1211,12 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/BankTransaction.php
+
+		-
+			message: '#^Type App\\Models\\BusinessLocation in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<App\\Models\\BusinessLocation\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: app/Models/BusinessLocation.php
 
 		-
 			message: '#^Class App\\Models\\ChartOfAccount uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'

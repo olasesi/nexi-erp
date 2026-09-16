@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BankAccountController;
 use App\Http\Controllers\Api\V1\BankTransactionController;
+use App\Http\Controllers\Api\V1\BusinessLocationController;
 use App\Http\Controllers\Api\V1\BusinessSettingsController;
 use App\Http\Controllers\Api\V1\ChartOfAccountController;
 use App\Http\Controllers\Api\V1\CompanyController;
@@ -111,5 +112,8 @@ Route::prefix('v1')->group(function () {
         Route::get('business-settings', [BusinessSettingsController::class, 'index']);
         Route::get('business-settings/{group}', [BusinessSettingsController::class, 'show']);
         Route::put('business-settings/{group}', [BusinessSettingsController::class, 'update']);
+
+        // Business locations (mirrors UltimatePOS Business Locations settings surface)
+        Route::apiResource('business-locations', BusinessLocationController::class);
     });
 });
