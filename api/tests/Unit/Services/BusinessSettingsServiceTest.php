@@ -78,10 +78,10 @@ it('encrypts secret keys at rest and returns them decrypted', function () {
     expect($row->value)->not->toBe('smtp-secret')
         ->and($service->group(null, 'email')['mail_password'])->toBe('smtp-secret');
 
-    $service->set(null, 'sale', ['stripe_secret_key' => 'sk_live_abc']);
-    $stripeRow = Setting::where('namespace', 'business')->where('group', 'sale')->where('key', 'stripe_secret_key')->firstOrFail();
+    $service->set(null, 'stripe', ['secret_key' => 'sk_live_abc']);
+    $stripeRow = Setting::where('namespace', 'business')->where('group', 'stripe')->where('key', 'secret_key')->firstOrFail();
     expect($stripeRow->value)->not->toBe('sk_live_abc')
-        ->and($service->group(null, 'sale')['stripe_secret_key'])->toBe('sk_live_abc');
+        ->and($service->group(null, 'stripe')['secret_key'])->toBe('sk_live_abc');
 });
 
 it('merges global defaults, global rows and company overrides', function () {
@@ -140,7 +140,7 @@ it('resolves option lists for selects', function () {
 it('provides group navigation meta', function () {
     $meta = app(BusinessSettingsService::class)->meta();
 
-    expect(count($meta))->toBe(17)
+    expect(count($meta))->toBe(count(config('business-settings.groups')))
         ->and($meta['business']['label'])->toBe('Business')
         ->and($meta['custom_labels']['description'])->not->toBe('');
 });

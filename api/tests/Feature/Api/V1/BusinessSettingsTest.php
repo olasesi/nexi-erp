@@ -21,8 +21,10 @@ it('returns all business settings groups with typed defaults and meta', function
 
     $body = $response->json();
 
-    expect(count($body['data']))->toBe(17)
-        ->and(count($body['meta']['groups']))->toBe(17)
+    expect(count($body['data']))->toBeGreaterThanOrEqual(30)
+        ->and(count($body['meta']['groups']))->toBeGreaterThanOrEqual(30)
+        ->and($body['data'])->toHaveKey('stripe')
+        ->and($body['data'])->toHaveKey('twilio')
         ->and($body['meta']['options']['business']['currency'])->toHaveKey('USD')
         ->and($body['meta']['options']['business']['time_zone'])->toHaveKey('UTC');
 });
@@ -131,6 +133,85 @@ it('returns 404 for unknown groups', function () {
 
     $this->getJson('/api/v1/business-settings/nope')->assertNotFound();
     $this->putJson('/api/v1/business-settings/nope', [])->assertNotFound();
+});
+
+it('updates a generated integration group and encrypts its credentials', function () {
+    Passport::actingAs(User::factory()->create());
+
+    $this->putJson('/api/v1/business-settings/stripe', [
+        'enabled' => '1',
+        'publishable_key' => 'pk_test_123',
+        'secret_key' => 'sk_live_abc',
+    ])->assertOk()
+        ->assertJsonPath('data.enabled', true)
+        ->assertJsonPath('data.publishable_key', 'pk_test_123')
+        ->assertJsonPath('data.secret_key', 'sk_live_abc');
+
+    expect(Setting::where('namespace', 'business')->where('group', 'stripe')->where('key', 'secret_key')->firstOrFail()->value)
+        ->not->toBe('sk_live_abc');
+
+    $this->assertDatabaseHas('settings', [
+        'namespace' => 'business',
+        'group' => 'stripe',
+        'key' => 'enabled',
+        'value' => '1',
+    ]);
+});
+
+it('shows generated integration groups with defaults and select options', function () {
+    Passport::actingAs(User::factory()->create());
+
+    $this->getJson('/api/v1/business-settings/paypal')
+        ->assertOk()
+        ->assertJsonPath('data.enabled', false)
+        ->assertJsonPath('data.mode', 'sandbox');
+
+    $this->getJson('/api/v1/business-settings')
+        ->assertOk()
+        ->assertJsonPath('meta.options.paypal.mode', ['sandbox' => 'sandbox', 'live' => 'live'])
+        ->assertJsonPath('meta.groups.ai_assistant.label', 'AI Assistant Settings')
+        ->assertJsonPath('meta.groups.plaid.description', 'Banking configuration for Plaid Settings.');
+});
+
+it('validates select values inside generated integration groups', function () {
+    Passport::actingAs(User::factory()->create());
+
+    $this->putJson('/api/v1/business-settings/paypal', ['mode' => 'production'])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['mode']);
+
+    $this->putJson('/api/v1/business-settings/webhook', ['enabled' => true, 'webhook_secret' => 'tok_1'])
+        ->assertOk()
+        ->assertJsonPath('data.webhook_secret', 'tok_1');
+});
+
+it('exposes consolidated business and notification settings', function () {
+    Passport::actingAs(User::factory()->create());
+
+    $this->putJson('/api/v1/business-settings/business', [
+        'company_email' => 'hello@acme.test',
+        'company_website' => 'https://acme.test',
+        'company_document' => 'TAX-2026',
+    ])->assertOk()
+        ->assertJsonPath('data.company_email', 'hello@acme.test')
+        ->assertJsonPath('data.company_website', 'https://acme.test')
+        ->assertJsonPath('data.company_document', 'TAX-2026');
+
+    $this->putJson('/api/v1/business-settings/prefixes', ['contract' => 'CON'])
+        ->assertOk()
+        ->assertJsonPath('data.contract', 'CON');
+
+    $this->putJson('/api/v1/business-settings/email_notifications', ['enable_crm_emails' => '1'])
+        ->assertOk()
+        ->assertJsonPath('data.enable_crm_emails', true);
+
+    $this->putJson('/api/v1/business-settings/time_tracker', ['app_site_url' => 'https://tracker.acme.test'])
+        ->assertOk()
+        ->assertJsonPath('data.app_site_url', 'https://tracker.acme.test');
+
+    $this->putJson('/api/v1/business-settings/school', ['enable_school_module' => true])
+        ->assertOk()
+        ->assertJsonPath('data.enable_school_module', true);
 });
 
 it('requires authentication', function () {

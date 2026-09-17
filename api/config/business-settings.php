@@ -17,7 +17,11 @@
 |--------------------------------------------------------------------------
 */
 
-return [
+use App\Support\IntegrationGroupDefinitions;
+
+$integrationGroups = IntegrationGroupDefinitions::groups(require __DIR__.'/business-integrations.php');
+
+$groups = [
 
     'groups' => [
 
@@ -39,6 +43,11 @@ return [
                 'time_format' => ['label' => 'Time Format', 'type' => 'select', 'default' => '24 Hour', 'options' => 'time_formats'],
                 'currency_precision' => ['label' => 'Currency Precision', 'type' => 'integer', 'default' => '2', 'rules' => ['min:0', 'max:8']],
                 'quantity_precision' => ['label' => 'Quantity Precision', 'type' => 'integer', 'default' => '2', 'rules' => ['min:0', 'max:8']],
+                'company_email' => ['label' => 'Company Email', 'type' => 'email', 'default' => null],
+                'company_phone' => ['label' => 'Company Phone', 'type' => 'string', 'default' => null, 'rules' => ['max:50']],
+                'company_website' => ['label' => 'Company Website', 'type' => 'url', 'default' => null],
+                'company_address' => ['label' => 'Company Address', 'type' => 'string', 'default' => null, 'rules' => ['max:500']],
+                'company_document' => ['label' => 'Company Document / Tax No', 'type' => 'string', 'default' => null, 'rules' => ['max:100']],
             ],
         ],
 
@@ -96,10 +105,6 @@ return [
                 'commission_calculation_type' => ['label' => 'Commission Calculation Type', 'type' => 'select', 'default' => 'invoice_value', 'options' => ['invoice_value', 'profit']],
                 'commission_agent_required' => ['label' => 'Is Commission Agent Required', 'type' => 'boolean', 'default' => '0'],
                 'enable_payment_link' => ['label' => 'Enable Payment Link', 'type' => 'boolean', 'default' => '0'],
-                'razorpay_key_id' => ['label' => 'Razorpay Key ID', 'type' => 'string', 'default' => '', 'rules' => ['max:255']],
-                'razorpay_key_secret' => ['label' => 'Razorpay Key Secret', 'type' => 'secret', 'default' => ''],
-                'stripe_public_key' => ['label' => 'Stripe Public Key', 'type' => 'string', 'default' => '', 'rules' => ['max:255']],
-                'stripe_secret_key' => ['label' => 'Stripe Secret Key', 'type' => 'secret', 'default' => ''],
             ],
         ],
 
@@ -220,6 +225,17 @@ return [
                 'subscription_no' => ['label' => 'Subscription No.', 'type' => 'string', 'default' => '', 'rules' => ['max:20']],
                 'draft' => ['label' => 'Draft', 'type' => 'string', 'default' => '', 'rules' => ['max:20']],
                 'sales_order' => ['label' => 'Sales Order', 'type' => 'string', 'default' => '', 'rules' => ['max:20']],
+                'quote' => ['label' => 'Quote', 'type' => 'string', 'default' => 'QT', 'rules' => ['max:20']],
+                'case' => ['label' => 'Case / Order', 'type' => 'string', 'default' => '', 'rules' => ['max:20']],
+                'contract' => ['label' => 'Contract', 'type' => 'string', 'default' => 'CNT', 'rules' => ['max:20']],
+                'document' => ['label' => 'Document', 'type' => 'string', 'default' => 'DOC', 'rules' => ['max:20']],
+                'school' => ['label' => 'School', 'type' => 'string', 'default' => '', 'rules' => ['max:20']],
+                'employee' => ['label' => 'Employee', 'type' => 'string', 'default' => 'EMP', 'rules' => ['max:20']],
+                'student' => ['label' => 'Student', 'type' => 'string', 'default' => 'STU', 'rules' => ['max:20']],
+                'recurring_invoice' => ['label' => 'Recurring Invoice', 'type' => 'string', 'default' => 'RI', 'rules' => ['max:20']],
+                'reminder' => ['label' => 'Reminder', 'type' => 'string', 'default' => '', 'rules' => ['max:20']],
+                'project' => ['label' => 'Project', 'type' => 'string', 'default' => 'PRJ', 'rules' => ['max:20']],
+                'task' => ['label' => 'Task', 'type' => 'string', 'default' => 'TSK', 'rules' => ['max:20']],
             ],
         ],
 
@@ -362,6 +378,67 @@ return [
                 )
             ),
         ],
+
+        'email_notifications' => [
+            'label' => 'Email Notification Settings',
+            'description' => 'Per-module email notification toggles.',
+            'keys' => [
+                'enable_general_notifications' => ['label' => 'General Notifications', 'type' => 'boolean', 'default' => '1'],
+                'enable_sales_emails' => ['label' => 'Sales', 'type' => 'boolean', 'default' => '1'],
+                'enable_purchase_emails' => ['label' => 'Purchases', 'type' => 'boolean', 'default' => '1'],
+                'enable_crm_emails' => ['label' => 'CRM', 'type' => 'boolean', 'default' => '0'],
+                'enable_support_ticket_emails' => ['label' => 'Support Ticket', 'type' => 'boolean', 'default' => '0'],
+                'enable_recruitment_emails' => ['label' => 'Recruitment', 'type' => 'boolean', 'default' => '0'],
+                'enable_appointment_emails' => ['label' => 'Appointment', 'type' => 'boolean', 'default' => '0'],
+                'enable_file_sharing_emails' => ['label' => 'File Sharing', 'type' => 'boolean', 'default' => '0'],
+                'enable_hrm_emails' => ['label' => 'HRM', 'type' => 'boolean', 'default' => '0'],
+                'enable_accounting_emails' => ['label' => 'Accounting', 'type' => 'boolean', 'default' => '0'],
+                'enable_pos_emails' => ['label' => 'POS', 'type' => 'boolean', 'default' => '0'],
+                'enable_school_emails' => ['label' => 'School', 'type' => 'boolean', 'default' => '0'],
+                'enable_project_emails' => ['label' => 'Project', 'type' => 'boolean', 'default' => '0'],
+                'enable_messenger_emails' => ['label' => 'Messenger', 'type' => 'boolean', 'default' => '0'],
+                'enable_holiday_emails' => ['label' => 'Holiday', 'type' => 'boolean', 'default' => '0'],
+                'enable_tutorial_emails' => ['label' => 'Tutorials', 'type' => 'boolean', 'default' => '0'],
+                'enable_document_emails' => ['label' => 'Documents', 'type' => 'boolean', 'default' => '0'],
+                'enable_cmms_emails' => ['label' => 'CMMS', 'type' => 'boolean', 'default' => '0'],
+                'enable_newsletter_emails' => ['label' => 'Newsletter', 'type' => 'boolean', 'default' => '0'],
+            ],
+        ],
+
+        'support' => [
+            'label' => 'Support Settings',
+            'description' => 'Support ticket generation and knowledge base options.',
+            'keys' => [
+                'enable_support_ticket' => ['label' => 'Enable Support Ticket', 'type' => 'boolean', 'default' => '0'],
+                'enable_faq' => ['label' => 'Enable FAQ', 'type' => 'boolean', 'default' => '0'],
+                'enable_knowledge_base' => ['label' => 'Enable Knowledge Base', 'type' => 'boolean', 'default' => '0'],
+                'support_email' => ['label' => 'Support Email', 'type' => 'email', 'default' => ''],
+            ],
+        ],
+
+        'time_tracker' => [
+            'label' => 'Time Tracker Settings',
+            'description' => 'Time tracking website and screenshot capture options.',
+            'keys' => [
+                'app_site_url' => ['label' => 'App Site URL', 'type' => 'url', 'default' => ''],
+                'tracking_interval' => ['label' => 'Tracking Interval (Minutes)', 'type' => 'integer', 'default' => '30', 'rules' => ['min:1', 'max:1440']],
+                'screenshot_interval' => ['label' => 'Screenshot Interval (Minutes)', 'type' => 'integer', 'default' => '30', 'rules' => ['min:5', 'max:1440']],
+            ],
+        ],
+
+        'school' => [
+            'label' => 'School Settings',
+            'description' => 'School admission and identity document prefixes.',
+            'keys' => [
+                'enable_school_module' => ['label' => 'Enable School Module', 'type' => 'boolean', 'default' => '0'],
+                'admission_student_prefix' => ['label' => 'Admission Student Prefix', 'type' => 'string', 'default' => 'STU', 'rules' => ['max:20']],
+                'employee_prefix' => ['label' => 'Employee Prefix', 'type' => 'string', 'default' => 'EMP', 'rules' => ['max:20']],
+                'admission_prefix' => ['label' => 'Admission Prefix', 'type' => 'string', 'default' => 'ADM', 'rules' => ['max:20']],
+                'receipt_prefix' => ['label' => 'Receipt Prefix', 'type' => 'string', 'default' => 'RC', 'rules' => ['max:20']],
+            ],
+        ],
+
+        ...$integrationGroups,
     ],
 
     /*
@@ -378,3 +455,5 @@ return [
         'mail_drivers' => ['smtp' => 'SMTP', 'gmail' => 'Gmail', 'outlook' => 'Outlook', 'yahoo' => 'Yahoo', 'mailgun' => 'Mailgun', 'ses' => 'Amazon SES', 'sendgrid' => 'SendGrid', 'postmark' => 'Postmark', 'sendmail' => 'Sendmail', 'log' => 'Log'],
     ],
 ];
+
+return $groups;
