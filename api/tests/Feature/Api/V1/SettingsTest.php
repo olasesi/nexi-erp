@@ -20,7 +20,67 @@ it('returns all settings groups with brand defaults and UI options', function ()
     $body = $settings->json();
     expect(count($body['meta']['currencies']))->toBe(155)
         ->and($body['meta']['default_currency'])->toBe('USD')
-        ->and(count($body['meta']['available_languages']))->toBeGreaterThan(10);
+        ->and($body['meta']['available_languages'])->toBe([
+            'en' => 'English',
+            'es' => 'Español',
+            'zh' => '中文',
+            'hi' => 'हिन्दी',
+            'ar' => 'العربية',
+            'fr' => 'Français',
+            'pt' => 'Português',
+            'ru' => 'Русский',
+            'id' => 'Bahasa Indonesia',
+            'de' => 'Deutsch',
+            'ja' => '日本語',
+            'tr' => 'Türkçe',
+            'vi' => 'Tiếng Việt',
+            'ko' => '한국어',
+            'it' => 'Italiano',
+        ])
+        ->and(count($body['meta']['available_languages']))->toBe(15)
+        ->and($settings->json('data.system.defaultLanguage'))->toBe('en')
+        ->and($body['meta']['themes'])->toBe(['light', 'twilight', 'dark'])
+        ->and(count($body['meta']['theme_colors']))->toBe(13);
+});
+
+it('defaults to English, restricts the language to the available options, and persists a change', function () {
+    Passport::actingAs(User::factory()->create());
+
+    $this->getJson('/api/v1/settings/system')
+        ->assertOk()
+        ->assertJsonPath('data.defaultLanguage', 'en');
+
+    $this->putJson('/api/v1/settings/system', ['defaultLanguage' => 'fr'])
+        ->assertOk()
+        ->assertJsonPath('data.defaultLanguage', 'fr');
+
+    $this->putJson('/api/v1/settings/system', ['defaultLanguage' => 'xx'])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['defaultLanguage']);
+});
+
+it('defaults to light theme and validates theme mode and theme color options', function () {
+    Passport::actingAs(User::factory()->create());
+
+    $this->getJson('/api/v1/settings/brand')
+        ->assertOk()
+        ->assertJsonPath('data.themeMode', 'light')
+        ->assertJsonPath('data.themeColor', 'green');
+
+    $this->putJson('/api/v1/settings/brand', [
+        'themeMode' => 'twilight',
+        'themeColor' => 'teal',
+    ])->assertOk()
+        ->assertJsonPath('data.themeMode', 'twilight')
+        ->assertJsonPath('data.themeColor', 'teal');
+
+    $this->putJson('/api/v1/settings/brand', ['themeMode' => 'neon'])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['themeMode']);
+
+    $this->putJson('/api/v1/settings/brand', ['themeColor' => 'mauve'])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['themeColor']);
 });
 
 it('updates a settings group and persists values scoped to company', function () {

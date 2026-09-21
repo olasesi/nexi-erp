@@ -2,6 +2,28 @@
 
 use Illuminate\Validation\Rule;
 
+$languages = [
+    'en' => 'English',
+    'es' => 'Español',
+    'zh' => '中文',
+    'hi' => 'हिन्दी',
+    'ar' => 'العربية',
+    'fr' => 'Français',
+    'pt' => 'Português',
+    'ru' => 'Русский',
+    'id' => 'Bahasa Indonesia',
+    'de' => 'Deutsch',
+    'ja' => '日本語',
+    'tr' => 'Türkçe',
+    'vi' => 'Tiếng Việt',
+    'ko' => '한국어',
+    'it' => 'Italiano',
+];
+
+$themes = ['light', 'twilight', 'dark'];
+
+$themeColors = ['green', 'blue', 'red', 'orange', 'yellow', 'pink', 'purple', 'sky', 'gray', 'black', 'cyan', 'indigo', 'teal'];
+
 return [
 
     /*
@@ -26,8 +48,8 @@ return [
                 'sidebarVariant' => ['nullable', 'string', Rule::in(['one-page', 'spaced'])],
                 'sidebarStyle' => ['nullable', 'string', 'max:20'],
                 'layoutDirection' => ['nullable', 'string', Rule::in(['ltr', 'rtl'])],
-                'themeMode' => ['nullable', 'string', Rule::in(['light', 'dark'])],
-                'themeColor' => ['nullable', 'string', 'max:20'],
+                'themeMode' => ['nullable', 'string', Rule::in($themes)],
+                'themeColor' => ['nullable', 'string', Rule::in($themeColors)],
                 'customColor' => ['nullable', 'string', 'max:20'],
             ],
             'defaults' => [
@@ -48,7 +70,7 @@ return [
         'system' => [
             'label' => 'System Settings',
             'keys' => [
-                'defaultLanguage' => ['nullable', 'string', 'max:10'],
+                'defaultLanguage' => ['nullable', 'string', 'max:10', Rule::in(array_keys($languages))],
                 'dateFormat' => ['nullable', 'string', 'max:20'],
                 'timeFormat' => ['nullable', 'string', 'max:20'],
                 'calendarStartDay' => ['nullable', 'integer', 'between:1,7'],
@@ -190,32 +212,14 @@ return [
     */
 
     'options' => [
-        'themes' => ['light', 'dark'],
-        'themeColors' => ['green', 'blue', 'red', 'orange', 'yellow', 'pink', 'purple', 'sky', 'gray', 'black', 'cyan', 'indigo', 'teal'],
+        'themes' => $themes,
+        'themeColors' => $themeColors,
         'sidebarVariants' => ['one-page', 'spaced'],
         'layoutDirections' => ['ltr', 'rtl'],
         'dateFormats' => ['Y-m-d', 'd/m/Y', 'm/d/Y', 'd-m-Y', 'm-d-Y', 'd M, Y', 'd M Y'],
         'timeFormats' => ['H:i', 'h:i A', 'g:i A'],
         'calendarStartDays' => ['1', '2', '3', '4', '5', '6', '7'],
-        'languages' => [
-            'en' => 'English',
-            'es' => 'Español',
-            'ar' => 'العربية',
-            'fr' => 'Français',
-            'de' => 'Deutsch',
-            'it' => 'Italiano',
-            'pt' => 'Português',
-            'ru' => 'Русский',
-            'zh' => '中文',
-            'ja' => '日本語',
-            'ko' => '한국어',
-            'hi' => 'हिन्दी',
-            'nl' => 'Nederlands',
-            'pl' => 'Polski',
-            'tr' => 'Türkçe',
-            'vi' => 'Tiếng Việt',
-            'id' => 'Bahasa Indonesia',
-        ],
+        'languages' => $languages,
         'emailProviders' => [
             'smtp' => 'SMTP',
             'gmail' => 'Gmail',
