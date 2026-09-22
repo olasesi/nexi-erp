@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CollectMetrics;
 use App\Http\Middleware\EnsureCustomerAccount;
 use App\Http\Middleware\EnsureEmailIsVerified;
 use App\Http\Middleware\EnsureStaffAccount;
@@ -16,6 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append(CollectMetrics::class);
+
         $middleware->alias([
             'verified' => EnsureEmailIsVerified::class,
             'staff' => EnsureStaffAccount::class,

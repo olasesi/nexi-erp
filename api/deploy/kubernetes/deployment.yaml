@@ -19,7 +19,27 @@ spec:
     metadata:
       labels:
         app: nexi-erp
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+        prometheus.io/path: "/api/metrics"
     spec:
+      volumes:
+        - name: web-files
+          emptyDir: {}
+        - name: nginx-conf
+          configMap:
+            name: nexi-erp-nginx
+      # The app image ships the full Laravel tree; nginx serves files from a
+      # shared volume populated here so both containers see identical content.
+      initContainers:
+        - name: web-copy
+          image: registry.example.com/nexi-erp:latest
+          imagePullPolicy: Always
+          command: ["sh", "-c", "cp -a /var/www/html/. /shared/www/"]
+          volumeMounts:
+            - name: web-files
+              mountPath: /shared/www
       containers:
         - name: app
           image: registry.example.com/nexi-erp:latest
@@ -58,18 +78,14 @@ spec:
                 secretKeyRef:
                   name: nexi-erp-app
                   key: key
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 9000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 9000
-            initialDelaySeconds: 5
-            periodSeconds: 5
+            - name: SENTRY_LARAVEL_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-app
+                  key: sentry_dsn
+                  optional: true
+            - name: SENTRY_TRACES_SAMPLE_RATE
+              value: "0.25"
           resources:
             requests:
               memory: "128Mi"
@@ -77,19 +93,53 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+        - name: nginx
+          image: nginx:1.27-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: web-files
+              mountPath: /var/www/html
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+          livenessProbe:
+            httpGet:
+              path: /up
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: nexi-erp
   namespace: default
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "80"
+    prometheus.io/path: "/api/metrics"
 spec:
   selector:
     app: nexi-erp
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 9000
+      targetPort: 80
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1

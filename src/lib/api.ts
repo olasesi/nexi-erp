@@ -7,6 +7,8 @@ import type {
   ProductCategory,
   PurchaseOrder,
   SalesOrder,
+  SettingsGroupResponse,
+  SettingsResponse,
   User,
   Warehouse,
 } from "@/types";
@@ -173,4 +175,33 @@ export const purchaseOrders = createCrud<PurchaseOrder>("purchase-orders");
 
 export function healthCheck() {
   return request<{ status: string }>("/api/health");
+}
+
+// ─── Settings ─────────────────────────────────────────
+
+export function getSettings(): Promise<SettingsResponse> {
+  return request<SettingsResponse>("/api/v1/settings");
+}
+
+export function updateSettingsGroup(
+  group: string,
+  values: Record<string, unknown>,
+): Promise<SettingsGroupResponse> {
+  return request<SettingsGroupResponse>(`/api/v1/settings/${group}`, {
+    method: "PUT",
+    body: JSON.stringify(values),
+  });
+}
+
+export function clearSettingsCache(): Promise<{ message: string; cache_size: string }> {
+  return request<{ message: string; cache_size: string }>("/api/v1/settings/cache/clear", {
+    method: "POST",
+  });
+}
+
+export function sendTestEmail(email: string): Promise<{ message: string }> {
+  return request<{ message: string }>("/api/v1/settings/email/test", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
 }

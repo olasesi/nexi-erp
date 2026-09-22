@@ -9,6 +9,7 @@ const navigation = [
   { name: "Warehouses", href: "/warehouses" },
   { name: "Sales Orders", href: "/sales-orders" },
   { name: "Purchase Orders", href: "/purchase-orders" },
+  { name: "Settings", href: "/settings" },
 ];
 
 export function Layout({ children }: { children: ReactNode }) {

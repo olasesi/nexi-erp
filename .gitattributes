@@ -1,0 +1,10 @@
+# Keep frontend source files LF everywhere so prettier --check behaves the
+# same on Windows (core.autocrlf) and CI.
+src/**/*.ts text eol=lf
+src/**/*.tsx text eol=lf
+src/**/*.js text eol=lf
+src/**/*.jsx text eol=lf
+src/**/*.css text eol=lf
+src/**/*.md text eol=lf
+src/**/*.json text eol=lf
+src/**/*.html text eol=lf

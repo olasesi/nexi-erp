@@ -192,3 +192,55 @@ export interface PaginatedResponse<T> {
   per_page: number;
   total: number;
 }
+
+export type SettingsValue = string | number | boolean | null;
+
+export type SettingsGroup = Record<string, SettingsValue>;
+
+export type AppSettings = Record<string, SettingsGroup>;
+
+export interface CurrencyOption {
+  name: string;
+  code: string;
+  symbol: string;
+  is_default: boolean;
+}
+
+export interface EmailProviderOption {
+  code: string;
+  name: string;
+}
+
+export interface SettingsMeta {
+  company_id: number | null;
+  currencies: CurrencyOption[];
+  default_currency: string;
+  available_languages: Record<string, string>;
+  date_formats: string[];
+  time_formats: string[];
+  calendar_start_days: string[];
+  themes: string[];
+  dashboard_widgets: Record<
+    string,
+    { label: string; type: string; size: { w: number; h: number } }
+  >;
+  dashboard_layouts: Record<string, { label: string; description: string; widgets: string[] }>;
+  theme_colors: string[];
+  sidebar_variants: string[];
+  layout_directions: string[];
+  currency_formats: string[];
+  currency_symbol_positions: string[];
+  storage_types: string[];
+  email_providers: EmailProviderOption[];
+  cache_size: string;
+}
+
+export interface SettingsResponse {
+  data: AppSettings;
+  meta: SettingsMeta;
+}
+
+export interface SettingsGroupResponse {
+  message?: string;
+  data: SettingsGroup;
+}

@@ -99,9 +99,17 @@ class SettingsService
 
     /**
      * Approximate cache footprint in megabytes.
+     *
+     * Only the file store has a tangible on-disk footprint; in-memory or
+     * external stores report zero because their contents live outside the
+     * application's filesystem.
      */
     public function cacheSize(): string
     {
+        if (config('cache.default') !== 'file') {
+            return '0.00';
+        }
+
         $bytes = $this->directorySize(storage_path('framework/cache'));
 
         return number_format($bytes / 1048576, 2);

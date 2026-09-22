@@ -8,6 +8,7 @@ import { DashboardPage } from "@/pages/dashboard";
 import { ProductsPage } from "@/pages/products";
 import { PurchaseOrdersPage } from "@/pages/purchase-orders";
 import { SalesOrdersPage } from "@/pages/sales-orders";
+import { SettingsPage } from "@/pages/settings";
 import { WarehousesPage } from "@/pages/warehouses";
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/warehouses" element={<WarehousesPage />} />
           <Route path="/sales-orders" element={<SalesOrdersPage />} />
           <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </Layout>
