@@ -24,6 +24,8 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'manage-roles', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'manage-permissions', 'guard_name' => 'web']);
 
+        Permission::firstOrCreate(['name' => 'portal.access', 'guard_name' => 'web']);
+
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $adminRole->syncPermissions(Permission::all());
 
@@ -36,6 +38,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'products.view-any', 'products.view',
             'sales-orders.view-any', 'sales-orders.view', 'sales-orders.create', 'sales-orders.update',
         ])->get());
+
+        $customerRole = Role::firstOrCreate(['name' => 'customer', 'guard_name' => 'web']);
+        $customerRole->syncPermissions(['portal.access']);
 
         $user = User::where('email', 'admin@nexi-corp.com')->first();
         if ($user) {

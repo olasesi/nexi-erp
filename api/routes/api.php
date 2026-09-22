@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\ChartOfAccountController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\CurrenciesController;
+use App\Http\Controllers\Api\V1\CustomerPortalController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\ExpenseCategoryController;
 use App\Http\Controllers\Api\V1\ExpenseController;
@@ -41,7 +42,22 @@ Route::prefix('v1')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])
         ->middleware('guest');
 
-    Route::middleware('auth:api')->group(function () {
+    Route::post('/customer/register', [CustomerPortalController::class, 'register'])
+        ->middleware('guest');
+
+    Route::middleware(['auth:api', 'customer'])->prefix('customer')->group(function () {
+        Route::get('me', [CustomerPortalController::class, 'me']);
+        Route::get('invoices', [CustomerPortalController::class, 'invoices']);
+        Route::get('invoices/{invoice}', [CustomerPortalController::class, 'showInvoice']);
+        Route::get('quotations', [CustomerPortalController::class, 'quotations']);
+        Route::get('quotations/{quotation}', [CustomerPortalController::class, 'showQuotation']);
+        Route::get('sales-orders', [CustomerPortalController::class, 'salesOrders']);
+        Route::get('sales-orders/{sales_order}', [CustomerPortalController::class, 'showSalesOrder']);
+        Route::get('payments', [CustomerPortalController::class, 'payments']);
+        Route::get('payments/{payment}', [CustomerPortalController::class, 'showPayment']);
+    });
+
+    Route::middleware(['auth:api', 'staff'])->group(function () {
 
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);

@@ -18,6 +18,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $fillable = [
         'company_id',
+        'contact_id',
         'name',
         'email',
         'password',
@@ -39,5 +40,18 @@ class User extends Authenticatable implements MustVerifyEmail
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
+    }
+
+    /**
+     * @return BelongsTo<Contact, $this>
+     */
+    public function contact(): BelongsTo
+    {
+        return $this->belongsTo(Contact::class);
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->contact_id !== null;
     }
 }
