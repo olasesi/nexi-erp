@@ -24,6 +24,47 @@ $themes = ['light', 'twilight', 'dark'];
 
 $themeColors = ['green', 'blue', 'red', 'orange', 'yellow', 'pink', 'purple', 'sky', 'gray', 'black', 'cyan', 'indigo', 'teal'];
 
+$dashboardWidgets = [
+    'total_revenue' => ['label' => 'Total Revenue', 'type' => 'kpi', 'size' => ['w' => 3, 'h' => 1]],
+    'total_orders' => ['label' => 'Total Orders', 'type' => 'kpi', 'size' => ['w' => 3, 'h' => 1]],
+    'total_customers' => ['label' => 'Total Customers', 'type' => 'kpi', 'size' => ['w' => 3, 'h' => 1]],
+    'pending_orders' => ['label' => 'Pending Orders', 'type' => 'kpi', 'size' => ['w' => 3, 'h' => 1]],
+    'low_stock' => ['label' => 'Low Stock Alerts', 'type' => 'kpi', 'size' => ['w' => 3, 'h' => 1]],
+    'sales_trend' => ['label' => 'Sales Trend', 'type' => 'chart', 'size' => ['w' => 6, 'h' => 2]],
+    'top_products' => ['label' => 'Top Products', 'type' => 'chart', 'size' => ['w' => 6, 'h' => 2]],
+    'recent_orders' => ['label' => 'Recent Orders', 'type' => 'list', 'size' => ['w' => 6, 'h' => 2]],
+    'stock_alerts' => ['label' => 'Stock Alerts', 'type' => 'list', 'size' => ['w' => 6, 'h' => 2]],
+    'recent_activity' => ['label' => 'Recent Activity', 'type' => 'list', 'size' => ['w' => 6, 'h' => 2]],
+];
+
+$dashboardLayouts = [
+    'minimal' => [
+        'label' => 'Minimalist',
+        'description' => 'A clean, focused view with only the essential numbers and one chart.',
+        'widgets' => ['total_revenue', 'total_orders', 'total_customers', 'sales_trend'],
+    ],
+    'maximal' => [
+        'label' => 'Maximalist',
+        'description' => 'Every widget on screen, organised in a dense information grid.',
+        'widgets' => ['total_revenue', 'total_orders', 'total_customers', 'pending_orders', 'low_stock', 'sales_trend', 'top_products', 'recent_orders', 'stock_alerts', 'recent_activity'],
+    ],
+    'executive' => [
+        'label' => 'Executive',
+        'description' => 'A business summary with key KPIs and a prominent revenue chart.',
+        'widgets' => ['total_revenue', 'total_orders', 'sales_trend', 'recent_orders'],
+    ],
+    'analytics' => [
+        'label' => 'Analytics',
+        'description' => 'Chart-first layout for performance analysis and trends.',
+        'widgets' => ['sales_trend', 'top_products', 'total_revenue', 'recent_orders'],
+    ],
+    'operations' => [
+        'label' => 'Operations',
+        'description' => 'Order and stock focused view for daily operations teams.',
+        'widgets' => ['pending_orders', 'low_stock', 'stock_alerts', 'recent_orders', 'total_orders'],
+    ],
+];
+
 return [
 
     /*
@@ -64,6 +105,18 @@ return [
                 'themeMode' => 'light',
                 'themeColor' => 'green',
                 'customColor' => null,
+            ],
+        ],
+
+        'dashboard' => [
+            'label' => 'Dashboard Settings',
+            'keys' => [
+                'layout' => ['nullable', 'string', 'max:20', Rule::in(array_keys($dashboardLayouts))],
+                'density' => ['nullable', 'string', Rule::in(['comfortable', 'compact'])],
+            ],
+            'defaults' => [
+                'layout' => 'minimal',
+                'density' => 'comfortable',
             ],
         ],
 
@@ -216,6 +269,8 @@ return [
         'themeColors' => $themeColors,
         'sidebarVariants' => ['one-page', 'spaced'],
         'layoutDirections' => ['ltr', 'rtl'],
+        'dashboardWidgets' => $dashboardWidgets,
+        'dashboardLayouts' => $dashboardLayouts,
         'dateFormats' => ['Y-m-d', 'd/m/Y', 'm/d/Y', 'd-m-Y', 'm-d-Y', 'd M, Y', 'd M Y'],
         'timeFormats' => ['H:i', 'h:i A', 'g:i A'],
         'calendarStartDays' => ['1', '2', '3', '4', '5', '6', '7'],

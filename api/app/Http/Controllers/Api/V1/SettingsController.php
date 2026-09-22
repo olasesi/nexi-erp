@@ -43,6 +43,8 @@ class SettingsController extends Controller
             'time_formats' => config('settings.options.timeFormats'),
             'calendar_start_days' => config('settings.options.calendarStartDays'),
             'themes' => config('settings.options.themes'),
+            'dashboard_widgets' => config('settings.options.dashboardWidgets'),
+            'dashboard_layouts' => config('settings.options.dashboardLayouts'),
             'theme_colors' => config('settings.options.themeColors'),
             'sidebar_variants' => config('settings.options.sidebarVariants'),
             'layout_directions' => config('settings.options.layoutDirections'),

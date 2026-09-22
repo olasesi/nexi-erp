@@ -43,6 +43,44 @@ it('returns all settings groups with brand defaults and UI options', function ()
         ->and(count($body['meta']['theme_colors']))->toBe(13);
 });
 
+it('returns the dashboard layout group with its default and the preset registry', function () {
+    Passport::actingAs(User::factory()->create());
+
+    $settings = $this->getJson('/api/v1/settings')->assertOk();
+
+    $settings->assertJsonPath('data.dashboard.layout', 'minimal')
+        ->assertJsonPath('data.dashboard.density', 'comfortable');
+
+    $body = $settings->json();
+    expect($body['meta']['dashboard_layouts'])->toHaveKeys(['minimal', 'maximal', 'executive', 'analytics', 'operations'])
+        ->and($body['meta']['dashboard_widgets'])->toBeArray()
+        ->and(count($body['meta']['dashboard_layouts']))->toBe(5);
+});
+
+it('defaults the dashboard layout and density and validates against the available presets', function () {
+    Passport::actingAs(User::factory()->create());
+
+    $this->getJson('/api/v1/settings/dashboard')
+        ->assertOk()
+        ->assertJsonPath('data.layout', 'minimal')
+        ->assertJsonPath('data.density', 'comfortable');
+
+    $this->putJson('/api/v1/settings/dashboard', [
+        'layout' => 'executive',
+        'density' => 'compact',
+    ])->assertOk()
+        ->assertJsonPath('data.layout', 'executive')
+        ->assertJsonPath('data.density', 'compact');
+
+    $this->putJson('/api/v1/settings/dashboard', ['layout' => 'neon'])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['layout']);
+
+    $this->putJson('/api/v1/settings/dashboard', ['density' => 'spacious'])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['density']);
+});
+
 it('defaults to English, restricts the language to the available options, and persists a change', function () {
     Passport::actingAs(User::factory()->create());
 
