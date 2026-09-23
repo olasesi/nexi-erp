@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\PermissionGuard;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -53,5 +54,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isCustomer(): bool
     {
         return $this->contact_id !== null;
+    }
+
+    /**
+     * Pin Spatie role/permission lookups for users to the API guard, so they
+     * resolve the same guard whether called during a request or from artisan/tests.
+     */
+    public function guardName(): string
+    {
+        return PermissionGuard::name();
     }
 }

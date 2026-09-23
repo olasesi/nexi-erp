@@ -3,6 +3,7 @@
 use App\Http\Middleware\CollectMetrics;
 use App\Http\Middleware\EnsureCustomerAccount;
 use App\Http\Middleware\EnsureEmailIsVerified;
+use App\Http\Middleware\EnsurePermitted;
 use App\Http\Middleware\EnsureStaffAccount;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => EnsureEmailIsVerified::class,
             'staff' => EnsureStaffAccount::class,
             'customer' => EnsureCustomerAccount::class,
+            'permitted' => EnsurePermitted::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

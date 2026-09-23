@@ -60,7 +60,7 @@ Route::prefix('v1')->group(function () {
         Route::get('payments/{payment}', [CustomerPortalController::class, 'showPayment']);
     });
 
-    Route::middleware(['auth:api', 'staff'])->group(function () {
+    Route::middleware(['auth:api', 'staff', 'permitted'])->group(function () {
 
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);

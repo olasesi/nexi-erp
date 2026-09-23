@@ -15,8 +15,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->call(RolesAndPermissionsSeeder::class);
-
         $company = Company::factory()->create([
             'name' => 'Nexi Corp',
             'email' => 'info@nexi-corp.com',
@@ -30,6 +28,8 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('password'),
             ]
         );
+
+        $this->call(RolesAndPermissionsSeeder::class);
 
         $categories = ProductCategory::factory()->count(5)->create([
             'company_id' => $company->id,

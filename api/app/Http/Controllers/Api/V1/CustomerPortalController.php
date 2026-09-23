@@ -16,6 +16,7 @@ use App\Models\Payment;
 use App\Models\Quotation;
 use App\Models\SalesOrder;
 use App\Models\User;
+use App\Support\PermissionGuard;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -47,8 +48,9 @@ class CustomerPortalController extends Controller
             'password' => $data['password'],
         ]);
 
-        $customerRole = Role::firstOrCreate(['name' => 'customer', 'guard_name' => 'web']);
-        $portalAccess = Permission::firstOrCreate(['name' => 'portal.access', 'guard_name' => 'web']);
+        $guard = PermissionGuard::name();
+        $customerRole = Role::firstOrCreate(['name' => 'customer', 'guard_name' => $guard]);
+        $portalAccess = Permission::firstOrCreate(['name' => 'portal.access', 'guard_name' => $guard]);
         $customerRole->givePermissionTo($portalAccess);
         $user->assignRole($customerRole);
 
