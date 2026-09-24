@@ -31,6 +31,30 @@ class DatabaseSeeder extends Seeder
 
         $this->call(RolesAndPermissionsSeeder::class);
 
+        $manager = User::firstOrCreate(
+            ['email' => 'manager@nexi-corp.com'],
+            [
+                'company_id' => $company->id,
+                'username' => 'manager',
+                'name' => 'Manager User',
+                'phone' => '+1-555-0102',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $manager->assignRole('manager');
+
+        $cashier = User::firstOrCreate(
+            ['email' => 'cashier@nexi-corp.com'],
+            [
+                'company_id' => $company->id,
+                'username' => 'cashier',
+                'name' => 'Cashier User',
+                'phone' => '+1-555-0103',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $cashier->assignRole('user');
+
         $categories = ProductCategory::factory()->count(5)->create([
             'company_id' => $company->id,
         ]);

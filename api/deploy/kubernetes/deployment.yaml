@@ -78,6 +78,16 @@ spec:
                 secretKeyRef:
                   name: nexi-erp-app
                   key: key
+            - name: PASSPORT_PASSWORD_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-app
+                  key: oauth_password_client_id
+            - name: PASSPORT_PASSWORD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-app
+                  key: oauth_password_client_secret
             - name: SENTRY_LARAVEL_DSN
               valueFrom:
                 secretKeyRef:

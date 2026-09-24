@@ -17,7 +17,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $this->normalizeGuard('web', $guard);
 
-        $modules = ['companies', 'contacts', 'product-categories', 'products', 'warehouses', 'sales-orders', 'purchase-orders'];
+        $modules = ['companies', 'contacts', 'product-categories', 'products', 'warehouses', 'sales-orders', 'purchase-orders', 'users', 'roles'];
 
         $actions = ['view-any', 'view', 'create', 'update', 'delete'];
 

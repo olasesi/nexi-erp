@@ -26,10 +26,12 @@ use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\PurchaseOrderController;
 use App\Http\Controllers\Api\V1\QuotationController;
 use App\Http\Controllers\Api\V1\ReconciliationController;
+use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SalesOrderController;
 use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\StockAdjustmentController;
 use App\Http\Controllers\Api\V1\StockTransferController;
+use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WarehouseController;
 use Illuminate\Support\Facades\Route;
 
@@ -134,5 +136,9 @@ Route::prefix('v1')->group(function () {
 
         // Business locations (mirrors UltimatePOS Business Locations settings surface)
         Route::apiResource('business-locations', BusinessLocationController::class);
+
+        // User management (mirrors UltimatePOS Manage Users / Manage Roles surface)
+        Route::apiResource('users', UserController::class);
+        Route::apiResource('roles', RoleController::class);
     });
 });

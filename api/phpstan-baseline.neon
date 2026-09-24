@@ -531,6 +531,18 @@ parameters:
 		-
 			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
 			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/Api/V1/RoleController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\RoleController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/RoleController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
 			count: 2
 			path: app/Http/Controllers/Api/V1/SalesOrderController.php
 
@@ -635,6 +647,30 @@ parameters:
 			identifier: missingType.property
 			count: 1
 			path: app/Http/Controllers/Api/V1/StockTransferController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/Api/V1/UserController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\UserController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\UserController\:\:getSearchableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\UserController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/UserController.php
 
 		-
 			message: '#^Method App\\Http\\Controllers\\Api\\V1\\WarehouseController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
@@ -763,6 +799,12 @@ parameters:
 			path: app/Http/Requests/Api/V1/StoreReconciliationRequest.php
 
 		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreRoleRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreRoleRequest.php
+
+		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreSalesOrderRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -779,6 +821,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/StoreStockTransferRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreUserRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreUserRequest.php
 
 		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreWarehouseRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
@@ -865,6 +913,12 @@ parameters:
 			path: app/Http/Requests/Api/V1/UpdateQuotationRequest.php
 
 		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateRoleRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateRoleRequest.php
+
+		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateSalesOrderRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -875,6 +929,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/UpdateSettingGroupRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateUserRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateUserRequest.php
 
 		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateWarehouseRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
@@ -1111,6 +1171,18 @@ parameters:
 			path: app/Http/Resources/ReconciliationResource.php
 
 		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\RoleResource\:\:\$label\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/RoleResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\RoleResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/RoleResource.php
+
+		-
 			message: '#^Method App\\Http\\Resources\\SalesOrderItemResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1145,6 +1217,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Resources/StockTransferResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\UserResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/UserResource.php
 
 		-
 			message: '#^Method App\\Http\\Resources\\WarehouseResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'

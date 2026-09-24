@@ -5,12 +5,18 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Concerns\IssuesPasswordTokens;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\MetricsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
     use IssuesPasswordTokens;
+
+    public function __construct(
+        protected MetricsService $metrics
+    ) {}
 
     /**
      * Exchange email/password credentials for an OAuth2 access token
@@ -23,7 +29,17 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        return $this->issuePasswordToken($credentials);
+        try {
+            $response = $this->issuePasswordToken($credentials);
+        } catch (ValidationException $e) {
+            $this->metrics->recordAuth(false);
+
+            throw $e;
+        }
+
+        $this->metrics->recordAuth(true);
+
+        return $response;
     }
 
     /**
@@ -42,6 +58,8 @@ class AuthController extends Controller
             'email' => $data['email'],
             'password' => $data['password'],
         ]);
+
+        $this->metrics->recordRegistration();
 
         return $this->issuePasswordToken([
             'email' => $data['email'],

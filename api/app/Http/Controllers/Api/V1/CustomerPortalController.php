@@ -16,6 +16,7 @@ use App\Models\Payment;
 use App\Models\Quotation;
 use App\Models\SalesOrder;
 use App\Models\User;
+use App\Services\MetricsService;
 use App\Support\PermissionGuard;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +28,10 @@ use Spatie\Permission\Models\Role;
 class CustomerPortalController extends Controller
 {
     use IssuesPasswordTokens;
+
+    public function __construct(
+        protected MetricsService $metrics
+    ) {}
 
     /**
      * Register a portal account for a customer contact.
@@ -53,6 +58,8 @@ class CustomerPortalController extends Controller
         $portalAccess = Permission::firstOrCreate(['name' => 'portal.access', 'guard_name' => $guard]);
         $customerRole->givePermissionTo($portalAccess);
         $user->assignRole($customerRole);
+
+        $this->metrics->recordRegistration();
 
         return $this->issuePasswordToken([
             'email' => $data['email'],
