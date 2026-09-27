@@ -67,7 +67,7 @@ it('registers a user and returns an OAuth2 access token', function () {
     expect(User::where('email', 'new@nexi-corp.com')->exists())->toBeTrue();
 });
 
-it('fetches the authenticated user', function () {
+it('fetches the authenticated user with roles and permissions', function () {
     $login = $this->postJson('/api/v1/login', [
         'email' => 'test@nexi-corp.com',
         'password' => 'password',
@@ -78,7 +78,8 @@ it('fetches the authenticated user', function () {
     $this->withToken($token)
         ->getJson('/api/v1/user')
         ->assertOk()
-        ->assertJsonPath('email', 'test@nexi-corp.com');
+        ->assertJsonPath('email', 'test@nexi-corp.com')
+        ->assertJsonStructure(['roles', 'permissions']);
 });
 
 it('logout revokes the access token', function () {

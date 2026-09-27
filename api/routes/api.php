@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\IncomeCategoryController;
 use App\Http\Controllers\Api\V1\IncomeController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\JournalEntryController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\ProductCategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
@@ -79,38 +80,43 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('chart-of-accounts', ChartOfAccountController::class);
 
         Route::apiResource('journal-entries', JournalEntryController::class);
-        Route::post('journal-entries/{journal_entry}/post', [JournalEntryController::class, 'postEntry']);
-        Route::post('journal-entries/{journal_entry}/void', [JournalEntryController::class, 'void']);
+        Route::post('journal-entries/{journal_entry}/post', [JournalEntryController::class, 'postEntry'])->name('journal-entries.post');
+        Route::post('journal-entries/{journal_entry}/void', [JournalEntryController::class, 'void'])->name('journal-entries.void');
 
         Route::apiResource('invoices', InvoiceController::class);
 
         Route::apiResource('payments', PaymentController::class);
-        Route::post('payments/{payment}/complete', [PaymentController::class, 'complete']);
+        Route::post('payments/{payment}/complete', [PaymentController::class, 'complete'])->name('payments.complete');
 
         Route::apiResource('bank-accounts', BankAccountController::class);
         Route::apiResource('bank-transactions', BankTransactionController::class);
-        Route::post('bank-transactions/import', [BankTransactionController::class, 'import']);
-        Route::post('bank-transactions/{bank_transaction}/match', [BankTransactionController::class, 'matchTransaction']);
-        Route::post('bank-transactions/{bank_transaction}/unmatch', [BankTransactionController::class, 'unmatch']);
+        Route::post('bank-transactions/import', [BankTransactionController::class, 'import'])->name('bank-transactions.import');
+        Route::post('bank-transactions/{bank_transaction}/match', [BankTransactionController::class, 'matchTransaction'])->name('bank-transactions.match');
+        Route::post('bank-transactions/{bank_transaction}/unmatch', [BankTransactionController::class, 'unmatch'])->name('bank-transactions.unmatch');
 
         Route::apiResource('reconciliations', ReconciliationController::class);
-        Route::post('reconciliations/{reconciliation}/complete', [ReconciliationController::class, 'complete']);
+        Route::post('reconciliations/{reconciliation}/complete', [ReconciliationController::class, 'complete'])->name('reconciliations.complete');
+
+        // In-app notifications (company-scoped inbox, bell badge support)
+        Route::get('notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+        Route::post('notifications/read-all', [NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+        Route::apiResource('notifications', NotificationController::class);
 
         // Reports & dashboard
-        Route::get('reports/profit-and-loss', [FinancialReportController::class, 'profitAndLoss']);
-        Route::get('reports/balance-sheet', [FinancialReportController::class, 'balanceSheet']);
-        Route::get('reports/cash-flow', [FinancialReportController::class, 'cashFlow']);
-        Route::get('reports/aging', [FinancialReportController::class, 'aging']);
+        Route::get('reports/profit-and-loss', [FinancialReportController::class, 'profitAndLoss'])->name('reports.profit-and-loss');
+        Route::get('reports/balance-sheet', [FinancialReportController::class, 'balanceSheet'])->name('reports.balance-sheet');
+        Route::get('reports/cash-flow', [FinancialReportController::class, 'cashFlow'])->name('reports.cash-flow');
+        Route::get('reports/aging', [FinancialReportController::class, 'aging'])->name('reports.aging');
 
-        Route::get('dashboard', [DashboardController::class, 'summary']);
-        Route::get('currencies', [CurrenciesController::class, 'index']);
+        Route::get('dashboard', [DashboardController::class, 'summary'])->name('dashboard.summary');
+        Route::get('currencies', [CurrenciesController::class, 'index'])->name('currencies.index');
 
         // Settings (mirrors WorkDo Dash settings surface)
-        Route::get('settings', [SettingsController::class, 'index']);
-        Route::get('settings/{group}', [SettingsController::class, 'show']);
-        Route::put('settings/{group}', [SettingsController::class, 'update']);
-        Route::post('settings/cache/clear', [SettingsController::class, 'clearCache']);
-        Route::post('settings/email/test', [SettingsController::class, 'sendTestEmail']);
+        Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+        Route::get('settings/{group}', [SettingsController::class, 'show'])->name('settings.show');
+        Route::put('settings/{group}', [SettingsController::class, 'update'])->name('settings.update');
+        Route::post('settings/cache/clear', [SettingsController::class, 'clearCache'])->name('settings.cache-clear');
+        Route::post('settings/email/test', [SettingsController::class, 'sendTestEmail'])->name('settings.email-test');
 
         // Expenses & Income
         Route::apiResource('expense-categories', ExpenseCategoryController::class);
@@ -121,18 +127,18 @@ Route::prefix('v1')->group(function () {
         // Stock management
         Route::apiResource('stock-adjustments', StockAdjustmentController::class);
         Route::apiResource('stock-transfers', StockTransferController::class);
-        Route::post('stock-transfers/{stock_transfer}/complete', [StockTransferController::class, 'complete']);
-        Route::post('stock-transfers/{stock_transfer}/cancel', [StockTransferController::class, 'cancel']);
+        Route::post('stock-transfers/{stock_transfer}/complete', [StockTransferController::class, 'complete'])->name('stock-transfers.complete');
+        Route::post('stock-transfers/{stock_transfer}/cancel', [StockTransferController::class, 'cancel'])->name('stock-transfers.cancel');
 
         // Quotations
         Route::apiResource('quotations', QuotationController::class);
-        Route::post('quotations/{quotation}/accept', [QuotationController::class, 'accept']);
-        Route::post('quotations/{quotation}/reject', [QuotationController::class, 'reject']);
+        Route::post('quotations/{quotation}/accept', [QuotationController::class, 'accept'])->name('quotations.accept');
+        Route::post('quotations/{quotation}/reject', [QuotationController::class, 'reject'])->name('quotations.reject');
 
         // Business settings (mirrors UltimatePOS Business Settings surface)
-        Route::get('business-settings', [BusinessSettingsController::class, 'index']);
-        Route::get('business-settings/{group}', [BusinessSettingsController::class, 'show']);
-        Route::put('business-settings/{group}', [BusinessSettingsController::class, 'update']);
+        Route::get('business-settings', [BusinessSettingsController::class, 'index'])->name('business-settings.index');
+        Route::get('business-settings/{group}', [BusinessSettingsController::class, 'show'])->name('business-settings.show');
+        Route::put('business-settings/{group}', [BusinessSettingsController::class, 'update'])->name('business-settings.update');
 
         // Business locations (mirrors UltimatePOS Business Locations settings surface)
         Route::apiResource('business-locations', BusinessLocationController::class);

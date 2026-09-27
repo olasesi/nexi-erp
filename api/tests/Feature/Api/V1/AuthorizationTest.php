@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Company;
+use App\Models\JournalEntry;
 use App\Models\User;
 use App\Support\PermissionGuard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -77,4 +78,23 @@ it('keeps routes without a seeded permission open', function () {
 
     $this->getJson('/api/v1/dashboard?company_id='.$company->id)->assertOk();
     $this->getJson('/api/v1/currencies')->assertOk();
+});
+
+it('gates a custom action route once its permission is seeded', function () {
+    foreach (['view-any', 'view', 'create', 'update', 'delete'] as $action) {
+        Permission::create(['name' => "journal-entries.{$action}", 'guard_name' => PermissionGuard::name()]);
+    }
+
+    $user = User::factory()->create();
+    Passport::actingAs($user);
+
+    $entry = JournalEntry::factory()->create(['status' => 'draft', 'posted_at' => null]);
+
+    $this->postJson("/api/v1/journal-entries/{$entry->id}/post")->assertForbidden();
+
+    $role = Role::create(['name' => 'gilter', 'guard_name' => PermissionGuard::name()]);
+    $role->givePermissionTo('journal-entries.update');
+    $user->assignRole($role);
+
+    $this->postJson("/api/v1/journal-entries/{$entry->id}/post")->assertOk();
 });

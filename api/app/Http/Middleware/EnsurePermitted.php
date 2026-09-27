@@ -17,6 +17,25 @@ class EnsurePermitted
         'store' => 'create',
         'update' => 'update',
         'destroy' => 'delete',
+        // Custom action routes mapped onto the standard permission suffixes.
+        'summary' => 'view-any',
+        'unread-count' => 'view-any',
+        'profit-and-loss' => 'view',
+        'balance-sheet' => 'view',
+        'cash-flow' => 'view',
+        'aging' => 'view',
+        'import' => 'create',
+        'post' => 'update',
+        'void' => 'update',
+        'complete' => 'update',
+        'cancel' => 'update',
+        'match' => 'update',
+        'unmatch' => 'update',
+        'accept' => 'update',
+        'reject' => 'update',
+        'read-all' => 'update',
+        'cache-clear' => 'update',
+        'email-test' => 'update',
     ];
 
     /**

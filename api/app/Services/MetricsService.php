@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -62,6 +63,14 @@ class MetricsService
     }
 
     /**
+     * Record an in-app notification being created.
+     */
+    public function recordNotification(): void
+    {
+        $this->bump(self::PREFIX.'notifications_created_total');
+    }
+
+    /**
      * Prometheus text exposition format (v0.0.4).
      */
     public function exposition(): string
@@ -117,6 +126,17 @@ class MetricsService
         $inactive = $users->where('is_active', false)->sum('total');
         $lines[] = "nexi_erp_users_total{status=\"active\"} $active";
         $lines[] = "nexi_erp_users_total{status=\"inactive\"} $inactive";
+
+        $lines[] = '# HELP nexi_erp_notifications_created_total In-app notifications created.';
+        $lines[] = '# TYPE nexi_erp_notifications_created_total counter';
+        $lines[] = 'nexi_erp_notifications_created_total '.$this->get(self::PREFIX.'notifications_created_total');
+
+        $lines[] = '# HELP nexi_erp_notifications_total In-app notifications by read status.';
+        $lines[] = '# TYPE nexi_erp_notifications_total gauge';
+        $unreadNotifications = Notification::whereNull('read_at')->count();
+        $readNotifications = Notification::whereNotNull('read_at')->count();
+        $lines[] = "nexi_erp_notifications_total{status=\"unread\"} $unreadNotifications";
+        $lines[] = "nexi_erp_notifications_total{status=\"read\"} $readNotifications";
 
         $lines[] = '# HELP nexi_erp_health Whether each backend component is reachable.';
         $lines[] = '# TYPE nexi_erp_health gauge';

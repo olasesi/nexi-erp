@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Company;
 use App\Models\Contact;
+use App\Models\Notification;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\SalesOrder;
@@ -20,7 +21,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'info@nexi-corp.com',
         ]);
 
-        User::firstOrCreate(
+        $admin = User::firstOrCreate(
             ['email' => 'admin@nexi-corp.com'],
             [
                 'company_id' => $company->id,
@@ -74,6 +75,18 @@ class DatabaseSeeder extends Seeder
 
         SalesOrder::factory()->count(5)->create([
             'company_id' => $company->id,
+        ]);
+
+        Notification::factory()->count(3)->create([
+            'company_id' => $company->id,
+            'user_id' => null,
+            'read_at' => null,
+        ]);
+
+        Notification::factory()->count(2)->create([
+            'company_id' => $company->id,
+            'user_id' => $admin->id,
+            'read_at' => null,
         ]);
     }
 }

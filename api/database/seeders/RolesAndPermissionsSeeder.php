@@ -17,7 +17,32 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $this->normalizeGuard('web', $guard);
 
-        $modules = ['companies', 'contacts', 'product-categories', 'products', 'warehouses', 'sales-orders', 'purchase-orders', 'users', 'roles'];
+        $modules = [
+            // Users & Roles
+            'users', 'roles',
+            // Contacts (customers, suppliers)
+            'contacts',
+            // Products
+            'product-categories', 'products', 'warehouses',
+            // Purchases
+            'purchase-orders',
+            // Sales
+            'sales-orders', 'quotations', 'invoices',
+            // Stock
+            'stock-adjustments', 'stock-transfers',
+            // Expenses & Income
+            'expense-categories', 'expenses', 'income-categories', 'incomes',
+            // Payment accounts
+            'payments', 'bank-accounts', 'bank-transactions',
+            // Accounting
+            'chart-of-accounts', 'journal-entries', 'reconciliations',
+            // Companies & business locations
+            'companies', 'business-locations',
+            // Workspace surfaces
+            'dashboard', 'reports', 'notifications',
+            // Settings
+            'settings', 'business-settings',
+        ];
 
         $actions = ['view-any', 'view', 'create', 'update', 'delete'];
 
@@ -47,6 +72,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'contacts.view-any', 'contacts.view', 'contacts.create', 'contacts.update',
             'products.view-any', 'products.view',
             'sales-orders.view-any', 'sales-orders.view', 'sales-orders.create', 'sales-orders.update',
+            'dashboard.view-any', 'dashboard.view',
+            'notifications.view-any', 'notifications.view', 'notifications.update',
         ])->get());
 
         $customerRole = Role::firstOrCreate(['name' => 'customer', 'guard_name' => $guard]);

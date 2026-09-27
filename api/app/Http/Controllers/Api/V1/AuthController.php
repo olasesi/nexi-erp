@@ -80,10 +80,19 @@ class AuthController extends Controller
     }
 
     /**
-     * Returns the current authenticated user with their company.
+     * Returns the current authenticated user with their company and the
+     * effective role permissions the frontend needs to build the sidebar.
      */
     public function user(Request $request): JsonResponse
     {
-        return response()->json($request->user()->load('company'));
+        $user = $request->user()->load('company');
+
+        return response()->json(
+            array_merge($user->toArray(), [
+                'roles' => $user->getRoleNames()->values(),
+                'permissions' => $user->getAllPermissions()->pluck('name')->values(),
+                'company' => $user->company,
+            ])
+        );
     }
 }

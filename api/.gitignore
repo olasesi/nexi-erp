@@ -1,4 +1,7 @@
 *.log
+serve.out
+tests*.out
+phpstan.out
 .DS_Store
 .env
 .env.backup
