@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Resources\StockAdjustmentResource;
 use App\Models\StockAdjustment;
 use App\Services\InventoryService;
+use App\Services\WebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -64,6 +65,8 @@ class StockAdjustmentController extends BaseController
         }
 
         $adjustment->load(['warehouse', 'items']);
+
+        WebhookService::dispatch('stock_adjustment.posted', $adjustment);
 
         return (new $this->resourceClass($adjustment))->response()->setStatusCode(201);
     }

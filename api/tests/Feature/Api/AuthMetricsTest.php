@@ -59,19 +59,17 @@ it('does not count a failed login as a success', function () {
         ->and($metrics)->toContain('nexi_erp_auth_login_failures_total 1');
 });
 
-it('counts staff registrations in the metrics exposition', function () {
-    $response = $this->postJson('/api/v1/register', [
+it('does not count registrations through the removed public staff endpoint', function () {
+    $this->postJson('/api/v1/register', [
         'name' => 'New Staff',
         'email' => 'staff@nexi-corp.com',
         'password' => 'password123',
         'password_confirmation' => 'password123',
-    ])->assertOk();
+    ])->assertNotFound();
 
-    $response->assertJsonStructure(['access_token']);
+    $metrics = $this->get('/api/metrics')->assertOk()->getContent();
 
-    $this->get('/api/metrics')
-        ->assertOk()
-        ->assertSee('nexi_erp_auth_registrations_total 1', false);
+    expect($metrics)->toContain('nexi_erp_auth_registrations_total 0');
 });
 
 it('counts customer portal registrations in the metrics exposition', function () {

@@ -21,6 +21,7 @@ class UpdateQuotationRequest extends FormRequest
             'warehouse_id' => 'nullable|exists:warehouses,id',
             'status' => 'nullable|in:draft,sent,accepted,rejected',
             'valid_until' => 'nullable|date',
+            'discount_rate' => 'nullable|numeric|min:0|max:100',
             'notes' => 'nullable|string',
             'items' => 'nullable|array',
             'items.*.product_id' => 'required|exists:products,id',

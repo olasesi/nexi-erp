@@ -15,8 +15,10 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-    foreach (['view-any', 'view', 'create', 'update', 'delete'] as $action) {
-        Permission::create(['name' => "companies.{$action}", 'guard_name' => PermissionGuard::name()]);
+    foreach (['companies', 'invoices', 'payments', 'bank-transactions', 'settings'] as $module) {
+        foreach (['view-any', 'view', 'create', 'update', 'delete'] as $action) {
+            Permission::create(['name' => "{$module}.{$action}", 'guard_name' => PermissionGuard::name()]);
+        }
     }
 });
 
@@ -78,6 +80,47 @@ it('keeps routes without a seeded permission open', function () {
 
     $this->getJson('/api/v1/dashboard?company_id='.$company->id)->assertOk();
     $this->getJson('/api/v1/currencies')->assertOk();
+});
+
+it('gates financial modules with their own permissions', function () {
+    $user = User::factory()->create();
+    Passport::actingAs($user);
+
+    $this->getJson('/api/v1/invoices')->assertForbidden();
+
+    $role = Role::create(['name' => 'finance', 'guard_name' => PermissionGuard::name()]);
+    $role->givePermissionTo('invoices.view-any');
+
+    $user->assignRole($role);
+
+    $this->getJson('/api/v1/invoices')->assertOk();
+});
+
+it('maps custom sub-actions onto CRUD permissions', function () {
+    $user = User::factory()->create();
+    Passport::actingAs($user);
+
+    $this->postJson('/api/v1/bank-transactions/import', ['format' => 'csv'])->assertForbidden();
+
+    $role = Role::create(['name' => 'bank-clerk', 'guard_name' => PermissionGuard::name()]);
+    $role->givePermissionTo('bank-transactions.create');
+
+    $user->assignRole($role);
+
+    // With the create permission the request reaches validation instead of the gate.
+    $this->postJson('/api/v1/bank-transactions/import', ['format' => 'csv'])->assertUnprocessable();
+});
+
+it('lets the admin role reach financial modules', function () {
+    $admin = Role::create(['name' => 'admin', 'guard_name' => PermissionGuard::name()]);
+    $admin->syncPermissions(Permission::all());
+
+    $user = User::factory()->create();
+    $user->assignRole($admin);
+    Passport::actingAs($user);
+
+    $this->getJson('/api/v1/invoices')->assertOk();
+    $this->postJson('/api/v1/settings/cache/clear')->assertSuccessful();
 });
 
 it('gates a custom action route once its permission is seeded', function () {

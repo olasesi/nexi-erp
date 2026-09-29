@@ -23,6 +23,7 @@ class QuotationResource extends JsonResource
             'subtotal' => (float) $this->subtotal,
             'tax_amount' => (float) $this->tax_amount,
             'discount_amount' => (float) $this->discount_amount,
+            'discount_rate' => (float) $this->discount_rate,
             'total' => (float) $this->total,
             'notes' => $this->notes,
             'items' => QuotationItemResource::collection($this->whenLoaded('items')),

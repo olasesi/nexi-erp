@@ -4,7 +4,7 @@ Monorepo with a **React (Vite)** frontend and a **Laravel 12** API backend.
 
 ```
 nexi-erp/
-├── api/            # Laravel 12 API (PHP 8.2+, Sanctum, GraphQL)
+├── api/            # Laravel 12 API (PHP 8.2+, Passport OAuth2)
 ├── src/            # React SPA (Vite, TypeScript, Tailwind v4, React Router)
 │   ├── components/ # Shared UI (Layout, Table, ErrorBoundary)
 │   ├── pages/      # Route pages (Dashboard, Companies, Contacts, etc.)
@@ -17,6 +17,10 @@ nexi-erp/
 ├── Jenkinsfile     # CI/CD pipeline
 └── ...
 ```
+
+The backend has its own documentation: [api/README.md](api/README.md) covers
+authentication, permissions, imports/exports, webhooks, the console commands,
+API versioning and the health/metrics endpoints.
 
 ## Quick Start
 
@@ -42,6 +46,11 @@ step into `.env` as `PASSPORT_PASSWORD_CLIENT_ID` / `PASSPORT_PASSWORD_CLIENT_SE
 > `access_token` / `refresh_token`; `GET /api/v1/user` returns the current
 > authenticated user; `POST /api/v1/logout` revokes the access token. All
 > `/api/v1/*` resource routes require `Authorization: Bearer <token>`.
+
+Webhook deliveries, the retry/prune commands and the API version catalogue are
+covered in [api/README.md](api/README.md). With `WEBHOOK_DRIVER=sync` the API
+delivers webhooks in-process; run `php artisan schedule:run` every minute so
+`webhooks:retry` and `webhooks:prune` keep the delivery log moving.
 
 ### Frontend
 

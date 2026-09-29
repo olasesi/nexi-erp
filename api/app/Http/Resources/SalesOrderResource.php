@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\SalesOrder;
+use App\Services\CurrencyService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,9 +24,11 @@ class SalesOrderResource extends JsonResource
             'subtotal' => (float) $this->subtotal,
             'tax_amount' => (float) $this->tax_amount,
             'discount_amount' => (float) $this->discount_amount,
+            'discount_rate' => (float) $this->discount_rate,
             'total' => (float) $this->total,
             'paid_amount' => (float) $this->paid_amount,
             'balance_due' => (float) $this->balance_due,
+            'fx' => app(CurrencyService::class)->fx($this->currency ?? 'USD', (float) $this->total, $this->company_id),
             'currency' => $this->currency,
             'notes' => $this->notes,
             'terms' => $this->terms,

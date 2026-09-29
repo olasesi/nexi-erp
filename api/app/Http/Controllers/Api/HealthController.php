@@ -3,51 +3,28 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\HealthCheckService;
+use App\Support\ApiVersions;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 
 class HealthController extends Controller
 {
-    public function __invoke(): JsonResponse
+    public function __invoke(HealthCheckService $health): JsonResponse
     {
-        $status = 'healthy';
-        $checks = [];
+        $report = $health->report();
 
-        // Database check
-        try {
-            DB::connection()->getPdo();
-            $checks['database'] = 'connected';
-        } catch (\Exception $e) {
-            $checks['database'] = 'error: '.$e->getMessage();
-            $status = 'unhealthy';
-        }
-
-        // Cache check
-        try {
-            Cache::store()->has('health-check');
-            $checks['cache'] = 'responsive';
-        } catch (\Exception $e) {
-            $checks['cache'] = 'error: '.$e->getMessage();
-            $status = 'degraded';
-        }
-
-        // Storage check
-        try {
-            Storage::disk('local')->exists('/');
-            $checks['storage'] = 'accessible';
-        } catch (\Exception $e) {
-            $checks['storage'] = 'error: '.$e->getMessage();
-            $status = 'degraded';
-        }
+        $status = $report['status'] === HealthCheckService::STATUS_UNHEALTHY
+            ? Response::HTTP_SERVICE_UNAVAILABLE
+            : Response::HTTP_OK;
 
         return response()->json([
-            'status' => $status,
-            'timestamp' => now()->toIso8601String(),
+            'status' => $report['status'],
             'service' => 'nexi-erp',
             'version' => config('app.version', '1.0.0'),
-            'checks' => $checks,
-        ]);
+            'api_version' => ApiVersions::default(),
+            'timestamp' => $report['checked_at'],
+            'checks' => $report['checks'],
+        ], $status);
     }
 }

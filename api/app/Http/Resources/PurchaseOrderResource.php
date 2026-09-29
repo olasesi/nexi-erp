@@ -23,6 +23,7 @@ class PurchaseOrderResource extends JsonResource
             'subtotal' => (float) $this->subtotal,
             'tax_amount' => (float) $this->tax_amount,
             'discount_amount' => (float) $this->discount_amount,
+            'discount_rate' => (float) $this->discount_rate,
             'total' => (float) $this->total,
             'paid_amount' => (float) $this->paid_amount,
             'balance_due' => (float) $this->balance_due,

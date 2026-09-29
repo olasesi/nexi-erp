@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Http\JsonResponse;
 
 abstract class BaseController extends Controller
@@ -67,6 +68,23 @@ abstract class BaseController extends Controller
         $item->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function restore(int $id): JsonResponse
+    {
+        $item = $this->model->query()
+            ->withoutGlobalScope(SoftDeletingScope::class)
+            ->findOrFail($id);
+
+        if ($item->getAttribute('deleted_at') === null) {
+            return response()->json([
+                'message' => 'This record is not trashed.',
+            ], 422);
+        }
+
+        $item->forceFill(['deleted_at' => null])->save();
+
+        return resolve($this->resourceClass, ['resource' => $item->fresh()])->response();
     }
 
     protected function applyFilters($query)

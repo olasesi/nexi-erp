@@ -44,7 +44,7 @@ class SalesOrderController extends BaseController
         unset($data['items']);
 
         $lines = app(OrderService::class)->buildLines($items);
-        $totals = app(OrderService::class)->computeTotals($lines);
+        $totals = app(OrderService::class)->computeTotals($lines, (float) ($data['discount_rate'] ?? 0));
 
         $data['order_number'] = $this->generateOrderNumber();
         $data['status'] = $data['status'] ?? 'draft';
@@ -73,7 +73,7 @@ class SalesOrderController extends BaseController
         DB::transaction(function () use ($order, $data) {
             if (isset($data['items'])) {
                 $lines = app(OrderService::class)->buildLines($data['items']);
-                $order->update(array_merge($data, app(OrderService::class)->computeTotals($lines)));
+                $order->update(array_merge($data, app(OrderService::class)->computeTotals($lines, (float) ($data['discount_rate'] ?? 0))));
                 app(OrderService::class)->syncItems($order, $data['items']);
             } else {
                 $order->update($data);

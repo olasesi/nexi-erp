@@ -5,10 +5,14 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Concerns\IssuesPasswordTokens;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Notifications\PasswordResetToken;
 use App\Services\MetricsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
+use Laravel\Passport\Token;
 
 class AuthController extends Controller
 {
@@ -43,31 +47,6 @@ class AuthController extends Controller
     }
 
     /**
-     * Register a new user and immediately issue an OAuth2 access token.
-     */
-    public function register(Request $request): JsonResponse
-    {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => $data['password'],
-        ]);
-
-        $this->metrics->recordRegistration();
-
-        return $this->issuePasswordToken([
-            'email' => $data['email'],
-            'password' => $data['password'],
-        ]);
-    }
-
-    /**
      * Revoke the access token used for the current request.
      */
     public function logout(Request $request): JsonResponse
@@ -77,6 +56,93 @@ class AuthController extends Controller
         }
 
         return response()->json(['message' => 'Logged out successfully']);
+    }
+
+    /**
+     * Change the authenticated user's password after verifying the current
+     * one, revoking every other active session for that account.
+     */
+    public function changePassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = $request->user();
+
+        if (! $user instanceof User) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        if (! Hash::check($data['current_password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['The current password is incorrect.'],
+            ]);
+        }
+
+        $user->forceFill(['password' => Hash::make($data['password'])])->save();
+
+        if ($current = $user->token()) {
+            if ($current instanceof Token) {
+                $user->tokens()->where('id', '!=', $current->id)->update(['revoked' => true]);
+            }
+        }
+
+        return response()->json(['message' => 'Password changed successfully.']);
+    }
+
+    /**
+     * Email a password reset token, always succeeding so the endpoint cannot
+     * be used to enumerate registered accounts.
+     */
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $user = User::where('email', $data['email'])->first();
+
+        if ($user) {
+            $token = Password::broker()->createToken($user);
+
+            $user->notify(new PasswordResetToken($token, $user->email));
+        }
+
+        return response()->json(['message' => 'If that email exists, a reset token has been sent.']);
+    }
+
+    /**
+     * Validate a reset token and set a new password for the account.
+     */
+    public function resetPassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'token' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $status = Password::broker()->reset(
+            [
+                'email' => $data['email'],
+                'token' => $data['token'],
+                'password' => $data['password'],
+                'password_confirmation' => $data['password_confirmation'] ?? $data['password'],
+            ],
+            fn (User $user, string $password) => $user->forceFill(['password' => Hash::make($password)])->save()
+        );
+
+        if ($status !== Password::PASSWORD_RESET) {
+            $messages = $status === Password::INVALID_USER
+                ? 'This account could not be found.'
+                : 'This password reset token is invalid or has expired.';
+
+            throw ValidationException::withMessages(['email' => [$messages]]);
+        }
+
+        return response()->json(['message' => 'Password reset successfully.']);
     }
 
     /**

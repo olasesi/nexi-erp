@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\DispatchesWebhooks;
+use App\Models\Concerns\RecordsActivity;
 use App\Support\PermissionGuard;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -15,7 +17,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, HasRoles, Notifiable;
+    use DispatchesWebhooks, HasApiTokens, HasFactory, HasRoles, Notifiable, RecordsActivity;
 
     protected $fillable = [
         'company_id',
@@ -42,6 +44,9 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    /**
+     * @return BelongsTo<Company, $this>
+     */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);

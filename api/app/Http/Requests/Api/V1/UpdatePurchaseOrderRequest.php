@@ -20,6 +20,7 @@ class UpdatePurchaseOrderRequest extends FormRequest
             'status' => 'nullable|string|in:draft,confirmed,processing,delivered,cancelled',
             'payment_status' => 'nullable|string|in:pending,partial,paid,overdue,refunded',
             'currency' => 'nullable|string|max:3',
+            'discount_rate' => 'nullable|numeric|min:0|max:100',
             'notes' => 'nullable|string',
             'terms' => 'nullable|string',
             'order_date' => 'nullable|date',

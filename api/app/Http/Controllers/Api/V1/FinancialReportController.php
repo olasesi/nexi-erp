@@ -52,4 +52,37 @@ class FinancialReportController extends Controller
 
         return response()->json($this->reports->aging($data['company_id'], $data['type'] ?? 'receivable'));
     }
+
+    public function salesByProduct(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'company_id' => 'required|exists:companies,id',
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+        ]);
+
+        return response()->json($this->reports->salesByProduct($data['company_id'], $data['from'], $data['to']));
+    }
+
+    public function salesByCategory(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'company_id' => 'required|exists:companies,id',
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+        ]);
+
+        return response()->json($this->reports->salesByCategory($data['company_id'], $data['from'], $data['to']));
+    }
+
+    public function vatSummary(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'company_id' => 'required|exists:companies,id',
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+        ]);
+
+        return response()->json($this->reports->vatSummary($data['company_id'], $data['from'], $data['to']));
+    }
 }

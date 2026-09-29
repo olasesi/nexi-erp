@@ -17,6 +17,7 @@ class UpdateInvoiceRequest extends FormRequest
             'status' => 'nullable|in:draft,sent,partial,paid,overdue,cancelled',
             'contact_id' => 'nullable|exists:contacts,id',
             'currency' => 'string|max:3',
+            'discount_rate' => 'nullable|numeric|min:0|max:100',
             'issue_date' => 'sometimes|date',
             'due_date' => 'nullable|date|after_or_equal:issue_date',
             'notes' => 'nullable|string',

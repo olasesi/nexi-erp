@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('invoice_id')->nullable()->constrained()->nullOnDelete();
             $table->date('payment_date');
             $table->decimal('amount', 15, 2);
-            $table->enum('method', ['cash', 'bank_transfer', 'credit_card', 'check', 'other'])->default('bank_transfer');
+            $table->enum('method', ['cash', 'bank_transfer', 'credit_card', 'check', 'other', 'payment_link'])->default('bank_transfer');
             $table->enum('status', ['pending', 'completed', 'failed', 'refunded'])->default('pending');
             $table->string('reference')->nullable();
             $table->text('notes')->nullable();

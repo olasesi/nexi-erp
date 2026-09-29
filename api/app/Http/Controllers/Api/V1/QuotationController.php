@@ -6,6 +6,7 @@ use App\Http\Resources\QuotationResource;
 use App\Models\Quotation;
 use App\Models\SalesOrder;
 use App\Services\OrderService;
+use App\Services\WebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -45,7 +46,7 @@ class QuotationController extends BaseController
         unset($data['items']);
 
         $lines = app(OrderService::class)->buildLines($items);
-        $totals = app(OrderService::class)->computeTotals($lines);
+        $totals = app(OrderService::class)->computeTotals($lines, (float) ($data['discount_rate'] ?? 0));
 
         $data['quotation_no'] = $this->nextRef('QT', Quotation::class, 'quotation_no');
         $data['status'] = $data['status'] ?? 'draft';
@@ -78,7 +79,7 @@ class QuotationController extends BaseController
         DB::transaction(function () use ($quotation, $data) {
             if (isset($data['items'])) {
                 $lines = app(OrderService::class)->buildLines($data['items']);
-                $quotation->update(array_merge($data, app(OrderService::class)->computeTotals($lines)));
+                $quotation->update(array_merge($data, app(OrderService::class)->computeTotals($lines, (float) ($data['discount_rate'] ?? 0))));
                 app(OrderService::class)->syncItems($quotation, $data['items']);
             } else {
                 $quotation->update($data);
@@ -138,7 +139,11 @@ class QuotationController extends BaseController
             }
         });
 
-        return (new $this->resourceClass($quotation->fresh(['contact', 'items'])))->response();
+        $quotation = $quotation->fresh(['contact', 'items']);
+
+        WebhookService::dispatch('quotation.accepted', $quotation);
+
+        return (new $this->resourceClass($quotation))->response();
     }
 
     public function reject(int $id): JsonResponse
@@ -155,7 +160,11 @@ class QuotationController extends BaseController
 
         $quotation->update(['status' => 'rejected']);
 
-        return (new $this->resourceClass($quotation->fresh(['contact', 'items'])))->response();
+        $quotation = $quotation->fresh(['contact', 'items']);
+
+        WebhookService::dispatch('quotation.rejected', $quotation);
+
+        return (new $this->resourceClass($quotation))->response();
     }
 
     public function destroy(int $id): JsonResponse

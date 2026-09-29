@@ -48,15 +48,18 @@ class OrderService
     }
 
     /**
-     * Aggregate line totals into the order-level amount columns.
+     * Aggregate line totals into the order-level amount columns, applying an
+     * optional document-wide discount rate on top of any per-line discounts.
      *
      * @return array{subtotal: float, tax_amount: float, discount_amount: float, total: float}
      */
-    public function computeTotals(array $lines): array
+    public function computeTotals(array $lines, float $discountRate = 0): array
     {
         $subtotal = round(array_sum(array_column($lines, 'subtotal')), 2);
         $tax = round(array_sum(array_column($lines, 'tax_amount')), 2);
-        $discount = round(array_sum(array_column($lines, 'discount_amount')), 2);
+        $lineDiscount = round(array_sum(array_column($lines, 'discount_amount')), 2);
+        $headerDiscount = round($subtotal * max(min($discountRate, 100), 0) / 100, 2);
+        $discount = round($lineDiscount + $headerDiscount, 2);
 
         return [
             'subtotal' => $subtotal,

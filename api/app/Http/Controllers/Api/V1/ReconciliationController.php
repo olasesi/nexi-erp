@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Resources\ReconciliationResource;
 use App\Models\Reconciliation;
+use App\Services\WebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -88,7 +89,11 @@ class ReconciliationController extends BaseController
             ]);
         });
 
-        return (new $this->resourceClass($reconciliation->fresh(['bankAccount', 'items.bankTransaction'])))->response();
+        $reconciliation = $reconciliation->fresh(['bankAccount', 'items.bankTransaction']);
+
+        WebhookService::dispatch('reconciliation.matched', $reconciliation);
+
+        return (new $this->resourceClass($reconciliation))->response();
     }
 
     protected function getFilterableFields(): array

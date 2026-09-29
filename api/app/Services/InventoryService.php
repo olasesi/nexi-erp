@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Inventory;
 use App\Models\PurchaseOrderItem;
+use App\Models\PurchaseReceipt;
 use App\Models\SalesOrderItem;
 
 class InventoryService
@@ -65,6 +66,65 @@ class InventoryService
         );
 
         $inventory->increment('quantity', $item->quantity);
+    }
+
+    /**
+     * Receive an explicit quantity into stock, used for partial receipts where
+     * the full ordered quantity is not delivered at once.
+     */
+    public function receiveStockFor(PurchaseOrderItem $item, float $quantity, ?int $warehouseId = null): void
+    {
+        if (! $item->product_id || $quantity <= 0) {
+            return;
+        }
+
+        $warehouse = $warehouseId ?? $item->purchaseOrder->warehouse_id;
+
+        $inventory = Inventory::firstOrCreate(
+            ['product_id' => $item->product_id, 'warehouse_id' => $warehouse],
+            ['quantity' => 0, 'reserved_quantity' => 0, 'minimum_quantity' => 0]
+        );
+
+        $inventory->increment('quantity', $quantity);
+    }
+
+    /**
+     * Reverse an explicit received quantity when a receipt is deleted.
+     */
+    public function reverseReceivedQuantity(PurchaseOrderItem $item, float $quantity, ?int $warehouseId = null): void
+    {
+        if (! $item->product_id || $quantity <= 0) {
+            return;
+        }
+
+        $warehouse = $warehouseId ?? $item->purchaseOrder->warehouse_id;
+
+        $inventory = Inventory::where('product_id', $item->product_id)
+            ->where('warehouse_id', $warehouse)
+            ->first();
+
+        if ($inventory) {
+            $inventory->decrement('quantity', $quantity);
+        }
+    }
+
+    /**
+     * Undo every stock movement a receipt recorded, and reopen its purchase
+     * order when it had been auto-completed by the receipt.
+     */
+    public function reverseReceipt(PurchaseReceipt $receipt): void
+    {
+        foreach ($receipt->items as $item) {
+            if ($poItem = $item->purchaseOrderItem) {
+                $this->reverseReceivedQuantity($poItem, (float) $item->quantity_received, $receipt->warehouse_id);
+            }
+        }
+
+        if ($po = $receipt->purchaseOrder) {
+            if ($po->status === 'delivered') {
+                $po->updateQuietly(['status' => 'confirmed']);
+            }
+        }
     }
 
     public function reverseStockReceipt(PurchaseOrderItem $item): void

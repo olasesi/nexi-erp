@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Invoice;
+use App\Services\CurrencyService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -22,14 +23,19 @@ class InvoiceResource extends JsonResource
             'sales_order_id' => $this->sales_order_id,
             'purchase_order_id' => $this->purchase_order_id,
             'currency' => $this->currency,
-            'issue_date' => $this->issue_date?->toDateString(),
+            'issue_date' => $this->issue_date->toDateString(),
             'due_date' => $this->due_date?->toDateString(),
             'subtotal' => (float) $this->subtotal,
             'tax_amount' => (float) $this->tax_amount,
             'discount_amount' => (float) $this->discount_amount,
+            'discount_rate' => (float) $this->discount_rate,
             'total' => (float) $this->total,
             'paid_amount' => (float) $this->paid_amount,
             'balance_due' => (float) $this->balance_due,
+            'payment_link' => $this->isSales() && $this->payment_token
+                ? url('/api/v1/public/invoices/pay/'.$this->payment_token)
+                : null,
+            'fx' => app(CurrencyService::class)->fx($this->currency ?? 'USD', (float) $this->total, $this->company_id),
             'notes' => $this->notes,
             'terms' => $this->terms,
             'items' => InvoiceItemResource::collection($this->whenLoaded('items')),

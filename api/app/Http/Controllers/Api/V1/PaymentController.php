@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Services\AccountingService;
 use App\Services\GeneralLedgerService;
+use App\Services\WebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -95,7 +96,11 @@ class PaymentController extends BaseController
             $this->reconcileAccounting($payment);
         });
 
-        return (new $this->resourceClass($payment->fresh('invoice')))->response();
+        $payment = $payment->fresh('invoice');
+
+        WebhookService::dispatch('payment.completed', $payment);
+
+        return (new $this->resourceClass($payment))->response();
     }
 
     protected function reconcileAccounting(Payment $payment): void

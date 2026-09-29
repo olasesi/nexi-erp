@@ -53,7 +53,7 @@ it('rejects invalid credentials on login', function () {
     $response->assertUnprocessable();
 });
 
-it('registers a user and returns an OAuth2 access token', function () {
+it('no longer exposes public staff self-registration', function () {
     $response = $this->postJson('/api/v1/register', [
         'name' => 'New User',
         'email' => 'new@nexi-corp.com',
@@ -61,10 +61,9 @@ it('registers a user and returns an OAuth2 access token', function () {
         'password_confirmation' => 'password123',
     ]);
 
-    $response->assertOk()
-        ->assertJsonStructure(['token_type', 'expires_in', 'access_token', 'refresh_token', 'user']);
+    $response->assertNotFound();
 
-    expect(User::where('email', 'new@nexi-corp.com')->exists())->toBeTrue();
+    expect(User::where('email', 'new@nexi-corp.com')->exists())->toBeFalse();
 });
 
 it('fetches the authenticated user with roles and permissions', function () {

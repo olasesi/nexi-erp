@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Resources\StockTransferResource;
 use App\Models\StockTransfer;
 use App\Services\TransferService;
+use App\Services\WebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -80,7 +81,11 @@ class StockTransferController extends BaseController
 
         app(TransferService::class)->completeTransfer($transfer);
 
-        return (new $this->resourceClass($transfer->fresh(['fromWarehouse', 'toWarehouse', 'items'])))->response();
+        $transfer = $transfer->fresh(['fromWarehouse', 'toWarehouse', 'items']);
+
+        WebhookService::dispatch('stock_transfer.completed', $transfer);
+
+        return (new $this->resourceClass($transfer))->response();
     }
 
     public function cancel(int $id): JsonResponse

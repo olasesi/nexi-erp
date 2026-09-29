@@ -18,6 +18,7 @@ class StoreQuotationRequest extends FormRequest
             'contact_id' => 'nullable|exists:contacts,id',
             'warehouse_id' => 'nullable|exists:warehouses,id',
             'valid_until' => 'nullable|date|after:today',
+            'discount_rate' => 'nullable|numeric|min:0|max:100',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',

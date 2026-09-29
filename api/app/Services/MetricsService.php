@@ -4,9 +4,8 @@ namespace App\Services;
 
 use App\Models\Notification;
 use App\Models\User;
+use App\Models\WebhookDelivery;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class MetricsService
 {
@@ -20,6 +19,10 @@ class MetricsService
      */
     private const COUNTER_TTL = 31536000;
 
+    public function __construct(
+        private HealthCheckService $health
+    ) {}
+
     /**
      * Record an observed HTTP request. Counters live in the configured cache
      * store so values are shared across PHP-FPM workers and (with a shared
@@ -30,9 +33,12 @@ class MetricsService
         $this->bump(self::PREFIX.'requests_total');
         $this->bump(self::PREFIX.'request_duration_sum', (int) round($seconds * 1000000));
         $this->bump(self::PREFIX.'request_duration_count');
+        $this->bump(self::PREFIX.'status_class:'.$this->statusClass($status));
 
         if ($status >= 500) {
             $this->bump(self::PREFIX.'request_errors_total');
+        } elseif ($status >= 400) {
+            $this->bump(self::PREFIX.'request_client_errors_total');
         }
 
         foreach (self::BUCKETS as $index => $upper) {
@@ -98,6 +104,16 @@ class MetricsService
         $lines[] = '# TYPE nexi_erp_http_request_errors_total counter';
         $lines[] = 'nexi_erp_http_request_errors_total '.$this->get(self::PREFIX.'request_errors_total');
 
+        $lines[] = '# HELP nexi_erp_http_request_client_errors_total HTTP requests that completed with status 4xx.';
+        $lines[] = '# TYPE nexi_erp_http_request_client_errors_total counter';
+        $lines[] = 'nexi_erp_http_request_client_errors_total '.$this->get(self::PREFIX.'request_client_errors_total');
+
+        $lines[] = '# HELP nexi_erp_http_responses_total HTTP requests by response status class.';
+        $lines[] = '# TYPE nexi_erp_http_responses_total counter';
+        foreach (['1', '2', '3', '4', '5'] as $class) {
+            $lines[] = sprintf('nexi_erp_http_responses_total{status_class="%sxx"} %d', $class, $this->get(self::PREFIX.'status_class:'.$class));
+        }
+
         $lines[] = '# HELP nexi_erp_http_request_duration_seconds HTTP request latency distribution.';
         $lines[] = '# TYPE nexi_erp_http_request_duration_seconds histogram';
         foreach (self::BUCKETS as $index => $upper) {
@@ -138,13 +154,50 @@ class MetricsService
         $lines[] = "nexi_erp_notifications_total{status=\"unread\"} $unreadNotifications";
         $lines[] = "nexi_erp_notifications_total{status=\"read\"} $readNotifications";
 
+        $lines[] = '# HELP nexi_erp_webhook_deliveries_total Outbound webhook deliveries by status.';
+        $lines[] = '# TYPE nexi_erp_webhook_deliveries_total gauge';
+        foreach ($this->deliveryCounts() as $status => $total) {
+            $lines[] = sprintf('nexi_erp_webhook_deliveries_total{status="%s"} %d', $status, $total);
+        }
+
         $lines[] = '# HELP nexi_erp_health Whether each backend component is reachable.';
         $lines[] = '# TYPE nexi_erp_health gauge';
-        foreach (self::healthChecks() as $component => $healthy) {
+        foreach ($this->health->components() as $component => $healthy) {
             $lines[] = "nexi_erp_health{component=\"$component\"} ".($healthy ? '1' : '0');
         }
 
         return implode("\n", $lines)."\n";
+    }
+
+    /**
+     * First letter status class, 5xx for anything unexpected.
+     */
+    private function statusClass(int $status): string
+    {
+        $class = intdiv($status, 100);
+
+        return (string) ($class >= 1 && $class <= 5 ? $class : 5);
+    }
+
+    /**
+     * Delivery rows per status, always including the statuses with no rows.
+     *
+     * @return array<string, int>
+     */
+    private function deliveryCounts(): array
+    {
+        $counts = [
+            WebhookDelivery::STATUS_PENDING => 0,
+            WebhookDelivery::STATUS_SUCCEEDED => 0,
+            WebhookDelivery::STATUS_FAILED => 0,
+        ];
+
+        foreach (WebhookDelivery::query()->selectRaw('status, count(*) as total')->groupBy('status')->get() as $row) {
+            $status = (string) $row->getAttribute('status');
+            $counts[$status] = (int) $row->getAttribute('total');
+        }
+
+        return $counts;
     }
 
     /**
@@ -161,36 +214,5 @@ class MetricsService
     private function get(string $key): int
     {
         return (int) Cache::get($key, 0);
-    }
-
-    /**
-     * @return array<string, bool>
-     */
-    private static function healthChecks(): array
-    {
-        $checks = [];
-
-        try {
-            DB::connection()->getPdo();
-            $checks['database'] = true;
-        } catch (\Throwable) {
-            $checks['database'] = false;
-        }
-
-        try {
-            Cache::store()->has('health-check');
-            $checks['cache'] = true;
-        } catch (\Throwable) {
-            $checks['cache'] = false;
-        }
-
-        try {
-            Storage::disk('local')->exists('/');
-            $checks['storage'] = true;
-        } catch (\Throwable) {
-            $checks['storage'] = false;
-        }
-
-        return $checks;
     }
 }

@@ -5,11 +5,14 @@ namespace App\Services;
 use App\Models\BankTransaction;
 use App\Models\ChartOfAccount;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\JournalEntry;
 use Illuminate\Support\Collection;
 
 class ReportService
 {
+    public function __construct(private readonly CurrencyService $currencies) {}
+
     /**
      * Profit & Loss for a date range, derived from posted journal entries.
      * Returns revenue and expense account summaries plus the net result.
@@ -148,7 +151,8 @@ class ReportService
             ? ['invoice', 'credit_note']
             : ['bill', 'debit_note'];
 
-        $invoices = Invoice::where('company_id', $companyId)
+        $invoices = Invoice::with('contact:id,first_name,last_name')
+            ->where('company_id', $companyId)
             ->whereIn('type', $invoiceTypes)
             ->whereIn('status', ['sent', 'partial', 'overdue'])
             ->get();
@@ -178,8 +182,10 @@ class ReportService
                 'invoice_id' => $invoice->id,
                 'invoice_number' => $invoice->invoice_number,
                 'contact_id' => $invoice->contact_id,
+                'contact_name' => $invoice->contact ? trim($invoice->contact->first_name.' '.$invoice->contact->last_name) : '',
                 'type' => $invoice->type,
                 'due_date' => $invoice->due_date?->toDateString(),
+                'days_overdue' => (int) max(0, $overdueDays),
                 'total' => (float) $invoice->total,
                 'balance_due' => (float) $invoice->balance_due,
             ]);
@@ -212,6 +218,199 @@ class ReportService
             ],
             'total_outstanding' => round($invoices->sum('balance_due'), 2),
         ];
+    }
+
+    /**
+     * Sales (net of credit notes) grouped by product, expressed in the
+     * company base currency. Line figures are scaled by each document's FX
+     * rate before aggregation.
+     *
+     * @return array<string, mixed>
+     */
+    public function salesByProduct(int $companyId, string $from, string $to): array
+    {
+        $base = $this->currencies->baseCurrency($companyId);
+        $lines = collect($this->aggregateSales($companyId, $from, $to, $base, function (InvoiceItem $item) {
+            return [
+                'key' => 'p'.($item->product_id ?? 'u'.$item->id),
+                'product_id' => $item->product_id,
+                'product_name' => $item->product ? $item->product->name : $item->description,
+            ];
+        }));
+
+        return [
+            'from' => $from,
+            'to' => $to,
+            'base_currency' => $base,
+            'items' => $lines->sortByDesc('total')->values(),
+            'total_quantity' => round($lines->sum('quantity'), 2),
+            'total_revenue' => round($lines->sum('total'), 2),
+        ];
+    }
+
+    /**
+     * Sales (net of credit notes) grouped by product category, with items
+     * lacking a product or category rolled into an "Uncategorized" bucket.
+     *
+     * @return array<string, mixed>
+     */
+    public function salesByCategory(int $companyId, string $from, string $to): array
+    {
+        $base = $this->currencies->baseCurrency($companyId);
+        $lines = collect($this->aggregateSales($companyId, $from, $to, $base, function (InvoiceItem $item) {
+            $product = $item->product;
+            $categoryId = $product?->category_id;
+            $category = $product?->category;
+
+            return [
+                'key' => 'c'.($categoryId ?? 'none'),
+                'category_id' => $categoryId,
+                'category_name' => $category ? $category->name : 'Uncategorized',
+            ];
+        }));
+
+        return [
+            'from' => $from,
+            'to' => $to,
+            'base_currency' => $base,
+            'categories' => $lines->sortByDesc('total')->values(),
+            'total_quantity' => round($lines->sum('quantity'), 2),
+            'total_revenue' => round($lines->sum('total'), 2),
+        ];
+    }
+
+    /**
+     * Value-added tax collected per rate across sales documents in the range,
+     * converted to the company base currency. Credit notes reduce the net and
+     * tax owed.
+     *
+     * @return array<string, mixed>
+     */
+    public function vatSummary(int $companyId, string $from, string $to): array
+    {
+        $base = $this->currencies->baseCurrency($companyId);
+        $documents = $this->salesDocuments($companyId, $from, $to);
+
+        $rates = collect();
+
+        foreach ($documents as $document) {
+            $rate = $this->currencies->rate($document->currency, $base, $companyId);
+            $sign = $document->type === 'invoice' ? 1 : -1;
+
+            foreach ($document->items as $item) {
+                $key = (string) round((float) $item->tax_rate, 2);
+                $entry = $rates->get($key, [
+                    'tax_rate' => round((float) $item->tax_rate, 2),
+                    'net_amount' => 0.0,
+                    'tax_amount' => 0.0,
+                    'gross_amount' => 0.0,
+                    'documents' => [],
+                ]);
+
+                $entry['net_amount'] += $sign * (float) $item->subtotal * $rate;
+                $entry['tax_amount'] += $sign * (float) $item->tax_amount * $rate;
+                $entry['gross_amount'] += $sign * (float) $item->total * $rate;
+                $entry['documents'][$document->id] = true;
+
+                $rates->put($key, $entry);
+            }
+        }
+
+        $rows = $rates->values()
+            ->sortBy('tax_rate')
+            ->map(fn (array $row) => [
+                'tax_rate' => round($row['tax_rate'], 2),
+                'net_amount' => round($row['net_amount'], 2),
+                'tax_amount' => round($row['tax_amount'], 2),
+                'gross_amount' => round($row['gross_amount'], 2),
+                'documents' => count($row['documents']),
+            ])
+            ->values();
+
+        return [
+            'from' => $from,
+            'to' => $to,
+            'base_currency' => $base,
+            'rates' => $rows,
+            'total_net' => round($rows->sum('net_amount'), 2),
+            'total_tax' => round($rows->sum('tax_amount'), 2),
+            'total_gross' => round($rows->sum('gross_amount'), 2),
+        ];
+    }
+
+    /**
+     * Posted sales documents (invoices and credit notes) in a date range,
+     * eager-loaded with their line products and product categories.
+     *
+     * @return Collection<int, Invoice>
+     */
+    protected function salesDocuments(int $companyId, string $from, string $to): Collection
+    {
+        return Invoice::with('items', 'items.product:id,name,category_id', 'items.product.category:id,name')
+            ->where('company_id', $companyId)
+            ->whereIn('type', ['invoice', 'credit_note'])
+            ->whereIn('status', ['sent', 'partial', 'paid', 'overdue'])
+            ->whereDate('issue_date', '>=', $from)
+            ->whereDate('issue_date', '<=', $to)
+            ->get();
+    }
+
+    /**
+     * Aggregate signed (invoice positive, credit note negative) sales line
+     * figures per group, converted to the base currency using each document's
+     * FX rate. The callback returns the descriptor array including the group
+     * key under "key".
+     *
+     * @param  callable(InvoiceItem): array<string, mixed>  $group
+     * @return array<int, array<string, mixed>>
+     */
+    protected function aggregateSales(int $companyId, string $from, string $to, string $base, callable $group): array
+    {
+        $documents = $this->salesDocuments($companyId, $from, $to);
+
+        $descriptors = [];
+        $sums = [];
+
+        foreach ($documents as $document) {
+            $rate = $this->currencies->rate($document->currency, $base, $companyId);
+            $sign = $document->type === 'invoice' ? 1 : -1;
+
+            foreach ($document->items as $item) {
+                $descriptor = $group($item);
+                $key = (string) $descriptor['key'];
+
+                if (! array_key_exists($key, $sums)) {
+                    $descriptors[$key] = $descriptor;
+                    $sums[$key] = [
+                        'quantity' => 0.0,
+                        'subtotal' => 0.0,
+                        'tax' => 0.0,
+                        'total' => 0.0,
+                    ];
+                }
+
+                $sums[$key]['quantity'] += $sign * (float) $item->quantity;
+                $sums[$key]['subtotal'] += $sign * (float) $item->subtotal * $rate;
+                $sums[$key]['tax'] += $sign * (float) $item->tax_amount * $rate;
+                $sums[$key]['total'] += $sign * (float) $item->total * $rate;
+            }
+        }
+
+        $rows = [];
+
+        foreach ($descriptors as $key => $descriptor) {
+            unset($descriptor['key']);
+
+            $totals = $sums[$key];
+            $descriptor['quantity'] = round($totals['quantity'], 2);
+            $descriptor['subtotal'] = round($totals['subtotal'], 2);
+            $descriptor['tax'] = round($totals['tax'], 2);
+            $descriptor['total'] = round($totals['total'], 2);
+
+            $rows[] = $descriptor;
+        }
+
+        return $rows;
     }
 
     /**

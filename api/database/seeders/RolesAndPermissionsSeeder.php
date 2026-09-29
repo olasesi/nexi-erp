@@ -25,7 +25,7 @@ class RolesAndPermissionsSeeder extends Seeder
             // Products
             'product-categories', 'products', 'warehouses',
             // Purchases
-            'purchase-orders',
+            'purchase-orders', 'purchase-receipts',
             // Sales
             'sales-orders', 'quotations', 'invoices',
             // Stock
@@ -38,6 +38,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'chart-of-accounts', 'journal-entries', 'reconciliations',
             // Companies & business locations
             'companies', 'business-locations',
+            // Multi-currency
+            'currency-rates',
             // Workspace surfaces
             'dashboard', 'reports', 'notifications',
             // Settings

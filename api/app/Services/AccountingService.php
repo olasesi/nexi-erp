@@ -23,18 +23,19 @@ class AccountingService
 
         $lines = [];
         $note = 'Invoice '.$invoice->invoice_number;
+        $revenue = round((float) $invoice->subtotal - (float) $invoice->discount_amount, 2);
 
         if ($invoice->type === 'invoice') {
             $lines = [
                 ['account_code' => '1100', 'debit' => (float) $invoice->total, 'description' => $note],
-                ['account_code' => '4010', 'credit' => (float) $invoice->subtotal, 'description' => $note],
+                ['account_code' => '4010', 'credit' => $revenue, 'description' => $note],
             ];
             if ((float) $invoice->tax_amount > 0) {
                 $lines[] = ['account_code' => '2100', 'credit' => (float) $invoice->tax_amount, 'description' => $note];
             }
         } elseif ($invoice->type === 'credit_note') {
             $lines = [
-                ['account_code' => '4010', 'debit' => (float) $invoice->subtotal, 'description' => 'Credit note '.$invoice->invoice_number],
+                ['account_code' => '4010', 'debit' => $revenue, 'description' => 'Credit note '.$invoice->invoice_number],
                 ['account_code' => '1100', 'credit' => (float) $invoice->total, 'description' => $note],
             ];
             if ((float) $invoice->tax_amount > 0) {
@@ -44,7 +45,7 @@ class AccountingService
             $lines = [
                 [
                     'account_code' => '5005',
-                    'debit' => round((float) $invoice->subtotal + (float) $invoice->tax_amount, 2),
+                    'debit' => (float) $invoice->total,
                     'description' => 'Bill '.$invoice->invoice_number,
                 ],
                 ['account_code' => '2010', 'credit' => (float) $invoice->total, 'description' => $note],
@@ -54,7 +55,7 @@ class AccountingService
                 ['account_code' => '2010', 'debit' => (float) $invoice->total, 'description' => 'Debit note '.$invoice->invoice_number],
                 [
                     'account_code' => '5005',
-                    'credit' => round((float) $invoice->subtotal + (float) $invoice->tax_amount, 2),
+                    'credit' => (float) $invoice->total,
                     'description' => $note,
                 ],
             ];

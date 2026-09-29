@@ -21,6 +21,7 @@ class StoreInvoiceRequest extends FormRequest
             'sales_order_id' => 'nullable|exists:sales_orders,id',
             'purchase_order_id' => 'nullable|exists:purchase_orders,id',
             'currency' => 'string|max:3',
+            'discount_rate' => 'nullable|numeric|min:0|max:100',
             'issue_date' => 'required|date',
             'due_date' => 'nullable|date|after_or_equal:issue_date',
             'notes' => 'nullable|string',

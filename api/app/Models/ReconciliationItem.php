@@ -13,11 +13,17 @@ class ReconciliationItem extends Model
         'status',
     ];
 
+    /**
+     * @return BelongsTo<Reconciliation, $this>
+     */
     public function reconciliation(): BelongsTo
     {
         return $this->belongsTo(Reconciliation::class);
     }
 
+    /**
+     * @return BelongsTo<BankTransaction, $this>
+     */
     public function bankTransaction(): BelongsTo
     {
         return $this->belongsTo(BankTransaction::class);

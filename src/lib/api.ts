@@ -98,28 +98,6 @@ export async function login(
   };
 }
 
-export async function register(payload: {
-  name: string;
-  email: string;
-  password: string;
-  password_confirmation: string;
-}): Promise<{ user: User; token: string; refreshToken: string }> {
-  const data = await request<{
-    user: User;
-    access_token: string;
-    refresh_token: string;
-  }>("/api/v1/register", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-  setToken(data.access_token);
-  return {
-    user: data.user,
-    token: data.access_token,
-    refreshToken: data.refresh_token,
-  };
-}
-
 export async function logout(): Promise<void> {
   await request("/api/v1/logout", { method: "POST" });
   removeToken();

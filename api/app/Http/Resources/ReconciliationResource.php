@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\Reconciliation;
+use App\Models\ReconciliationItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -20,7 +21,9 @@ class ReconciliationResource extends JsonResource
             'period_end' => $this->period_end?->toDateString(),
             'opening_balance' => (float) $this->opening_balance,
             'closing_balance' => (float) $this->closing_balance,
-            'reconciled_amount' => (float) $this->items->sum(fn ($item) => (float) $item->bankTransaction->amount),
+            'reconciled_amount' => (float) $this->items
+                ->map(fn (ReconciliationItem $item) => $item->bankTransaction)
+                ->sum('amount'),
             'status' => $this->status,
             'completed_at' => $this->completed_at?->toIso8601String(),
             'items' => ReconciliationItemResource::collection($this->whenLoaded('items')),
