@@ -48,13 +48,17 @@ class RoleController extends BaseController
         $request = app($this->storeRequestClass);
         $data = $request->validated();
 
-        $permissions = $data['permissions'] ?? [];
+        $permissions = $data['permissions'] ?? null;
         unset($data['permissions']);
+
+        if ($permissions !== null) {
+            $this->authorizePermission('manage-permissions');
+        }
 
         $data['guard_name'] = PermissionGuard::name();
 
         $role = $this->model->create($data);
-        $role->syncPermissions($permissions);
+        $role->syncPermissions($permissions ?? []);
 
         return (new $this->resourceClass($role))->response()->setStatusCode(201);
     }
@@ -75,6 +79,10 @@ class RoleController extends BaseController
 
         $permissions = $data['permissions'] ?? null;
         unset($data['permissions']);
+
+        if ($permissions !== null) {
+            $this->authorizePermission('manage-permissions');
+        }
 
         $role->update($data);
 

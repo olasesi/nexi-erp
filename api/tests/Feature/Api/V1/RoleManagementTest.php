@@ -141,3 +141,54 @@ it('requires authentication', function () {
 
     $this->getJson('/api/v1/roles')->assertUnauthorized();
 });
+
+it('refuses to grant permissions without manage-permissions', function () {
+    $role = Role::create(['name' => 'hr-admin', 'guard_name' => PermissionGuard::name()]);
+    $role->givePermissionTo(['roles.view-any', 'roles.create', 'roles.update']);
+
+    $user = User::factory()->create();
+    $user->assignRole($role);
+    Passport::actingAs($user);
+
+    $this->postJson('/api/v1/roles', [
+        'name' => 'escalated',
+        'permissions' => ['companies.delete'],
+    ])->assertForbidden();
+
+    $this->putJson("/api/v1/roles/{$role->id}", [
+        'permissions' => ['companies.delete'],
+    ])->assertForbidden();
+
+    expect(Role::where('name', 'escalated')->exists())->toBeFalse()
+        ->and($role->fresh()->getPermissionNames()->all())->toEqualCanonicalizing([
+            'roles.view-any', 'roles.create', 'roles.update',
+        ]);
+});
+
+it('refuses to clear permissions without manage-permissions', function () {
+    $role = Role::create(['name' => 'grants', 'guard_name' => PermissionGuard::name()]);
+    $role->givePermissionTo(['roles.update', 'contacts.view-any']);
+
+    $user = User::factory()->create();
+    $user->assignRole($role);
+    Passport::actingAs($user);
+
+    $this->putJson("/api/v1/roles/{$role->id}", ['permissions' => []])->assertForbidden();
+
+    expect($role->fresh()->getPermissionNames()->all())->toEqualCanonicalizing([
+        'roles.update', 'contacts.view-any',
+    ]);
+});
+
+it('lets a role without grants be created without manage-permissions', function () {
+    $role = Role::create(['name' => 'no-grants', 'guard_name' => PermissionGuard::name()]);
+    $role->givePermissionTo(['roles.create']);
+
+    $user = User::factory()->create();
+    $user->assignRole($role);
+    Passport::actingAs($user);
+
+    $this->postJson('/api/v1/roles', ['name' => 'empty-role'])->assertCreated();
+
+    expect(Role::where('name', 'empty-role')->exists())->toBeTrue();
+});

@@ -40,6 +40,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'companies', 'business-locations',
             // Multi-currency
             'currency-rates',
+            // Integrations
+            'webhook-endpoints',
             // Workspace surfaces
             'dashboard', 'reports', 'notifications',
             // Settings
@@ -50,6 +52,23 @@ class RolesAndPermissionsSeeder extends Seeder
 
         foreach ($modules as $module) {
             foreach ($actions as $action) {
+                Permission::firstOrCreate(['name' => "{$module}.{$action}", 'guard_name' => $guard]);
+            }
+        }
+
+        // Modules whose routes only cover part of the CRUD surface. They are
+        // seeded action by action so a routed module is never left ungated
+        // (an unseeded permission is skipped by the permitted middleware) and
+        // no unreachable action is invented. Keep in sync with routes/api.php.
+        $partialActions = [
+            'audit-logs' => ['view-any', 'view'],
+            'currencies' => ['view-any'],
+            'webhook-deliveries' => ['view-any', 'view', 'update'],
+            'webhook-events' => ['view-any'],
+        ];
+
+        foreach ($partialActions as $module => $suffixes) {
+            foreach ($suffixes as $action) {
                 Permission::firstOrCreate(['name' => "{$module}.{$action}", 'guard_name' => $guard]);
             }
         }

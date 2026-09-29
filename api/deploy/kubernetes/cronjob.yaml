@@ -1,0 +1,94 @@
+# Runs `php artisan schedule:run` every minute: the webhook retry command and
+# the daily delivery prune registered in bootstrap/app.php. Without it, failed
+# deliveries are never retried and delivery records never expire.
+#
+# The env block mirrors the app and queue containers in deployment.yaml.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nexi-erp-scheduler
+  namespace: default
+  labels:
+    app: nexi-erp
+spec:
+  schedule: "* * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 60
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app: nexi-erp
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+            - name: web-files
+              emptyDir: {}
+          initContainers:
+            - name: web-copy
+              image: registry.example.com/nexi-erp:latest
+              imagePullPolicy: Always
+              command: ["sh", "-c", "cp -a /var/www/html/. /shared/www/"]
+              volumeMounts:
+                - name: web-files
+                  mountPath: /shared/www
+          containers:
+            - name: scheduler
+              image: registry.example.com/nexi-erp:latest
+              imagePullPolicy: Always
+              command: ["php", "artisan", "schedule:run"]
+              env:
+                - name: APP_ENV
+                  value: "production"
+                - name: APP_DEBUG
+                  value: "false"
+                - name: DB_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: nexi-erp-db
+                      key: host
+                - name: DB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: nexi-erp-db
+                      key: database
+                - name: DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: nexi-erp-db
+                      key: username
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: nexi-erp-db
+                      key: password
+                - name: REDIS_HOST
+                  value: nexi-erp-redis
+                - name: APP_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: nexi-erp-app
+                      key: key
+                - name: QUEUE_CONNECTION
+                  value: "database"
+                - name: CACHE_STORE
+                  value: "database"
+                - name: WEBHOOK_DRIVER
+                  value: "queue"
+                - name: FRONTEND_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: nexi-erp-app
+                      key: frontend_url
+                      optional: true
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "100m"
+                limits:
+                  memory: "512Mi"
+                  cpu: "500m"

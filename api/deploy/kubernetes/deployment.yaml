@@ -96,10 +96,105 @@ spec:
                   optional: true
             - name: SENTRY_TRACES_SAMPLE_RATE
               value: "0.25"
+            # The queue worker and the scheduler CronJob run the same env block;
+            # keep the three copies in step when adding a variable.
+            - name: QUEUE_CONNECTION
+              value: "database"
+            - name: CACHE_STORE
+              value: "database"
+            # Deliveries leave the request cycle; retries are the worker's job.
+            - name: WEBHOOK_DRIVER
+              value: "queue"
+            - name: FRONTEND_URL
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-app
+                  key: frontend_url
+                  optional: true
           resources:
             requests:
               memory: "128Mi"
               cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+        - name: queue
+          image: registry.example.com/nexi-erp:latest
+          imagePullPolicy: Always
+          command:
+            - php
+            - artisan
+            - queue:work
+            - --sleep=3
+            - --tries=3
+            - --timeout=90
+            - --max-time=3600
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: APP_DEBUG
+              value: "false"
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-db
+                  key: host
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-db
+                  key: database
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-db
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-db
+                  key: password
+            - name: REDIS_HOST
+              value: nexi-erp-redis
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-app
+                  key: key
+            - name: PASSPORT_PASSWORD_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-app
+                  key: oauth_password_client_id
+            - name: PASSPORT_PASSWORD_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-app
+                  key: oauth_password_client_secret
+            - name: SENTRY_LARAVEL_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-app
+                  key: sentry_dsn
+                  optional: true
+            - name: SENTRY_TRACES_SAMPLE_RATE
+              value: "0.25"
+            - name: QUEUE_CONNECTION
+              value: "database"
+            - name: CACHE_STORE
+              value: "database"
+            - name: WEBHOOK_DRIVER
+              value: "queue"
+            - name: FRONTEND_URL
+              valueFrom:
+                secretKeyRef:
+                  name: nexi-erp-app
+                  key: frontend_url
+                  optional: true
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
             limits:
               memory: "512Mi"
               cpu: "500m"

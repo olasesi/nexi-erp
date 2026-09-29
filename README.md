@@ -48,9 +48,14 @@ step into `.env` as `PASSPORT_PASSWORD_CLIENT_ID` / `PASSPORT_PASSWORD_CLIENT_SE
 > `/api/v1/*` resource routes require `Authorization: Bearer <token>`.
 
 Webhook deliveries, the retry/prune commands and the API version catalogue are
-covered in [api/README.md](api/README.md). With `WEBHOOK_DRIVER=sync` the API
-delivers webhooks in-process; run `php artisan schedule:run` every minute so
-`webhooks:retry` and `webhooks:prune` keep the delivery log moving.
+covered in [api/README.md](api/README.md). With `WEBHOOK_DRIVER=sync` (the
+default) the API delivers webhooks in-process; run `php artisan
+schedule:run` every minute so `webhooks:retry` and `webhooks:prune` keep the
+delivery log moving. Production runs `WEBHOOK_DRIVER=queue`, which needs both a
+queue worker and the scheduler — the Kubernetes manifests ship both
+(`deploy/kubernetes/deployment.yaml` has a `queue` container, `cronjob.yaml`
+runs the scheduler every minute), and `docker-compose.yml` has the matching
+`queue` and `scheduler` services.
 
 ### Frontend
 

@@ -45,15 +45,19 @@ class UserController extends BaseController
         $request = app($this->storeRequestClass);
         $data = $request->validated();
 
-        $roles = $data['roles'] ?? [];
+        $roles = $data['roles'] ?? null;
         unset($data['roles']);
+
+        if ($roles !== null) {
+            $this->authorizePermission('manage-roles');
+        }
 
         if ($user = auth('api')->user()) {
             $data['company_id'] = $data['company_id'] ?? $user->company_id;
         }
 
         $item = $this->model->create($data);
-        $item->syncRoles($roles);
+        $item->syncRoles($roles ?? []);
 
         return (new $this->resourceClass($item))->response()->setStatusCode(201);
     }
@@ -74,6 +78,10 @@ class UserController extends BaseController
 
         $roles = $data['roles'] ?? null;
         unset($data['roles']);
+
+        if ($roles !== null) {
+            $this->authorizePermission('manage-roles');
+        }
 
         if (isset($data['password'])) {
             if ($data['password'] === '') {

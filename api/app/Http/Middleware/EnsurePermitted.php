@@ -52,6 +52,24 @@ class EnsurePermitted
     ];
 
     /**
+     * Map a route name onto the permission that should gate it, e.g.
+     * products.store needs products.create. Exposed statically so coverage
+     * tests can assert every routed module has a seeded permission.
+     */
+    public static function permissionName(?string $routeName): ?string
+    {
+        if ($routeName === null || ! str_contains($routeName, '.')) {
+            return null;
+        }
+
+        [$module, $action] = explode('.', $routeName, 2);
+
+        $suffix = self::ACTION_MAP[$action] ?? null;
+
+        return $suffix === null ? null : "{$module}.{$suffix}";
+    }
+
+    /**
      * Gate a resource route on its permission (e.g. products.store needs
      * products.create). Enforcement is data-driven: a route is only gated
      * while the matching permission exists, so admins toggle checks by
@@ -76,21 +94,11 @@ class EnsurePermitted
             return null;
         }
 
-        $name = $route->getName();
+        $permission = self::permissionName($route->getName());
 
-        if ($name === null || ! str_contains($name, '.')) {
+        if ($permission === null) {
             return null;
         }
-
-        [$module, $action] = explode('.', $name, 2);
-
-        $suffix = self::ACTION_MAP[$action] ?? null;
-
-        if ($suffix === null) {
-            return null;
-        }
-
-        $permission = "{$module}.{$suffix}";
 
         // Guard-aware existence check: rows stored under any other guard mean
         // the permission hasn't been migrated yet, so skip enforcement.

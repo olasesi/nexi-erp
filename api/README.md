@@ -56,10 +56,28 @@ Customer portal accounts use `POST /api/v1/customer/register` and the
 
 ## Permissions
 
-Roles are `admin`, `manager`, `accountant`, `sales`, `purchases`, `warehouse`,
-`viewer` and `customer` (see `app/Database/Seeders`). A user without the
-`X-Api-Permission` ability for an action receives `403`. The action → ability
-map lives in `app/Http/Middleware/EnsurePermitted.php`.
+`RolesAndPermissionsSeeder` creates the `admin`, `manager`, `user` and
+`customer` roles, and one `<module>.<action>` permission per module —
+`view-any`, `view`, `create`, `update`, `delete`. `manager` gets everything
+except `delete` and the two escalation permissions; `user` gets an explicit
+read-mostly allowlist; `customer` gets `portal.access` only.
+
+Every `/api/v1` resource route is gated on the permission its name maps to
+(`EnsurePermitted::permissionName`), e.g. `POST /api/v1/webhook-endpoints`
+needs `webhook-endpoints.create`. Enforcement is data-driven: a route is only
+gated while the permission row exists, so a routed module missing from the
+seeder would silently open up. `tests/Feature/Api/PermissionCoverageTest.php`
+asserts every gated route has a seeded permission, and fails when a new route
+module is added without one. Modules whose routes cover only part of CRUD
+(`audit-logs`, `currencies`, `webhook-events`, `webhook-deliveries`) are seeded
+action by action so no unreachable permission exists.
+
+Granting permissions (`POST`/`PUT /api/v1/roles` with a `permissions` array) and
+assigning roles (`POST`/`PUT /api/v1/users` with a `roles` array) additionally
+require `manage-permissions` and `manage-roles` respectively; both are held by
+`admin` only, and both are checked with the same `403` payload as the route
+gate. Creating a role or user without a `permissions` / `roles` array needs only
+the ordinary `roles.create` / `users.create` permission.
 
 ## Import & export
 
@@ -88,7 +106,7 @@ $body, $signature)`, which also enforces the replay window
 
 Every attempt is stored on `webhook_deliveries`, so `GET
 /api/v1/webhook-endpoints/{endpoint}/deliveries` and the replay action
-(`POST /api/v1/webhook-deliveries/{delivery}/replay`) work for failures.
+(`POST /api/v1/webhook-deliveries/{delivery}/redeliver`) work for failures.
 
 ## Scheduled commands
 
@@ -102,6 +120,19 @@ Run the scheduler once a minute (`* * * * * cd /path/to/api && php artisan
 schedule:run`). With `WEBHOOK_DRIVER=sync` the retry command is what retries
 failed deliveries; with `WEBHOOK_DRIVER=queue` the queue worker does it and the
 command is only a safety net.
+
+Both are already wired where they run:
+
+| Target          | Worker                                     | Scheduler                                  |
+| --------------- | ------------------------------------------ | ------------------------------------------ |
+| Docker Compose  | `queue` service (`queue:work`)             | `scheduler` service (`schedule:work`)      |
+| Kubernetes      | `queue` container in `deployment.yaml`     | `cronjob.yaml` (`schedule:run`, every min) |
+
+The Kubernetes manifests set `WEBHOOK_DRIVER=queue`, `QUEUE_CONNECTION` and
+`CACHE_STORE` to `database` (no redis client is installed) on the app, worker
+and scheduler containers, and read `FRONTEND_URL` from the `nexi-erp-app`
+secret. Those three env blocks are copied rather than shared, so keep them in
+step when adding a variable.
 
 ## Versioning
 

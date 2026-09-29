@@ -117,4 +117,18 @@ abstract class BaseController extends Controller
     {
         return [];
     }
+
+    /**
+     * Gate a privilege change (granting permissions, assigning roles) on its
+     * own permission. The permitted middleware only knows the CRUD permission
+     * of the route, so these writes are checked here with the same 403 payload.
+     */
+    protected function authorizePermission(string $permission): void
+    {
+        if (request()->user()?->can($permission) !== true) {
+            abort(response()->json([
+                'message' => 'You do not have permission to perform this action.',
+            ], JsonResponse::HTTP_FORBIDDEN));
+        }
+    }
 }

@@ -235,3 +235,47 @@ it('requires authentication', function () {
 
     $this->getJson('/api/v1/users')->assertUnauthorized();
 });
+
+it('refuses to assign roles without manage-roles', function () {
+    $role = Role::create(['name' => 'hr', 'guard_name' => PermissionGuard::name()]);
+    $role->givePermissionTo(['users.view-any', 'users.create', 'users.update']);
+
+    $user = User::factory()->create(['company_id' => $this->company->id]);
+    $user->assignRole($role);
+    Passport::actingAs($user);
+
+    $this->postJson('/api/v1/users', [
+        'name' => 'Escalated',
+        'email' => 'escalated@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'roles' => ['admin'],
+    ])->assertForbidden();
+
+    $target = User::factory()->create(['company_id' => $this->company->id]);
+
+    $this->putJson("/api/v1/users/{$target->id}", ['roles' => ['admin']])->assertForbidden();
+
+    expect(User::where('email', 'escalated@example.com')->exists())->toBeFalse()
+        ->and($target->fresh()->roles)->toBeEmpty()
+        ->and($user->fresh()->hasRole('admin'))->toBeFalse();
+});
+
+it('lets a user be created without roles when manage-roles is missing', function () {
+    $role = Role::create(['name' => 'staff-writer', 'guard_name' => PermissionGuard::name()]);
+    $role->givePermissionTo(['users.create']);
+
+    $user = User::factory()->create(['company_id' => $this->company->id]);
+    $user->assignRole($role);
+    Passport::actingAs($user);
+
+    $this->postJson('/api/v1/users', [
+        'name' => 'No Roles',
+        'email' => 'noroles@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+    ])->assertCreated()
+        ->assertJsonPath('data.roles', []);
+
+    expect(User::where('email', 'noroles@example.com')->first()->roles)->toBeEmpty();
+});
