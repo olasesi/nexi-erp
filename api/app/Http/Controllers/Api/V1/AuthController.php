@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Concerns\IssuesPasswordTokens;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\UpdateProfileRequest;
 use App\Models\User;
 use App\Notifications\PasswordResetToken;
 use App\Services\MetricsService;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -51,7 +53,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        if ($token = $request->user()->token()) {
+        if ($token = $this->authenticatedUser($request)->token()) {
             $token->revoke();
         }
 
@@ -69,11 +71,7 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $user = $request->user();
-
-        if (! $user instanceof User) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         if (! Hash::check($data['current_password'], $user->password)) {
             throw ValidationException::withMessages([
@@ -151,7 +149,42 @@ class AuthController extends Controller
      */
     public function user(Request $request): JsonResponse
     {
-        $user = $request->user()->load('company');
+        return $this->profileResponse($this->authenticatedUser($request));
+    }
+
+    /**
+     * Let the authenticated user edit their own name, username, and phone.
+     * Account level fields (email, company, roles, is_active) stay under the
+     * admin /user resource.
+     */
+    public function updateProfile(UpdateProfileRequest $request): JsonResponse
+    {
+        $user = $this->authenticatedUser($request);
+
+        $user->forceFill($request->validated())->save();
+
+        return $this->profileResponse($user);
+    }
+
+    /**
+     * Narrow the authenticated guard result to the staff User model. The auth
+     * middleware guarantees this, so anything else is a 401 rather than a
+     * fatal error deep in the controller.
+     */
+    private function authenticatedUser(Request $request): User
+    {
+        $user = $request->user();
+
+        if (! $user instanceof User) {
+            throw new AuthenticationException;
+        }
+
+        return $user;
+    }
+
+    private function profileResponse(User $user): JsonResponse
+    {
+        $user->loadMissing('company');
 
         return response()->json(
             array_merge($user->toArray(), [

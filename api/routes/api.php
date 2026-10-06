@@ -87,6 +87,10 @@ Route::prefix('v1')->group(function () {
 
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/user', [AuthController::class, 'user']);
+        // Self-service profile edit, left unnamed like GET /user so it stays
+        // outside the admin users.* permission gate: any staff may edit their
+        // own name, username, and phone.
+        Route::put('/user', [AuthController::class, 'updateProfile']);
 
         Route::apiResource('companies', CompanyController::class);
         Route::post('companies/{company}/restore', [CompanyController::class, 'restore'])->name('companies.restore');
