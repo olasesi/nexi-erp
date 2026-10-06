@@ -26,6 +26,10 @@ class Invoice extends Model
         'invoice_number',
         'type',
         'status',
+        'shipping_status',
+        'shipped_at',
+        'tracking_number',
+        'service_staff_id',
         'contact_id',
         'sales_order_id',
         'purchase_order_id',
@@ -43,11 +47,32 @@ class Invoice extends Model
         'terms',
     ];
 
+    /** Fulfilment states an invoice can move through, in fulfilment order. */
+    public const SHIPPING_STATUSES = [
+        'pending',
+        'processing',
+        'ready',
+        'shipped',
+        'partial',
+        'delivered',
+        'returned',
+    ];
+
+    /** States that still represent an outstanding shipment. */
+    public const OPEN_SHIPPING_STATUSES = [
+        'pending',
+        'processing',
+        'ready',
+        'shipped',
+        'partial',
+    ];
+
     protected function casts(): array
     {
         return [
             'issue_date' => 'date',
             'due_date' => 'date',
+            'shipped_at' => 'datetime',
         ];
     }
 
@@ -97,6 +122,24 @@ class Invoice extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Staff member responsible for shipping this invoice.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function serviceStaff(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'service_staff_id');
+    }
+
+    /**
+     * True while the invoice still needs to be delivered.
+     */
+    public function hasOpenShipment(): bool
+    {
+        return in_array($this->shipping_status, self::OPEN_SHIPPING_STATUSES, true);
     }
 
     public function isSales(): bool

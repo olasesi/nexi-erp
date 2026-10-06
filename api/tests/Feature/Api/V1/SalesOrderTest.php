@@ -62,6 +62,37 @@ it('creates a sales order with items', function () {
         ->assertJsonStructure(['data' => ['id', 'order_number', 'items']]);
 });
 
+it('records who raised the order', function () {
+    $company = Company::factory()->create();
+    $contact = Contact::factory()->create(['company_id' => $company->id]);
+    $warehouse = Warehouse::factory()->create(['company_id' => $company->id]);
+
+    $category = ProductCategory::factory()->create(['company_id' => $company->id]);
+    $product = Product::factory()->create([
+        'company_id' => $company->id,
+        'category_id' => $category->id,
+    ]);
+
+    $this->postJson('/api/v1/sales-orders', [
+        'company_id' => $company->id,
+        'contact_id' => $contact->id,
+        'warehouse_id' => $warehouse->id,
+        'items' => [
+            [
+                'product_name' => $product->name,
+                'product_sku' => $product->sku,
+                'quantity' => 2,
+                'unit_price' => 50.00,
+            ],
+        ],
+    ])->assertCreated();
+
+    $order = SalesOrder::where('company_id', $company->id)->firstOrFail();
+
+    expect($order->created_by)->toBe($this->user->id)
+        ->and($order->createdBy?->name)->toBe($this->user->name);
+});
+
 it('shows a sales order', function () {
     $order = SalesOrder::factory()->create();
 

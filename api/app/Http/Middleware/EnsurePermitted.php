@@ -19,6 +19,13 @@ class EnsurePermitted
         'destroy' => 'delete',
         // Custom action routes mapped onto the standard permission suffixes.
         'summary' => 'view-any',
+        // Dashboard card feeds all read the same KPI surface.
+        'financial-year-sales' => 'view-any',
+        'sales-payment-due' => 'view-any',
+        'purchase-payment-due' => 'view-any',
+        'stock-alert' => 'view-any',
+        'pending-shipments' => 'view-any',
+        'sales-orders' => 'view-any',
         'unread-count' => 'view-any',
         'profit-and-loss' => 'view',
         'balance-sheet' => 'view',

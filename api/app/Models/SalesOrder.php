@@ -23,6 +23,7 @@ class SalesOrder extends Model
         'company_id',
         'contact_id',
         'warehouse_id',
+        'created_by',
         'order_number',
         'status',
         'payment_status',
@@ -85,5 +86,15 @@ class SalesOrder extends Model
     public function items(): HasMany
     {
         return $this->hasMany(SalesOrderItem::class);
+    }
+
+    /**
+     * Staff member who raised the order, shown as "Added By" on the dashboard.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

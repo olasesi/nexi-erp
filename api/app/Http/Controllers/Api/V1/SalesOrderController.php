@@ -51,6 +51,7 @@ class SalesOrderController extends BaseController
         $data['payment_status'] = $data['payment_status'] ?? 'pending';
         $data['paid_amount'] = $data['paid_amount'] ?? 0;
         $data['balance_due'] = round($totals['total'] - $data['paid_amount'], 2);
+        $data['created_by'] = $data['created_by'] ?? auth('api')->user()?->id;
 
         $item = DB::transaction(function () use ($data, $lines, $totals) {
             $order = $this->model->create(array_merge($data, $totals));

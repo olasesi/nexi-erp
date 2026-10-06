@@ -162,6 +162,20 @@ Route::prefix('v1')->group(function () {
         Route::get('reports/vat-summary', [FinancialReportController::class, 'vatSummary'])->name('reports.vat-summary');
 
         Route::get('dashboard', [DashboardController::class, 'summary'])->name('dashboard.summary');
+        // Dashboard card feeds. Each one is limit-capped on its own so a
+        // heavy table cannot slow down the KPI summary above.
+        Route::get('dashboard/financial-year-sales', [DashboardController::class, 'financialYearSales'])
+            ->name('dashboard.financial-year-sales');
+        Route::get('dashboard/sales-payment-due', [DashboardController::class, 'salesPaymentDue'])
+            ->name('dashboard.sales-payment-due');
+        Route::get('dashboard/purchase-payment-due', [DashboardController::class, 'purchasePaymentDue'])
+            ->name('dashboard.purchase-payment-due');
+        Route::get('dashboard/stock-alert', [DashboardController::class, 'stockAlert'])
+            ->name('dashboard.stock-alert');
+        Route::get('dashboard/sales-orders', [DashboardController::class, 'salesOrders'])
+            ->name('dashboard.sales-orders');
+        Route::get('dashboard/pending-shipments', [DashboardController::class, 'pendingShipments'])
+            ->name('dashboard.pending-shipments');
         Route::get('currencies', [CurrenciesController::class, 'index'])->name('currencies.index');
         Route::apiResource('currency-rates', CurrencyRateController::class);
         Route::post('currency-rates/{currency_rate}/restore', [CurrencyRateController::class, 'restore'])->name('currency-rates.restore');
