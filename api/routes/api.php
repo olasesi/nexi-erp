@@ -12,10 +12,12 @@ use App\Http\Controllers\Api\V1\BusinessSettingsController;
 use App\Http\Controllers\Api\V1\ChartOfAccountController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\ContactController;
+use App\Http\Controllers\Api\V1\CrmStageController;
 use App\Http\Controllers\Api\V1\CurrenciesController;
 use App\Http\Controllers\Api\V1\CurrencyRateController;
 use App\Http\Controllers\Api\V1\CustomerPortalController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\DealController;
 use App\Http\Controllers\Api\V1\ExpenseCategoryController;
 use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\FinancialReportController;
@@ -23,6 +25,7 @@ use App\Http\Controllers\Api\V1\IncomeCategoryController;
 use App\Http\Controllers\Api\V1\IncomeController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\JournalEntryController;
+use App\Http\Controllers\Api\V1\LeadController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\ProductCategoryController;
@@ -176,6 +179,8 @@ Route::prefix('v1')->group(function () {
             ->name('dashboard.sales-orders');
         Route::get('dashboard/pending-shipments', [DashboardController::class, 'pendingShipments'])
             ->name('dashboard.pending-shipments');
+        Route::get('dashboard/crm-summary', [DashboardController::class, 'crmSummary'])
+            ->name('dashboard.crm-summary');
         Route::get('currencies', [CurrenciesController::class, 'index'])->name('currencies.index');
         Route::apiResource('currency-rates', CurrencyRateController::class);
         Route::post('currency-rates/{currency_rate}/restore', [CurrencyRateController::class, 'restore'])->name('currency-rates.restore');
@@ -210,6 +215,13 @@ Route::prefix('v1')->group(function () {
         Route::post('quotations/{quotation}/restore', [QuotationController::class, 'restore'])->name('quotations.restore');
         Route::post('quotations/{quotation}/accept', [QuotationController::class, 'accept'])->name('quotations.accept');
         Route::post('quotations/{quotation}/reject', [QuotationController::class, 'reject'])->name('quotations.reject');
+
+        // CRM: pipeline stages first, then the leads and deals that sit on
+        // them. `convert` promotes a lead into a contact plus an open deal.
+        Route::apiResource('crm-stages', CrmStageController::class);
+        Route::apiResource('leads', LeadController::class);
+        Route::post('leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
+        Route::apiResource('deals', DealController::class);
 
         // Business settings (mirrors UltimatePOS Business Settings surface)
         Route::get('business-settings', [BusinessSettingsController::class, 'index'])->name('business-settings.index');

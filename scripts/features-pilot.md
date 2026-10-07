@@ -21,6 +21,7 @@ and `EnsurePermitted` derives the permission name from the route name
 | Products | `product-categories`, `products`, `warehouses` | `/api/v1/product-categories`, `/api/v1/products`, `/api/v1/warehouses` |
 | Purchases | `purchase-orders` | `/api/v1/purchase-orders` |
 | Sales | `sales-orders`, `quotations`, `invoices` | `/api/v1/sales-orders`, `/api/v1/quotations`, `/api/v1/invoices` |
+| CRM | `leads`, `deals`, `crm-stages` | `/api/v1/leads`, `/api/v1/deals`, `/api/v1/crm-stages` (+ `POST /api/v1/leads/{lead}/convert`, `GET /api/v1/dashboard/crm-summary`) |
 | Stock | `stock-adjustments`, `stock-transfers` | `/api/v1/stock-adjustments`, `/api/v1/stock-transfers` |
 | Expenses | `expense-categories`, `expenses`, `income-categories`, `incomes` | `/api/v1/expense-categories`, `/api/v1/expenses`, `/api/v1/income-categories`, `/api/v1/incomes` |
 | Payment Accounts | `payments`, `bank-accounts`, `bank-transactions` | `/api/v1/payments`, `/api/v1/bank-accounts`, `/api/v1/bank-transactions` |

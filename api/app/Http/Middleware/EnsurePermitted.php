@@ -26,6 +26,9 @@ class EnsurePermitted
         'stock-alert' => 'view-any',
         'pending-shipments' => 'view-any',
         'sales-orders' => 'view-any',
+        'crm-summary' => 'view-any',
+        // Promoting a lead mutates it, so it rides the update permission.
+        'convert' => 'update',
         'unread-count' => 'view-any',
         'profit-and-loss' => 'view',
         'balance-sheet' => 'view',

@@ -2,8 +2,11 @@
 
 use App\Models\Company;
 use App\Models\Contact;
+use App\Models\CrmStage;
+use App\Models\Deal;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Lead;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\SalesOrder;
@@ -823,6 +826,50 @@ it('lists sales invoices that have not been delivered yet', function () {
         ->and($paidRow['balance_due'])->toEqual(0);
 });
 
+it('returns the CRM card numbers', function () {
+    $qualified = CrmStage::factory()->create(['company_id' => $this->company->id, 'name' => 'Qualified', 'position' => 1]);
+    CrmStage::factory()->create(['company_id' => $this->company->id, 'name' => 'Closed Won', 'position' => 2]);
+
+    Lead::factory()->create(['company_id' => $this->company->id, 'source' => 'referral']);
+    Lead::factory()->contacted()->create(['company_id' => $this->company->id, 'source' => 'website', 'value' => 5000]);
+    Lead::factory()->qualified()->create(['company_id' => $this->company->id, 'source' => 'referral', 'value' => 9000]);
+    Lead::factory()->converted()->create(['company_id' => $this->company->id, 'source' => 'website']);
+    Lead::factory()->lost()->create(['company_id' => $this->company->id, 'source' => 'call']);
+
+    Deal::factory()->open()->create(['company_id' => $this->company->id, 'crm_stage_id' => $qualified->id, 'value' => 15000]);
+    Deal::factory()->open()->create(['company_id' => $this->company->id, 'crm_stage_id' => $qualified->id, 'value' => 20000]);
+    Deal::factory()->won()->create(['company_id' => $this->company->id, 'crm_stage_id' => $qualified->id, 'value' => 30000]);
+    Deal::factory()->lost()->create(['company_id' => $this->company->id, 'crm_stage_id' => $qualified->id, 'value' => 4000]);
+
+    $response = $this->getJson('/api/v1/dashboard/crm-summary?company_id='.$this->company->id)
+        ->assertOk();
+
+    expect($response->json('total_leads'))->toBe(5)
+        ->and($response->json('active_leads'))->toBe(3)
+        ->and($response->json('converted_leads'))->toBe(1)
+        ->and($response->json('lost_leads'))->toBe(1)
+        ->and($response->json('open_deals'))->toBe(2)
+        ->and($response->json('pipeline_value'))->toBe(35000)
+        ->and($response->json('won_deals'))->toBe(1)
+        ->and($response->json('lost_deals'))->toBe(1)
+        ->and($response->json('conversion_rate'))->toBe(50)
+        ->and($response->json('lead_funnel.0.status'))->toBe('new')
+        ->and($response->json('lead_funnel.0.count'))->toBe(1)
+        ->and($response->json('lead_funnel.3.count'))->toBe(1)
+        ->and($response->json('leads_by_source.0.source'))->toBe('referral')
+        ->and($response->json('leads_by_source.0.count'))->toBe(2)
+        ->and($response->json('leads_by_source.1.source'))->toBe('website')
+        ->and($response->json('leads_by_source.1.count'))->toBe(2)
+        ->and($response->json('leads_by_source.4.source'))->toBe('call')
+        ->and($response->json('leads_by_source.4.count'))->toBe(1)
+        ->and($response->json('pipeline_by_stage.0.stage'))->toBe('Qualified')
+        ->and($response->json('pipeline_by_stage.0.open_deals'))->toBe(2)
+        ->and($response->json('pipeline_by_stage.0.pipeline_value'))->toBe(35000)
+        ->and($response->json('pipeline_by_stage.1.stage'))->toBe('Closed Won')
+        ->and($response->json('pipeline_by_stage.1.open_deals'))->toBe(0)
+        ->and($response->json('pipeline_by_stage.1.pipeline_value'))->toBe(0);
+});
+
 it('keeps the dashboard card feeds behind the dashboard permission', function () {
     // No seeded permissions, so the permitted middleware skips enforcement.
     $feeds = [
@@ -832,6 +879,7 @@ it('keeps the dashboard card feeds behind the dashboard permission', function ()
         'stock-alert',
         'sales-orders',
         'pending-shipments',
+        'crm-summary',
     ];
 
     foreach ($feeds as $feed) {

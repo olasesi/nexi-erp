@@ -5,7 +5,9 @@ use App\Models\BankAccount;
 use App\Models\BankTransaction;
 use App\Models\Company;
 use App\Models\Contact;
+use App\Models\CrmStage;
 use App\Models\Invoice;
+use App\Models\Lead;
 use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseReceipt;
@@ -234,6 +236,24 @@ it('emits invoice.sent with the recipient when the invoice is emailed', function
     expect($delivery->payload['data']['attributes']['recipient'])->toBe('billing@example.com');
 
     Mail::assertSent(InvoiceMail::class);
+});
+
+it('broadcasts the CRM lifecycle around a converted lead', function () {
+    subscribeTo('lead.created', 'lead.updated', 'lead.converted', 'deal.created');
+
+    CrmStage::factory()->create(['company_id' => $this->company->id]);
+    $lead = Lead::factory()->create([
+        'company_id' => $this->company->id,
+        'source' => 'referral',
+        'status' => 'qualified',
+        'value' => 2500,
+    ]);
+
+    $this->postJson("/api/v1/leads/{$lead->id}/convert")->assertOk();
+
+    $events = WebhookDelivery::distinct()->pluck('event')->all();
+
+    expect($events)->toContain('lead.created', 'lead.updated', 'lead.converted', 'deal.created');
 });
 
 it('emits reconciliation.matched when a reconciliation is completed', function () {

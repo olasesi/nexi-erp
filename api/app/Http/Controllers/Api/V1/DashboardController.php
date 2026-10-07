@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contact;
+use App\Models\CrmStage;
+use App\Models\Deal;
 use App\Models\Invoice;
 use App\Models\JournalEntry;
+use App\Models\Lead;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\SalesOrder;
@@ -383,6 +386,101 @@ class DashboardController extends Controller
     }
 
     /**
+     * "CRM" card: funnel and pipeline health in one payload — active leads,
+     * pipeline value, conversion rate, the funnel by status, leads by source
+     * and how the open deals are distributed across the stages.
+     */
+    public function crmSummary(Request $request): JsonResponse
+    {
+        $companyId = $this->validateCompanyId($request);
+        $limit = $this->cardLimit($request);
+
+        $leads = Lead::where('company_id', $companyId);
+        $deals = Deal::where('company_id', $companyId);
+
+        $totalLeads = (clone $leads)->count();
+        $activeLeads = (clone $leads)->active()->count();
+        $convertedLeads = (clone $leads)->where('status', Lead::STATUS_CONVERTED)->count();
+        $lostLeads = (clone $leads)->where('status', Lead::STATUS_LOST)->count();
+
+        $leadStatusCounts = $this->leadStatusCounts($companyId);
+        $leadSourceCounts = $this->leadSourceCounts($companyId);
+
+        $openDeals = (clone $deals)->where('status', Deal::STATUS_OPEN);
+        $openDealCount = $openDeals->count();
+        $pipelineValue = round((float) (clone $openDeals)->sum('value'), 2);
+
+        $wonDeals = (clone $deals)->where('status', Deal::STATUS_WON);
+        $wonDealCount = $wonDeals->count();
+        $wonValue = round((float) $wonDeals->sum('value'), 2);
+        $lostDealCount = (clone $deals)->where('status', Deal::STATUS_LOST)->count();
+
+        // Conversion is won share of decided deals: open work never dilutes it.
+        $decided = $wonDealCount + $lostDealCount;
+
+        $overdueFollowUps = (clone $leads)
+            ->active()
+            ->whereNotNull('next_follow_up_at')
+            ->where('next_follow_up_at', '<', now())
+            ->count();
+
+        $followUps = (clone $leads)
+            ->active()
+            ->whereNotNull('next_follow_up_at')
+            ->with('assignedTo')
+            ->orderBy('next_follow_up_at')
+            ->limit($limit)
+            ->get();
+
+        $topDeals = $openDeals->with(['stage', 'contact'])
+            ->orderByDesc('value')
+            ->orderByDesc('id')
+            ->limit($limit)
+            ->get();
+
+        return response()->json([
+            'company_id' => $companyId,
+            'limit' => $limit,
+            'total_leads' => $totalLeads,
+            'active_leads' => $activeLeads,
+            'converted_leads' => $convertedLeads,
+            'lost_leads' => $lostLeads,
+            'overdue_follow_ups' => $overdueFollowUps,
+            'open_deals' => $openDealCount,
+            'pipeline_value' => $pipelineValue,
+            'won_deals' => $wonDealCount,
+            'won_value' => $wonValue,
+            'lost_deals' => $lostDealCount,
+            'conversion_rate' => $decided === 0 ? 0.0 : round($wonDealCount * 100 / $decided, 2),
+            'lead_funnel' => $leadStatusCounts,
+            'leads_by_source' => $leadSourceCounts,
+            'pipeline_by_stage' => $this->pipelineByStage($companyId),
+            'data' => [
+                'follow_ups' => $followUps->map(fn (Lead $lead) => [
+                    'lead_id' => $lead->id,
+                    'name' => $lead->name,
+                    'organization' => $lead->organization,
+                    'status' => $lead->status,
+                    'value' => round((float) $lead->value, 2),
+                    'next_follow_up_at' => $lead->next_follow_up_at,
+                    'assigned_to' => $lead->assignedTo?->name,
+                ])->values()->all(),
+                'top_deals' => $topDeals->map(fn (Deal $deal) => [
+                    'deal_id' => $deal->id,
+                    'title' => $deal->title,
+                    'value' => round((float) $deal->value, 2),
+                    'stage' => $deal->stage?->name,
+                    'close_date' => $this->formatDate($deal->close_date),
+                    'contact' => $deal->contact === null ? null : [
+                        'id' => $deal->contact->id,
+                        'name' => $deal->contact->full_name,
+                    ],
+                ])->values()->all(),
+            ],
+        ]);
+    }
+
+    /**
      * Shared implementation behind the two payment due cards.
      *
      * @param  list<string>  $types
@@ -450,6 +548,95 @@ class DashboardController extends Controller
                 ];
             })->values()->all(),
         ]);
+    }
+
+    /**
+     * Lead funnel, zero-filled across every status so the chart keeps its
+     * category order even for statuses with no rows.
+     *
+     * @return list<array{status: string, count: int}>
+     */
+    private function leadStatusCounts(int $companyId): array
+    {
+        $counts = array_fill_keys(Lead::STATUSES, 0);
+
+        $rows = Lead::where('company_id', $companyId)
+            ->selectRaw('status, count(*) as total')
+            ->groupBy('status')
+            ->get();
+
+        foreach ($rows as $row) {
+            $status = (string) $row->getAttribute('status');
+
+            if (array_key_exists($status, $counts)) {
+                $counts[$status] = (int) $row->getAttribute('total');
+            }
+        }
+
+        return array_map(
+            fn (string $status): array => ['status' => $status, 'count' => $counts[$status]],
+            array_keys($counts),
+        );
+    }
+
+    /**
+     * Leads per acquisition source, zero-filled in the documented order.
+     *
+     * @return list<array{source: string, count: int}>
+     */
+    private function leadSourceCounts(int $companyId): array
+    {
+        $counts = array_fill_keys(Lead::SOURCES, 0);
+
+        $rows = Lead::where('company_id', $companyId)
+            ->selectRaw('source, count(*) as total')
+            ->groupBy('source')
+            ->get();
+
+        foreach ($rows as $row) {
+            $source = (string) $row->getAttribute('source');
+
+            if (array_key_exists($source, $counts)) {
+                $counts[$source] = (int) $row->getAttribute('total');
+            }
+        }
+
+        return array_map(
+            fn (string $source): array => ['source' => $source, 'count' => $counts[$source]],
+            array_keys($counts),
+        );
+    }
+
+    /**
+     * Open deals spread across the ordered pipeline. One grouped query plus
+     * one ordered stage read keeps this flat no matter how many deals exist.
+     *
+     * @return list<array{stage_id: int, stage: string, open_deals: int, pipeline_value: float}>
+     */
+    private function pipelineByStage(int $companyId): array
+    {
+        $aggregates = Deal::where('company_id', $companyId)
+            ->where('status', Deal::STATUS_OPEN)
+            ->groupBy('crm_stage_id')
+            ->selectRaw('crm_stage_id, count(*) as open_deals, coalesce(sum(value), 0) as pipeline_value')
+            ->get()
+            ->keyBy('crm_stage_id');
+
+        $stages = CrmStage::where('company_id', $companyId)
+            ->orderBy('position')
+            ->orderBy('id')
+            ->get(['id', 'name']);
+
+        return array_values($stages->map(function (CrmStage $stage) use ($aggregates) {
+            $row = $aggregates->get($stage->getKey());
+
+            return [
+                'stage_id' => (int) $stage->getKey(),
+                'stage' => (string) $stage->name,
+                'open_deals' => $row === null ? 0 : (int) $row->getAttribute('open_deals'),
+                'pipeline_value' => round((float) ($row?->getAttribute('pipeline_value') ?? 0), 2),
+            ];
+        })->all());
     }
 
     private function validateCompanyId(Request $request): int

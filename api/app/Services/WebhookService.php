@@ -33,6 +33,7 @@ class WebhookService
         'stock_transfer.completed',
         'stock_adjustment.posted',
         'reconciliation.matched',
+        'lead.converted',
     ];
 
     /**
@@ -55,6 +56,9 @@ class WebhookService
         'income',
         'bank_transaction',
         'reconciliation',
+        'crm_stage',
+        'lead',
+        'deal',
         'user',
     ];
 

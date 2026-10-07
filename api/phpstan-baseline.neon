@@ -163,6 +163,30 @@ parameters:
 			path: app/Http/Controllers/Api/V1/ContactController.php
 
 		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Http/Controllers/Api/V1/CrmStageController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\CrmStageController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/CrmStageController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\CrmStageController\:\:getSearchableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/CrmStageController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\CrmStageController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/CrmStageController.php
+
+		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 1
@@ -209,6 +233,30 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Controllers/Api/V1/DashboardController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Http/Controllers/Api/V1/DealController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\DealController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/DealController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\DealController\:\:getSearchableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/DealController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\DealController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/DealController.php
 
 		-
 			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
@@ -377,6 +425,30 @@ parameters:
 			identifier: missingType.property
 			count: 1
 			path: app/Http/Controllers/Api/V1/JournalEntryController.php
+
+		-
+			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: app/Http/Controllers/Api/V1/LeadController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\LeadController\:\:getFilterableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/LeadController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\V1\\LeadController\:\:getSearchableFields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/V1/LeadController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\V1\\LeadController\:\:\$model has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: app/Http/Controllers/Api/V1/LeadController.php
 
 		-
 			message: '#^Call to an undefined method object\:\:response\(\)\.$#'
@@ -727,6 +799,18 @@ parameters:
 			path: app/Http/Requests/Api/V1/StoreContactRequest.php
 
 		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreCrmStageRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreCrmStageRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreDealRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreDealRequest.php
+
+		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreExpenseRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -749,6 +833,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/StoreJournalEntryRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\StoreLeadRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/StoreLeadRequest.php
 
 		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\StorePaymentRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
@@ -847,6 +937,18 @@ parameters:
 			path: app/Http/Requests/Api/V1/UpdateContactRequest.php
 
 		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateCrmStageRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateCrmStageRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateDealRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateDealRequest.php
+
+		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateExpenseRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -869,6 +971,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Http/Requests/Api/V1/UpdateJournalEntryRequest.php
+
+		-
+			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdateLeadRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Requests/Api/V1/UpdateLeadRequest.php
 
 		-
 			message: '#^Method App\\Http\\Requests\\Api\\V1\\UpdatePaymentRequest\:\:rules\(\) return type has no value type specified in iterable type array\.$#'
@@ -979,6 +1087,18 @@ parameters:
 			path: app/Http/Resources/ContactResource.php
 
 		-
+			message: '#^Method App\\Http\\Resources\\CrmStageResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/CrmStageResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\DealResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/DealResource.php
+
+		-
 			message: '#^Method App\\Http\\Resources\\ExpenseCategoryResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1055,6 +1175,12 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Http/Resources/JournalEntryResource.php
+
+		-
+			message: '#^Method App\\Http\\Resources\\LeadResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Resources/LeadResource.php
 
 		-
 			message: '#^Method App\\Http\\Resources\\PaymentResource\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
@@ -1309,6 +1435,18 @@ parameters:
 			path: app/Models/Contact.php
 
 		-
+			message: '#^Class App\\Models\\CrmStage uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CrmStage.php
+
+		-
+			message: '#^Class App\\Models\\Deal uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Deal.php
+
+		-
 			message: '#^Class App\\Models\\Expense uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -1415,6 +1553,12 @@ parameters:
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/JournalEntryLine.php
+
+		-
+			message: '#^Class App\\Models\\Lead uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Lead.php
 
 		-
 			message: '#^Class App\\Models\\Payment uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'

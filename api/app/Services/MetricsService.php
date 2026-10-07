@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\Deal;
+use App\Models\Lead;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\WebhookDelivery;
@@ -160,6 +162,22 @@ class MetricsService
             $lines[] = sprintf('nexi_erp_webhook_deliveries_total{status="%s"} %d', $status, $total);
         }
 
+        $lines[] = '# HELP nexi_erp_leads_total CRM leads by funnel status.';
+        $lines[] = '# TYPE nexi_erp_leads_total gauge';
+        foreach ($this->leadCounts() as $status => $total) {
+            $lines[] = sprintf('nexi_erp_leads_total{status="%s"} %d', $status, $total);
+        }
+
+        $lines[] = '# HELP nexi_erp_deals_total CRM deals by status.';
+        $lines[] = '# TYPE nexi_erp_deals_total gauge';
+        foreach ($this->dealCounts() as $status => $total) {
+            $lines[] = sprintf('nexi_erp_deals_total{status="%s"} %d', $status, $total);
+        }
+
+        $lines[] = '# HELP nexi_erp_pipeline_value_open Combined value of open CRM deals.';
+        $lines[] = '# TYPE nexi_erp_pipeline_value_open gauge';
+        $lines[] = 'nexi_erp_pipeline_value_open '.number_format($this->openPipelineValue(), 2, '.', '');
+
         $lines[] = '# HELP nexi_erp_health Whether each backend component is reachable.';
         $lines[] = '# TYPE nexi_erp_health gauge';
         foreach ($this->health->components() as $component => $healthy) {
@@ -167,6 +185,57 @@ class MetricsService
         }
 
         return implode("\n", $lines)."\n";
+    }
+
+    /**
+     * CRM leads per funnel status, always emitting every status so a scraper
+     * never has to treat a missing label as zero. Aggregates run without an
+     * authenticated user, so the company scope is skipped on purpose: these
+     * gauges describe the whole installation, like nexi_erp_users_total.
+     *
+     * @return array<string, int>
+     */
+    private function leadCounts(): array
+    {
+        $counts = array_fill_keys(Lead::STATUSES, 0);
+
+        foreach (Lead::query()->selectRaw('status, count(*) as total')->groupBy('status')->get() as $row) {
+            $status = (string) $row->getAttribute('status');
+
+            if (array_key_exists($status, $counts)) {
+                $counts[$status] = (int) $row->getAttribute('total');
+            }
+        }
+
+        return $counts;
+    }
+
+    /**
+     * CRM deals per status, zero-filled the same way as the lead gauge.
+     *
+     * @return array<string, int>
+     */
+    private function dealCounts(): array
+    {
+        $counts = array_fill_keys(Deal::STATUSES, 0);
+
+        foreach (Deal::query()->selectRaw('status, count(*) as total')->groupBy('status')->get() as $row) {
+            $status = (string) $row->getAttribute('status');
+
+            if (array_key_exists($status, $counts)) {
+                $counts[$status] = (int) $row->getAttribute('total');
+            }
+        }
+
+        return $counts;
+    }
+
+    /**
+     * Combined value of every deal still in play, across all companies.
+     */
+    private function openPipelineValue(): float
+    {
+        return (float) Deal::query()->where('status', Deal::STATUS_OPEN)->sum('value');
     }
 
     /**

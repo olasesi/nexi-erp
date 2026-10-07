@@ -28,6 +28,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'purchase-orders', 'purchase-receipts',
             // Sales
             'sales-orders', 'quotations', 'invoices',
+            // CRM
+            'leads', 'deals', 'crm-stages',
             // Stock
             'stock-adjustments', 'stock-transfers',
             // Expenses & Income
