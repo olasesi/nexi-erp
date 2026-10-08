@@ -3,10 +3,12 @@
 use App\Http\Controllers\Api\ApiVersionController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\MetricsController;
+use App\Http\Controllers\Api\V1\AddonController;
 use App\Http\Controllers\Api\V1\AuditLogController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BankAccountController;
 use App\Http\Controllers\Api\V1\BankTransactionController;
+use App\Http\Controllers\Api\V1\BusinessAdvisorController;
 use App\Http\Controllers\Api\V1\BusinessLocationController;
 use App\Http\Controllers\Api\V1\BusinessSettingsController;
 use App\Http\Controllers\Api\V1\ChartOfAccountController;
@@ -26,6 +28,7 @@ use App\Http\Controllers\Api\V1\IncomeController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\JournalEntryController;
 use App\Http\Controllers\Api\V1\LeadController;
+use App\Http\Controllers\Api\V1\NoticeController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\ProductCategoryController;
@@ -40,6 +43,7 @@ use App\Http\Controllers\Api\V1\SalesOrderController;
 use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\StockAdjustmentController;
 use App\Http\Controllers\Api\V1\StockTransferController;
+use App\Http\Controllers\Api\V1\SuggestionController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WarehouseController;
 use App\Http\Controllers\Api\V1\WebhookDeliveryController;
@@ -245,5 +249,30 @@ Route::prefix('v1')->group(function () {
         Route::get('webhook-deliveries', [WebhookDeliveryController::class, 'index'])->name('webhook-deliveries.index');
         Route::get('webhook-deliveries/{webhook_delivery}', [WebhookDeliveryController::class, 'show'])->name('webhook-deliveries.show');
         Route::post('webhook-deliveries/{webhook_delivery}/redeliver', [WebhookDeliveryController::class, 'redeliver'])->name('webhook-deliveries.redeliver');
+
+        // Add-on catalog. Readable by every staff member (the SPA needs it to
+        // decide what to render); the toggle write rides addons.update.
+        Route::get('addons', [AddonController::class, 'index'])->name('addons.index');
+        Route::put('addons/{addon}', [AddonController::class, 'toggle'])->name('addons.toggle');
+
+        // ---- Add-on modules. Each group is additionally gated by its own
+        // toggle (EnsureAddon), so a switched-off add-on answers 403 rather
+        // than exposing routes the SPA no longer renders.
+        Route::middleware('addon:notice-board')->group(function () {
+            Route::apiResource('notices', NoticeController::class);
+            Route::post('notices/{notice}/restore', [NoticeController::class, 'restore'])->name('notices.restore');
+        });
+
+        Route::middleware('addon:suggestion-box')->group(function () {
+            Route::apiResource('suggestions', SuggestionController::class);
+            Route::post('suggestions/{suggestion}/restore', [SuggestionController::class, 'restore'])->name('suggestions.restore');
+        });
+
+        Route::middleware('addon:business-advisor')->group(function () {
+            Route::get('business-advisor/report', [BusinessAdvisorController::class, 'index'])
+                ->name('business-advisor.index');
+            Route::get('business-advisor/snapshots', [BusinessAdvisorController::class, 'snapshots'])
+                ->name('business-advisor.snapshots');
+        });
     });
 });

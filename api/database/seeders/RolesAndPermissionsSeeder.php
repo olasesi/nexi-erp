@@ -63,6 +63,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // (an unseeded permission is skipped by the permitted middleware) and
         // no unreachable action is invented. Keep in sync with routes/api.php.
         $partialActions = [
+            'addons' => ['view-any', 'update'],
             'audit-logs' => ['view-any', 'view'],
             'currencies' => ['view-any'],
             'webhook-deliveries' => ['view-any', 'view', 'update'],
@@ -71,6 +72,21 @@ class RolesAndPermissionsSeeder extends Seeder
 
         foreach ($partialActions as $module => $suffixes) {
             foreach ($suffixes as $action) {
+                Permission::firstOrCreate(['name' => "{$module}.{$action}", 'guard_name' => $guard]);
+            }
+        }
+
+        // Add-on modules come from the catalog itself so a newly installed
+        // add-on is gated as soon as its config entry exists. Only the actions
+        // it actually routes are seeded (config/addons.php `actions`).
+        foreach (config('addons', []) as $addon) {
+            $module = $addon['module'] ?? null;
+
+            if (! is_string($module) || $module === '') {
+                continue;
+            }
+
+            foreach ($addon['actions'] ?? [] as $action) {
                 Permission::firstOrCreate(['name' => "{$module}.{$action}", 'guard_name' => $guard]);
             }
         }

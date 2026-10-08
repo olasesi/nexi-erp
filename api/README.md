@@ -69,8 +69,8 @@ gated while the permission row exists, so a routed module missing from the
 seeder would silently open up. `tests/Feature/Api/PermissionCoverageTest.php`
 asserts every gated route has a seeded permission, and fails when a new route
 module is added without one. Modules whose routes cover only part of CRUD
-(`audit-logs`, `currencies`, `webhook-events`, `webhook-deliveries`) are seeded
-action by action so no unreachable permission exists.
+(`addons`, `audit-logs`, `currencies`, `webhook-events`, `webhook-deliveries`)
+are seeded action by action so no unreachable permission exists.
 
 Granting permissions (`POST`/`PUT /api/v1/roles` with a `permissions` array) and
 assigning roles (`POST`/`PUT /api/v1/users` with a `roles` array) additionally
@@ -78,6 +78,40 @@ require `manage-permissions` and `manage-roles` respectively; both are held by
 `admin` only, and both are checked with the same `403` payload as the route
 gate. Creating a role or user without a `permissions` / `roles` array needs only
 the ordinary `roles.create` / `users.create` permission.
+
+## Add-ons
+
+`config/addons.php` is the catalogue: one entry per installable add-on with its
+`label`, `description`, `category`, `status` (`free` | `premium` |
+`coming_soon`), the `module` whose permissions gate it, and the `actions` it
+actually routes. Toggles are ordinary business settings stored under namespace
+`business`, group `addons`, keyed by the add-on id — the `addons` group in
+`config/business-settings.php` is derived from the catalogue, so the setting
+list can never drift from what is installable.
+
+| Endpoint                    | Purpose                                                       |
+| --------------------------- | ------------------------------------------------------------- |
+| `GET  /api/v1/addons`       | Catalogue with each add-on's effective toggle state            |
+| `PUT  /api/v1/addons/{addon}` | Switch one add-on on/off for the acting company (`addons.update`) |
+
+Reading the catalogue needs only authentication: the SPA uses it to decide what
+to render. Each add-on's route group additionally runs the `addon:<id>`
+middleware (`EnsureAddon`), which answers `403` with `code: addon_disabled`
+when the add-on is off — a switched-off module cannot be reached by typing the
+URL. An id that is not in the catalogue fails open, so only real add-ons can be
+switched off.
+
+`RolesAndPermissionsSeeder` seeds `{module}.{action}` straight from the
+catalogue's `actions`, so a newly added config entry is gated as soon as it
+exists: `php artisan db:seed --class=RolesAndPermissionsSeeder --force`.
+
+### Shipped add-ons
+
+| Add-on id          | Routes                                       | Notes                                                             |
+| ------------------ | -------------------------------------------- | ----------------------------------------------------------------- |
+| `notice-board`     | `/api/v1/notices`                            | Staff announcements; `?status=all` is the management view          |
+| `suggestion-box`   | `/api/v1/suggestions`                        | Employee suggestions with a reviewed-by/reviewed-at status flow     |
+| `business-advisor` | `/api/v1/business-advisor/report`, `.../snapshots` | Rule-based health score, daily row written by `advisor:snapshot` |
 
 ## Import & export
 
@@ -113,7 +147,8 @@ Every attempt is stored on `webhook_deliveries`, so `GET
 ```bash
 php artisan webhooks:retry    # attempt deliveries whose backoff elapsed
 php artisan webhooks:prune    # delete finished deliveries past the retention window
-php artisan schedule:list     # both are registered in bootstrap/app.php
+php artisan advisor:snapshot  # score every company for the business advisor (01:45)
+php artisan schedule:list     # all three are registered in bootstrap/app.php
 ```
 
 Run the scheduler once a minute (`* * * * * cd /path/to/api && php artisan
@@ -174,14 +209,14 @@ PHPStan runs on `app/` and `config/` at level 8; new code must not add entries t
 ```
 api/
 ├── app/
-│   ├── Console/Commands/     # webhooks:retry, webhooks:prune
+│   ├── Console/Commands/     # webhooks:retry, webhooks:prune, advisor:snapshot
 │   ├── Http/Controllers/Api  # V1 resource controllers + health/metrics
 │   ├── Http/Middleware/      # EnsurePermitted, CollectMetrics, ApiVersion, …
 │   ├── Jobs/                 # DeliverWebhook
 │   ├── Models/               # Eloquent models, Concerns/{CompanyScoped,…}
 │   ├── Services/             # business logic (Accounting, Webhook, Metrics, …)
 │   └── Support/              # Csv, ApiVersions, PermissionGuard
-├── config/                   # api.php, webhooks.php, …
+├── config/                   # addons.php, api.php, webhooks.php, …
 ├── database/migrations       # schema, including 2026_09_28_000008 webhooks
 ├── routes/api.php            # /api, /api/v1/*
 └── tests/                    # Pest feature + integration suites

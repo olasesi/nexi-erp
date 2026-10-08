@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\ApiVersion;
 use App\Http\Middleware\CollectMetrics;
+use App\Http\Middleware\EnsureAddon;
 use App\Http\Middleware\EnsureCustomerAccount;
 use App\Http\Middleware\EnsureEmailIsVerified;
 use App\Http\Middleware\EnsurePermitted;
@@ -25,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('webhooks:retry')->everyMinute()->withoutOverlapping();
         $schedule->command('webhooks:prune')->dailyAt('02:15')->withoutOverlapping();
+        $schedule->command('advisor:snapshot')->dailyAt('01:45')->withoutOverlapping();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(CollectMetrics::class);
@@ -36,6 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'staff' => EnsureStaffAccount::class,
             'customer' => EnsureCustomerAccount::class,
             'permitted' => EnsurePermitted::class,
+            'addon' => EnsureAddon::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

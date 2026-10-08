@@ -332,6 +332,24 @@ $groups = [
             ],
         ],
 
+        // Derived from config/addons.php so the toggle list can never drift
+        // from the catalog: one boolean key per installed add-on.
+        'addons' => [
+            'label' => 'Add-ons',
+            'description' => 'Enable or disable add-ons for this company.',
+            'keys' => array_combine(
+                array_keys(require __DIR__.'/addons.php'),
+                array_map(
+                    fn (array $addon) => [
+                        'label' => $addon['label'],
+                        'type' => 'boolean',
+                        'default' => ($addon['enabled_by_default'] ?? false) ? '1' : '0',
+                    ],
+                    require __DIR__.'/addons.php'
+                )
+            ),
+        ],
+
         'custom_labels' => [
             'label' => 'Custom Labels',
             'description' => 'Custom labels for payments, contacts, products, locations, users, purchases and sales.',

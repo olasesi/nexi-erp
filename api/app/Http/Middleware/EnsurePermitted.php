@@ -54,6 +54,8 @@ class EnsurePermitted
         'pdf' => 'view',
         'email' => 'update',
         'restore' => 'update',
+        'snapshots' => 'view',
+        'toggle' => 'update',
         'test' => 'update',
         'rotate-secret' => 'update',
         'redeliver' => 'update',

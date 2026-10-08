@@ -19,8 +19,8 @@ nexi-erp/
 ```
 
 The backend has its own documentation: [api/README.md](api/README.md) covers
-authentication, permissions, imports/exports, webhooks, the console commands,
-API versioning and the health/metrics endpoints.
+authentication, permissions, add-ons, imports/exports, webhooks, the console
+commands, API versioning and the health/metrics endpoints.
 
 ## Quick Start
 
