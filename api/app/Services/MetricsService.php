@@ -15,6 +15,9 @@ class MetricsService
 
     private const BUCKETS = [0.01, 0.05, 0.1, 0.5, 1.0, 5.0];
 
+    /** Smart Dashboard tabs, so every label set is complete on exposition. */
+    private const ANALYTICS_TABS = ['executive', 'financial', 'sales', 'operations'];
+
     /**
      * TTL (seconds) for counters seeded on demand, far past any window in
      * which an increment would ever matter.
@@ -76,6 +79,24 @@ class MetricsService
     public function recordNotification(): void
     {
         $this->bump(self::PREFIX.'notifications_created_total');
+    }
+
+    /**
+     * Record an observed Smart Dashboard tab build. Cache hits skip the
+     * duration sample: what they cost is the lookup, not the build.
+     */
+    public function recordAnalytics(string $tab, float $seconds, bool $cached): void
+    {
+        $this->bump(self::PREFIX."analytics_requests_total:$tab");
+
+        if ($cached) {
+            $this->bump(self::PREFIX."analytics_cache_hits_total:$tab");
+
+            return;
+        }
+
+        $this->bump(self::PREFIX."analytics_build_duration_sum:$tab", (int) round($seconds * 1000000));
+        $this->bump(self::PREFIX."analytics_build_duration_count:$tab");
     }
 
     /**
@@ -177,6 +198,27 @@ class MetricsService
         $lines[] = '# HELP nexi_erp_pipeline_value_open Combined value of open CRM deals.';
         $lines[] = '# TYPE nexi_erp_pipeline_value_open gauge';
         $lines[] = 'nexi_erp_pipeline_value_open '.number_format($this->openPipelineValue(), 2, '.', '');
+
+        $lines[] = '# HELP nexi_erp_analytics_requests_total Smart Dashboard tab payloads served.';
+        $lines[] = '# TYPE nexi_erp_analytics_requests_total counter';
+        foreach (self::ANALYTICS_TABS as $tab) {
+            $lines[] = sprintf('nexi_erp_analytics_requests_total{tab="%s"} %d', $tab, $this->get(self::PREFIX."analytics_requests_total:$tab"));
+        }
+
+        $lines[] = '# HELP nexi_erp_analytics_cache_hits_total Smart Dashboard tab payloads served from cache.';
+        $lines[] = '# TYPE nexi_erp_analytics_cache_hits_total counter';
+        foreach (self::ANALYTICS_TABS as $tab) {
+            $lines[] = sprintf('nexi_erp_analytics_cache_hits_total{tab="%s"} %d', $tab, $this->get(self::PREFIX."analytics_cache_hits_total:$tab"));
+        }
+
+        $lines[] = '# HELP nexi_erp_analytics_build_duration_seconds Time spent building Smart Dashboard tab payloads.';
+        $lines[] = '# TYPE nexi_erp_analytics_build_duration_seconds summary';
+        foreach (self::ANALYTICS_TABS as $tab) {
+            $sum = $this->get(self::PREFIX."analytics_build_duration_sum:$tab");
+            $count = $this->get(self::PREFIX."analytics_build_duration_count:$tab");
+            $lines[] = sprintf('nexi_erp_analytics_build_duration_seconds_sum{tab="%s"} %s', $tab, number_format($sum / 1000000, 6, '.', ''));
+            $lines[] = sprintf('nexi_erp_analytics_build_duration_seconds_count{tab="%s"} %d', $tab, $count);
+        }
 
         $lines[] = '# HELP nexi_erp_health Whether each backend component is reachable.';
         $lines[] = '# TYPE nexi_erp_health gauge';

@@ -67,7 +67,22 @@ class BusinessHealthService
      * Full report for one company: scores, facts, trend, alerts, insights and
      * the recommendations derived from them.
      *
-     * @return array<string, mixed>
+     * @phpstan-return array{
+     *     company_id: int,
+     *     score_date: string,
+     *     generated_by: string,
+     *     overall_score: int|null,
+     *     categories: array<string, Category>,
+     *     coverage: array{scored: int, total: int},
+     *     signals: array<string, array<string, float>>,
+     *     trend: array{
+     *         points: array<int, array{score_date: string, overall_score: int|null, financial_score: int|null, sales_score: int|null, operations_score: int|null, team_score: int|null}>,
+     *         delta: int|null
+     *     },
+     *     alerts: list<Alert>,
+     *     insights: list<Insight>,
+     *     recommendations: list<Recommendation>
+     * }
      */
     public function report(int $companyId): array
     {

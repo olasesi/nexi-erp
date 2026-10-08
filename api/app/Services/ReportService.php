@@ -7,7 +7,9 @@ use App\Models\ChartOfAccount;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\JournalEntry;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ReportService
 {
@@ -54,6 +56,55 @@ class ReportService
             'total_expenses' => $totalExpenses,
             'net_income' => round($totalRevenue - $totalExpenses, 2),
         ];
+    }
+
+    /**
+     * Revenue and expense per calendar month over a date range, derived from
+     * posted journal entries in a single grouped query. Months without
+     * activity are zero-filled so the chart keeps a steady x-axis.
+     *
+     * @return list<array{month: string, revenue: float, expenses: float, net: float}>
+     */
+    public function monthlySeries(int $companyId, string $from, string $to): array
+    {
+        $rows = DB::table('journal_entries')
+            ->join('journal_entry_lines', 'journal_entry_lines.journal_entry_id', '=', 'journal_entries.id')
+            ->join('chart_of_accounts', 'chart_of_accounts.id', '=', 'journal_entry_lines.chart_of_account_id')
+            ->where('journal_entries.company_id', $companyId)
+            ->where('journal_entries.status', 'posted')
+            ->whereIn('chart_of_accounts.type', ['revenue', 'expense'])
+            ->whereDate('journal_entries.entry_date', '>=', $from)
+            ->whereDate('journal_entries.entry_date', '<=', $to)
+            ->groupByRaw('substr(journal_entries.entry_date, 1, 7), chart_of_accounts.type')
+            ->selectRaw(
+                'substr(journal_entries.entry_date, 1, 7) as month, '
+                .'chart_of_accounts.type as type, '
+                ."sum(case when chart_of_accounts.type = 'revenue' "
+                .'then journal_entry_lines.credit - journal_entry_lines.debit '
+                .'else journal_entry_lines.debit - journal_entry_lines.credit end) as amount',
+            )
+            ->get();
+
+        $values = [];
+
+        foreach ($rows as $row) {
+            $month = (string) $row->month;
+            $type = (string) $row->type;
+
+            $values[$month][$type] = (float) $row->amount;
+        }
+
+        return array_map(function (string $month) use ($values): array {
+            $revenue = round($values[$month]['revenue'] ?? 0.0, 2);
+            $expenses = round($values[$month]['expense'] ?? 0.0, 2);
+
+            return [
+                'month' => $month,
+                'revenue' => $revenue,
+                'expenses' => $expenses,
+                'net' => round($revenue - $expenses, 2),
+            ];
+        }, $this->monthLabels($from, $to));
     }
 
     /**
@@ -521,5 +572,24 @@ class ReportService
     public function supportedTypes(): array
     {
         return ChartOfAccount::distinct()->pluck('type')->all();
+    }
+
+    /**
+     * Every calendar month between two dates as a "Y-m" label.
+     *
+     * @return list<string>
+     */
+    public function monthLabels(string $from, string $to): array
+    {
+        $cursor = Carbon::parse($from)->startOfMonth();
+        $end = Carbon::parse($to)->startOfMonth();
+        $labels = [];
+
+        while ($cursor->lte($end)) {
+            $labels[] = $cursor->format('Y-m');
+            $cursor->addMonthNoOverflow();
+        }
+
+        return $labels;
     }
 }

@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
+
+import { getAddons } from "@/lib/api";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard" },
@@ -12,7 +15,32 @@ const navigation = [
   { name: "Settings", href: "/settings" },
 ];
 
+const SMART_DASHBOARD = { name: "Smart Dashboard", href: "/smart-dashboard" };
+
 export function Layout({ children }: { children: ReactNode }) {
+  const [smartDashboardEnabled, setSmartDashboardEnabled] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getAddons()
+      .then(({ data }) => {
+        const addon = data.find((item) => item.id === "smart-dashboard");
+        if (!cancelled && addon) {
+          setSmartDashboardEnabled(addon.enabled || addon.enabled_by_default);
+        }
+      })
+      .catch(() => {
+        // Keep the entry visible by default when the catalog cannot be read.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const items = smartDashboardEnabled ? [SMART_DASHBOARD, ...navigation] : navigation;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
@@ -21,19 +49,24 @@ export function Layout({ children }: { children: ReactNode }) {
             <h1 className="text-lg font-bold text-gray-900">Nexi ERP</h1>
           </div>
           <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-            {navigation.map((item) => (
+            {items.map((item) => (
               <NavLink
                 key={item.href}
                 to={item.href}
                 className={({ isActive }) =>
-                  `block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  `flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-blue-50 text-blue-700"
                       : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`
                 }
               >
-                {item.name}
+                <span>{item.name}</span>
+                {item.href === "/smart-dashboard" && (
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                    Free
+                  </span>
+                )}
               </NavLink>
             ))}
           </nav>

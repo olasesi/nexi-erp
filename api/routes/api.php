@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ApiVersionController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\MetricsController;
 use App\Http\Controllers\Api\V1\AddonController;
+use App\Http\Controllers\Api\V1\AnalyticsController;
 use App\Http\Controllers\Api\V1\AuditLogController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BankAccountController;
@@ -273,6 +274,19 @@ Route::prefix('v1')->group(function () {
                 ->name('business-advisor.index');
             Route::get('business-advisor/snapshots', [BusinessAdvisorController::class, 'snapshots'])
                 ->name('business-advisor.snapshots');
+        });
+
+        // Smart Dashboard. Four read-only tab payloads sharing one
+        // permission (analytics.view), all cached inside the service.
+        Route::middleware('addon:smart-dashboard')->group(function () {
+            Route::get('analytics/executive', [AnalyticsController::class, 'executive'])
+                ->name('analytics.executive');
+            Route::get('analytics/financial', [AnalyticsController::class, 'financial'])
+                ->name('analytics.financial');
+            Route::get('analytics/sales', [AnalyticsController::class, 'sales'])
+                ->name('analytics.sales');
+            Route::get('analytics/operations', [AnalyticsController::class, 'operations'])
+                ->name('analytics.operations');
         });
     });
 });

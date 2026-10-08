@@ -54,4 +54,14 @@ return [
         'actions' => ['view-any', 'view'],
         'enabled_by_default' => true,
     ],
+
+    'smart-dashboard' => [
+        'label' => 'Smart Dashboard',
+        'description' => 'Executive, financial, sales and operations analytics in four tabs.',
+        'category' => 'Analytics',
+        'status' => 'free',
+        'module' => 'analytics',
+        'actions' => ['view'],
+        'enabled_by_default' => true,
+    ],
 ];

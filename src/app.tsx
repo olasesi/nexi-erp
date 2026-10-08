@@ -9,6 +9,7 @@ import { ProductsPage } from "@/pages/products";
 import { PurchaseOrdersPage } from "@/pages/purchase-orders";
 import { SalesOrdersPage } from "@/pages/sales-orders";
 import { SettingsPage } from "@/pages/settings";
+import { SmartDashboardPage } from "@/pages/smart-dashboard";
 import { WarehousesPage } from "@/pages/warehouses";
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/smart-dashboard" element={<SmartDashboardPage />} />
           <Route path="/companies" element={<CompaniesPage />} />
           <Route path="/contacts" element={<ContactsPage />} />
           <Route path="/products" element={<ProductsPage />} />

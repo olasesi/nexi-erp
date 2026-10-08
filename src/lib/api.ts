@@ -1,5 +1,8 @@
 import { logger } from "@/lib/logger";
 import type {
+  Addon,
+  AnalyticsEnvelope,
+  AnalyticsTab,
   Company,
   Contact,
   PaginatedResponse,
@@ -182,4 +185,25 @@ export function sendTestEmail(email: string): Promise<{ message: string }> {
     method: "POST",
     body: JSON.stringify({ email }),
   });
+}
+
+// ─── Smart Dashboard (add-on) ──────────────────────
+
+export function getAddons(): Promise<{ data: Addon[] }> {
+  return request<{ data: Addon[] }>("/api/v1/addons");
+}
+
+export function getAnalytics<TData = Record<string, unknown>>(
+  tab: AnalyticsTab,
+  companyId: number,
+  options: { limit?: number; fresh?: boolean } = {},
+): Promise<AnalyticsEnvelope<TData>> {
+  const params = new URLSearchParams({ company_id: String(companyId) });
+  if (options.limit !== undefined) {
+    params.set("limit", String(options.limit));
+  }
+  if (options.fresh) {
+    params.set("fresh", "1");
+  }
+  return request<AnalyticsEnvelope<TData>>(`/api/v1/analytics/${tab}?${params.toString()}`);
 }

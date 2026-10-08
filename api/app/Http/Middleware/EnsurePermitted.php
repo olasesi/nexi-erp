@@ -56,6 +56,11 @@ class EnsurePermitted
         'restore' => 'update',
         'snapshots' => 'view',
         'toggle' => 'update',
+        // Smart Dashboard tabs, one read permission across all four.
+        'executive' => 'view',
+        'financial' => 'view',
+        'sales' => 'view',
+        'operations' => 'view',
         'test' => 'update',
         'rotate-secret' => 'update',
         'redeliver' => 'update',
