@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\V1\BusinessSettingsController;
 use App\Http\Controllers\Api\V1\ChartOfAccountController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\ContactController;
+use App\Http\Controllers\Api\V1\CoworkingBookingController;
+use App\Http\Controllers\Api\V1\CoworkingUnitController;
 use App\Http\Controllers\Api\V1\CrmStageController;
 use App\Http\Controllers\Api\V1\CurrenciesController;
 use App\Http\Controllers\Api\V1\CurrencyRateController;
@@ -24,6 +26,9 @@ use App\Http\Controllers\Api\V1\DealController;
 use App\Http\Controllers\Api\V1\ExpenseCategoryController;
 use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\FinancialReportController;
+use App\Http\Controllers\Api\V1\GymMemberController;
+use App\Http\Controllers\Api\V1\GymPlanController;
+use App\Http\Controllers\Api\V1\GymVisitController;
 use App\Http\Controllers\Api\V1\HrmAttendanceController;
 use App\Http\Controllers\Api\V1\HrmDepartmentController;
 use App\Http\Controllers\Api\V1\HrmDesignationController;
@@ -33,6 +38,8 @@ use App\Http\Controllers\Api\V1\IncomeCategoryController;
 use App\Http\Controllers\Api\V1\IncomeController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\JournalEntryController;
+use App\Http\Controllers\Api\V1\LaundryItemController;
+use App\Http\Controllers\Api\V1\LaundryOrderController;
 use App\Http\Controllers\Api\V1\LeadController;
 use App\Http\Controllers\Api\V1\NoticeController;
 use App\Http\Controllers\Api\V1\NotificationController;
@@ -49,6 +56,8 @@ use App\Http\Controllers\Api\V1\PurchaseOrderController;
 use App\Http\Controllers\Api\V1\PurchaseReceiptController;
 use App\Http\Controllers\Api\V1\QuotationController;
 use App\Http\Controllers\Api\V1\ReconciliationController;
+use App\Http\Controllers\Api\V1\RentalAgreementController;
+use App\Http\Controllers\Api\V1\RentalItemController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SalesOrderController;
 use App\Http\Controllers\Api\V1\SettingsController;
@@ -352,6 +361,98 @@ Route::prefix('v1')->group(function () {
                 ->name('analytics.sales');
             Route::get('analytics/operations', [AnalyticsController::class, 'operations'])
                 ->name('analytics.operations');
+        });
+
+        // Coworking Space: reusable units first (desks, offices, rooms), then
+        // the bookings on them. The availability feed is registered before the
+        // unit resource so `availability` is not swallowed by the {coworking_unit}
+        // show route, and the booking summary behaves the same way.
+        Route::middleware('addon:coworking-space')->group(function () {
+            Route::get('coworking-units/availability', [CoworkingUnitController::class, 'availability'])
+                ->name('coworking-units.availability');
+            Route::apiResource('coworking-units', CoworkingUnitController::class);
+            Route::post('coworking-units/{coworking_unit}/restore', [CoworkingUnitController::class, 'restore'])
+                ->name('coworking-units.restore');
+
+            Route::get('coworking-bookings/summary', [CoworkingBookingController::class, 'summary'])
+                ->name('coworking-bookings.summary');
+            Route::apiResource('coworking-bookings', CoworkingBookingController::class);
+            Route::post('coworking-bookings/{coworking_booking}/restore', [CoworkingBookingController::class, 'restore'])
+                ->name('coworking-bookings.restore');
+            Route::post('coworking-bookings/{coworking_booking}/confirm', [CoworkingBookingController::class, 'confirm'])
+                ->name('coworking-bookings.confirm');
+            Route::post('coworking-bookings/{coworking_booking}/check-in', [CoworkingBookingController::class, 'checkIn'])
+                ->name('coworking-bookings.check-in');
+            Route::post('coworking-bookings/{coworking_booking}/check-out', [CoworkingBookingController::class, 'checkOut'])
+                ->name('coworking-bookings.check-out');
+            Route::post('coworking-bookings/{coworking_booking}/cancel', [CoworkingBookingController::class, 'cancel'])
+                ->name('coworking-bookings.cancel');
+        });
+
+        // Laundry & Dry Cleaning: a linear garment flow on the order, with the
+        // priced line items hanging off it. The summary feed is registered
+        // before the resource so `summary` is not read as an order id.
+        Route::middleware('addon:laundry-dry-cleaning')->group(function () {
+            Route::get('laundry-orders/summary', [LaundryOrderController::class, 'summary'])
+                ->name('laundry-orders.summary');
+            Route::apiResource('laundry-orders', LaundryOrderController::class);
+            Route::post('laundry-orders/{laundry_order}/restore', [LaundryOrderController::class, 'restore'])
+                ->name('laundry-orders.restore');
+            Route::post('laundry-orders/{laundry_order}/advance', [LaundryOrderController::class, 'advance'])
+                ->name('laundry-orders.advance');
+            Route::post('laundry-orders/{laundry_order}/cancel', [LaundryOrderController::class, 'cancel'])
+                ->name('laundry-orders.cancel');
+
+            Route::apiResource('laundry-items', LaundryItemController::class);
+            Route::post('laundry-items/{laundry_item}/restore', [LaundryItemController::class, 'restore'])
+                ->name('laundry-items.restore');
+        });
+
+        // Gym Management: membership plans, the members on them, and the visits
+        // they clock. Check-in is the visit store action; the member summary
+        // feed is registered before the resource so `summary` is not read as an
+        // id, and suspend/activate carry their own routes.
+        Route::middleware('addon:gym-management')->group(function () {
+            Route::apiResource('gym-plans', GymPlanController::class);
+            Route::post('gym-plans/{gym_plan}/restore', [GymPlanController::class, 'restore'])
+                ->name('gym-plans.restore');
+
+            Route::get('gym-members/summary', [GymMemberController::class, 'summary'])
+                ->name('gym-members.summary');
+            Route::apiResource('gym-members', GymMemberController::class);
+            Route::post('gym-members/{gym_member}/restore', [GymMemberController::class, 'restore'])
+                ->name('gym-members.restore');
+            Route::post('gym-members/{gym_member}/suspend', [GymMemberController::class, 'suspend'])
+                ->name('gym-members.suspend');
+            Route::post('gym-members/{gym_member}/activate', [GymMemberController::class, 'activate'])
+                ->name('gym-members.activate');
+
+            Route::apiResource('gym-visits', GymVisitController::class);
+            Route::post('gym-visits/{gym_visit}/check-out', [GymVisitController::class, 'checkOut'])
+                ->name('gym-visits.check-out');
+            Route::post('gym-visits/{gym_visit}/restore', [GymVisitController::class, 'restore'])
+                ->name('gym-visits.restore');
+        });
+
+        // Rental Management: itemised agreements that move from draft to
+        // active, then close as line items come back. The summary feed and the
+        // per-item return action carry their own routes.
+        Route::middleware('addon:rental')->group(function () {
+            Route::get('rental-agreements/summary', [RentalAgreementController::class, 'summary'])
+                ->name('rental-agreements.summary');
+            Route::apiResource('rental-agreements', RentalAgreementController::class);
+            Route::post('rental-agreements/{rental_agreement}/restore', [RentalAgreementController::class, 'restore'])
+                ->name('rental-agreements.restore');
+            Route::post('rental-agreements/{rental_agreement}/activate', [RentalAgreementController::class, 'activate'])
+                ->name('rental-agreements.activate');
+            Route::post('rental-agreements/{rental_agreement}/cancel', [RentalAgreementController::class, 'cancel'])
+                ->name('rental-agreements.cancel');
+
+            Route::apiResource('rental-items', RentalItemController::class);
+            Route::post('rental-items/{rental_item}/return', [RentalItemController::class, 'returnItem'])
+                ->name('rental-items.return');
+            Route::post('rental-items/{rental_item}/restore', [RentalItemController::class, 'restore'])
+                ->name('rental-items.restore');
         });
     });
 });

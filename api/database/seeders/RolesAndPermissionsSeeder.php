@@ -85,16 +85,24 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Add-on modules come from the catalog itself so a newly installed
         // add-on is gated as soon as its config entry exists. Only the actions
-        // it actually routes are seeded (config/addons.php `actions`).
+        // it actually routes are seeded (config/addons.php `actions`). A
+        // multi-resource add-on lists every permission module under `modules`;
+        // single-resource entries fall back to `module` + `actions`.
         foreach (config('addons', []) as $addon) {
-            $module = $addon['module'] ?? null;
+            $modules = $addon['modules'] ?? [
+                ['module' => $addon['module'] ?? null, 'actions' => $addon['actions'] ?? []],
+            ];
 
-            if (! is_string($module) || $module === '') {
-                continue;
-            }
+            foreach ($modules as $entry) {
+                $module = $entry['module'] ?? null;
 
-            foreach ($addon['actions'] ?? [] as $action) {
-                Permission::firstOrCreate(['name' => "{$module}.{$action}", 'guard_name' => $guard]);
+                if (! is_string($module) || $module === '') {
+                    continue;
+                }
+
+                foreach ($entry['actions'] ?? [] as $action) {
+                    Permission::firstOrCreate(['name' => "{$module}.{$action}", 'guard_name' => $guard]);
+                }
             }
         }
 

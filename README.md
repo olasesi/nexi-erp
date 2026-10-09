@@ -47,6 +47,12 @@ step into `.env` as `PASSPORT_PASSWORD_CLIENT_ID` / `PASSPORT_PASSWORD_CLIENT_SE
 > authenticated user; `POST /api/v1/logout` revokes the access token. All
 > `/api/v1/*` resource routes require `Authorization: Bearer <token>`.
 
+The API also ships opt-in vertical add-ons — **Coworking Space**, **Laundry &
+Dry Cleaning**, **Gym Management** and **Rental Management** — each a
+self-contained bundle of storage, lifecycle rules and permissions toggled per
+company. See [api/README.md](api/README.md#vertical-add-ons) for their routes
+and domain invariants.
+
 Webhook deliveries, the retry/prune commands and the API version catalogue are
 covered in [api/README.md](api/README.md). With `WEBHOOK_DRIVER=sync` (the
 default) the API delivers webhooks in-process; run `php artisan

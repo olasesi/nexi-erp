@@ -19,6 +19,17 @@ class MetricsService
     private const ANALYTICS_TABS = ['executive', 'financial', 'sales', 'operations'];
 
     /**
+     * Vertical add-on lifecycle events. Fixed label sets keep the exposition
+     * deterministic: a scraper never has to treat a missing label as zero.
+     */
+    private const VERTICAL_EVENTS = [
+        'coworking' => ['requested', 'confirmed', 'checked_in', 'checked_out', 'cancelled'],
+        'laundry' => ['received', 'washing', 'drying', 'folding', 'ready_for_pickup', 'delivered', 'cancelled'],
+        'gym' => ['checked_in', 'checked_out', 'suspended', 'activated'],
+        'rental' => ['activated', 'cancelled', 'returned'],
+    ];
+
+    /**
      * TTL (seconds) for counters seeded on demand, far past any window in
      * which an increment would ever matter.
      */
@@ -97,6 +108,15 @@ class MetricsService
 
         $this->bump(self::PREFIX."analytics_build_duration_sum:$tab", (int) round($seconds * 1000000));
         $this->bump(self::PREFIX."analytics_build_duration_count:$tab");
+    }
+
+    /**
+     * Record a vertical add-on lifecycle event (a booking being confirmed, a
+     * garment order advanced, a member checked in, an item returned).
+     */
+    public function recordVertical(string $module, string $event): void
+    {
+        $this->bump(self::PREFIX."vertical_events_total:$module:$event");
     }
 
     /**
@@ -218,6 +238,14 @@ class MetricsService
             $count = $this->get(self::PREFIX."analytics_build_duration_count:$tab");
             $lines[] = sprintf('nexi_erp_analytics_build_duration_seconds_sum{tab="%s"} %s', $tab, number_format($sum / 1000000, 6, '.', ''));
             $lines[] = sprintf('nexi_erp_analytics_build_duration_seconds_count{tab="%s"} %d', $tab, $count);
+        }
+
+        $lines[] = '# HELP nexi_erp_vertical_events_total Lifecycle events recorded by vertical add-on modules.';
+        $lines[] = '# TYPE nexi_erp_vertical_events_total counter';
+        foreach (self::VERTICAL_EVENTS as $module => $events) {
+            foreach ($events as $event) {
+                $lines[] = sprintf('nexi_erp_vertical_events_total{module="%s",event="%s"} %d', $module, $event, $this->get(self::PREFIX."vertical_events_total:$module:$event"));
+            }
         }
 
         $lines[] = '# HELP nexi_erp_health Whether each backend component is reachable.';

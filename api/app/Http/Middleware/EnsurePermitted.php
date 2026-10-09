@@ -69,6 +69,17 @@ class EnsurePermitted
         'redeliver' => 'update',
         'deliveries' => 'view',
         'events' => 'view-any',
+        // Vertical add-on actions. State transitions mutate their record, so
+        // each one rides the update permission; read feeds map to view-any.
+        'availability' => 'view-any',
+        'confirm' => 'update',
+        'check-in' => 'update',
+        'check-out' => 'update',
+        'advance' => 'update',
+        'deliver' => 'update',
+        'activate' => 'update',
+        'suspend' => 'update',
+        'return' => 'update',
     ];
 
     /**

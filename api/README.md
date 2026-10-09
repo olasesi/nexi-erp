@@ -84,7 +84,10 @@ the ordinary `roles.create` / `users.create` permission.
 `config/addons.php` is the catalogue: one entry per installable add-on with its
 `label`, `description`, `category`, `status` (`free` | `premium` |
 `coming_soon`), the `module` whose permissions gate it, and the `actions` it
-actually routes. Toggles are ordinary business settings stored under namespace
+actually routes. An add-on that routes more than one resource also declares a
+`modules` array, one `{module, actions}` entry per resource (falling back to
+`module` + `actions` when absent); the seeder and the coverage test both walk
+that list. Toggles are ordinary business settings stored under namespace
 `business`, group `addons`, keyed by the add-on id — the `addons` group in
 `config/business-settings.php` is derived from the catalogue, so the setting
 list can never drift from what is installable.
@@ -112,6 +115,25 @@ exists: `php artisan db:seed --class=RolesAndPermissionsSeeder --force`.
 | `notice-board`     | `/api/v1/notices`                            | Staff announcements; `?status=all` is the management view          |
 | `suggestion-box`   | `/api/v1/suggestions`                        | Employee suggestions with a reviewed-by/reviewed-at status flow     |
 | `business-advisor` | `/api/v1/business-advisor/report`, `.../snapshots` | Rule-based health score, daily row written by `advisor:snapshot` |
+| `smart-dashboard`  | `/api/v1/analytics/{executive,financial,sales,operations}` | Executive, financial, sales and operations analytics tabs |
+
+### Vertical add-ons
+
+Four self-contained verticals ship as add-ons. Each bundles its own storage,
+state machine and domain invariants, is gated per company like any other add-on,
+and stamps a counter on `nexi_erp_vertical_events_total` as its transitions run.
+
+| Add-on id             | Routes                                            | Domain invariants                                                                 |
+| --------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `coworking-space`     | `/api/v1/coworking-units`, `/api/v1/coworking-bookings` | Capacity check plus no overlapping booking on a unit; `?start_at=&end_at=&seats=` availability feed; pricing per hour (sub-day) or per day |
+| `laundry-dry-cleaning`| `/api/v1/laundry-orders`, `/api/v1/laundry-items`  | Linear garment flow `received → washing → drying → folding → ready_for_pickup → delivered`, with `cancel`; order totals recomputed from priced items (subtotal + tax − discount); `LW-YYMM-####` number |
+| `gym-management`      | `/api/v1/gym-plans`, `/api/v1/gym-members`, `/api/v1/gym-visits` | Check-in only for a live, unexpired membership with monthly visit quota left; `suspend`/`activate`; a visit closes once; `expired` is derived from `renews_at`; `GM-YY-####` member number |
+| `rental`              | `/api/v1/rental-agreements`, `/api/v1/rental-items` | `draft → active` then `cancel` or per-item partial `return` (auto-closes the agreement when everything is back); `overdue` plus late fees derived from `end_at` × `late_fee_per_day`; `RN-YYYY-####` number |
+
+Product stock is intentionally **not** mutated by rental returns — that stays a
+future integration with the inventory module. Each vertical exposes a
+`/summary` feed (registered before its resource so `summary` is not read as an
+id) and every state change rides the owning resource's `update` permission.
 
 ## Import & export
 
@@ -189,8 +211,10 @@ answered with `410 Gone`.
 `/api/health` returns `503` only when a critical dependency (the database) is
 down; a failing cache, disk or queue degrades the status to `degraded` and still
 returns `200`. `/api/metrics` exposes request counters and latency histograms,
-auth counters, user/notification gauges, webhook delivery gauges and
-`nexi_erp_health{component="…"}`.
+auth counters, user/notification gauges, webhook delivery gauges,
+`nexi_erp_health{component="…"}` and per-vertical business counters
+(`nexi_erp_vertical_events_total{module,event}`, e.g. coworking bookings
+`confirmed`, laundry orders `delivered`, gym `checked_in`, rental `returned`).
 
 ## Quality tooling
 
