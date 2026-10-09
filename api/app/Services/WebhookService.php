@@ -59,6 +59,11 @@ class WebhookService
         'crm_stage',
         'lead',
         'deal',
+        'project',
+        'project_task',
+        'project_milestone',
+        'pos_register',
+        'pos_order',
         'user',
     ];
 

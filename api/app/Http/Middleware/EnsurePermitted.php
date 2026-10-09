@@ -27,6 +27,8 @@ class EnsurePermitted
         'pending-shipments' => 'view-any',
         'sales-orders' => 'view-any',
         'crm-summary' => 'view-any',
+        'project-summary' => 'view-any',
+        'pos-summary' => 'view-any',
         // Promoting a lead mutates it, so it rides the update permission.
         'convert' => 'update',
         'unread-count' => 'view-any',
@@ -46,6 +48,7 @@ class EnsurePermitted
         'match' => 'update',
         'unmatch' => 'update',
         'accept' => 'update',
+        'approve' => 'update',
         'reject' => 'update',
         'receive' => 'update',
         'read-all' => 'update',

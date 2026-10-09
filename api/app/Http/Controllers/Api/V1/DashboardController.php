@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProjectResource;
 use App\Models\Contact;
 use App\Models\Deal;
 use App\Models\Invoice;
@@ -10,9 +11,12 @@ use App\Models\JournalEntry;
 use App\Models\Lead;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\Project;
 use App\Models\SalesOrder;
 use App\Services\BusinessSettingsService;
 use App\Services\CrmAnalytics;
+use App\Services\PosAnalytics;
+use App\Services\ProjectAnalytics;
 use App\Services\ReportService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -37,6 +41,8 @@ class DashboardController extends Controller
         private readonly ReportService $reports,
         private readonly BusinessSettingsService $businessSettings,
         private readonly CrmAnalytics $crm,
+        private readonly ProjectAnalytics $projects,
+        private readonly PosAnalytics $pos,
     ) {}
 
     public function summary(Request $request): JsonResponse
@@ -447,6 +453,63 @@ class DashboardController extends Controller
                     ])->values()->all(),
                 ],
             ],
+        ));
+    }
+
+    /**
+     * "Project" card: portfolio health in one payload — project counts by
+     * status, budget, task completion and the milestone pipeline — plus a
+     * short list of the most recent projects.
+     */
+    public function projectSummary(Request $request): JsonResponse
+    {
+        $companyId = $this->validateCompanyId($request);
+        $limit = $this->cardLimit($request);
+
+        $summary = $this->projects->summary($companyId);
+
+        $recentProjects = Project::where('company_id', $companyId)
+            ->with('owner')
+            ->withCount(['tasks', 'milestones'])
+            ->latest('id')
+            ->limit($limit)
+            ->get();
+
+        return response()->json(array_merge(
+            [
+                'company_id' => $companyId,
+                'limit' => $limit,
+            ],
+            $summary,
+            [
+                'data' => [
+                    'recent_projects' => ProjectResource::collection($recentProjects)->resolve(),
+                ],
+            ],
+        ));
+    }
+
+    /**
+     * "POS" card: the till's takings for a trading day — sales, transaction
+     * count, items sold, the payment mix and the best selling products.
+     */
+    public function posSummary(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'company_id' => 'required|exists:companies,id',
+            'date' => 'nullable|date',
+            'limit' => 'nullable|integer|min:1|max:50',
+        ]);
+
+        $companyId = (int) $data['company_id'];
+        $limit = (int) ($data['limit'] ?? self::DEFAULT_CARD_LIMIT);
+
+        return response()->json(array_merge(
+            [
+                'company_id' => $companyId,
+                'limit' => $limit,
+            ],
+            $this->pos->summary($companyId, $data['date'] ?? null, $limit),
         ));
     }
 

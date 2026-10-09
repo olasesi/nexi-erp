@@ -28,8 +28,15 @@ class RolesAndPermissionsSeeder extends Seeder
             'purchase-orders', 'purchase-receipts',
             // Sales
             'sales-orders', 'quotations', 'invoices',
+            // Point of sale
+            'pos-registers', 'pos-orders',
             // CRM
             'leads', 'deals', 'crm-stages',
+            // Projects
+            'projects', 'project-tasks', 'project-milestones',
+            // HRM
+            'hrm-departments', 'hrm-designations', 'hrm-employees',
+            'hrm-attendance', 'hrm-leaves',
             // Stock
             'stock-adjustments', 'stock-transfers',
             // Expenses & Income

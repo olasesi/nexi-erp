@@ -8,6 +8,9 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Lead;
 use App\Models\Payment;
+use App\Models\PosOrder;
+use App\Models\PosOrderItem;
+use App\Models\PosPayment;
 use App\Models\Product;
 use App\Models\SalesOrder;
 use App\Models\SalesOrderItem;
@@ -870,6 +873,46 @@ it('returns the CRM card numbers', function () {
         ->and($response->json('pipeline_by_stage.1.pipeline_value'))->toBe(0);
 });
 
+it('returns the POS card for a trading day', function () {
+    $this->travelTo(now()->setDate(2026, 6, 15));
+
+    $order = PosOrder::factory()->create([
+        'company_id' => $this->company->id,
+        'order_date' => '2026-06-15',
+        'subtotal' => 60,
+        'tax_amount' => 2,
+        'total' => 62,
+        'paid_amount' => 62,
+        'balance_due' => 0,
+    ]);
+
+    PosOrderItem::create([
+        'pos_order_id' => $order->id,
+        'product_name' => 'Widget',
+        'quantity' => 2,
+        'unit_price' => 30,
+        'subtotal' => 60,
+        'total' => 60,
+    ]);
+
+    PosPayment::create(['pos_order_id' => $order->id, 'method' => 'card', 'amount' => 62, 'paid_at' => now()]);
+
+    $response = $this->getJson('/api/v1/dashboard/pos-summary?company_id='.$this->company->id)
+        ->assertOk();
+
+    expect($response->json('company_id'))->toBe($this->company->id)
+        ->and($response->json('date'))->toBe('2026-06-15')
+        ->and($response->json('todays_sales'))->toBe(62)
+        ->and($response->json('todays_transactions'))->toBe(1)
+        ->and($response->json('todays_items_sold'))->toBe(2)
+        ->and($response->json('todays_tax'))->toBe(2)
+        ->and($response->json('average_sale'))->toBe(62)
+        ->and($response->json('by_payment_method.0.method'))->toBe('card')
+        ->and($response->json('by_payment_method.0.total'))->toBe(62)
+        ->and($response->json('top_products.0.product_name'))->toBe('Widget')
+        ->and($response->json('top_products.0.quantity'))->toBe(2);
+});
+
 it('keeps the dashboard card feeds behind the dashboard permission', function () {
     // No seeded permissions, so the permitted middleware skips enforcement.
     $feeds = [
@@ -880,6 +923,8 @@ it('keeps the dashboard card feeds behind the dashboard permission', function ()
         'sales-orders',
         'pending-shipments',
         'crm-summary',
+        'project-summary',
+        'pos-summary',
     ];
 
     foreach ($feeds as $feed) {

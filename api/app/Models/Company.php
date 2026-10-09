@@ -59,4 +59,28 @@ class Company extends Model
     {
         return $this->hasMany(PurchaseOrder::class);
     }
+
+    /**
+     * @return HasMany<Project, $this>
+     */
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    /**
+     * @return HasMany<PosRegister, $this>
+     */
+    public function posRegisters(): HasMany
+    {
+        return $this->hasMany(PosRegister::class);
+    }
+
+    /**
+     * @return HasMany<PosOrder, $this>
+     */
+    public function posOrders(): HasMany
+    {
+        return $this->hasMany(PosOrder::class);
+    }
 }

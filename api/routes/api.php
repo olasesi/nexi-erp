@@ -24,6 +24,11 @@ use App\Http\Controllers\Api\V1\DealController;
 use App\Http\Controllers\Api\V1\ExpenseCategoryController;
 use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\FinancialReportController;
+use App\Http\Controllers\Api\V1\HrmAttendanceController;
+use App\Http\Controllers\Api\V1\HrmDepartmentController;
+use App\Http\Controllers\Api\V1\HrmDesignationController;
+use App\Http\Controllers\Api\V1\HrmEmployeeController;
+use App\Http\Controllers\Api\V1\HrmLeaveController;
 use App\Http\Controllers\Api\V1\IncomeCategoryController;
 use App\Http\Controllers\Api\V1\IncomeController;
 use App\Http\Controllers\Api\V1\InvoiceController;
@@ -32,8 +37,13 @@ use App\Http\Controllers\Api\V1\LeadController;
 use App\Http\Controllers\Api\V1\NoticeController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PosOrderController;
+use App\Http\Controllers\Api\V1\PosRegisterController;
 use App\Http\Controllers\Api\V1\ProductCategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\ProjectController;
+use App\Http\Controllers\Api\V1\ProjectMilestoneController;
+use App\Http\Controllers\Api\V1\ProjectTaskController;
 use App\Http\Controllers\Api\V1\PublicPaymentController;
 use App\Http\Controllers\Api\V1\PurchaseOrderController;
 use App\Http\Controllers\Api\V1\PurchaseReceiptController;
@@ -139,6 +149,18 @@ Route::prefix('v1')->group(function () {
         Route::post('payments/{payment}/restore', [PaymentController::class, 'restore'])->name('payments.restore');
         Route::post('payments/{payment}/complete', [PaymentController::class, 'complete'])->name('payments.complete');
 
+        // Point of sale: sellable tills and the orders they ring up. The
+        // summary feed is registered before the resource so `summary` is not
+        // swallowed by the {pos_order} show route.
+        Route::apiResource('pos-registers', PosRegisterController::class);
+        Route::post('pos-registers/{pos_register}/restore', [PosRegisterController::class, 'restore'])
+            ->name('pos-registers.restore');
+        Route::get('pos-orders/summary', [PosOrderController::class, 'summary'])
+            ->name('pos-orders.summary');
+        Route::apiResource('pos-orders', PosOrderController::class);
+        Route::post('pos-orders/{pos_order}/restore', [PosOrderController::class, 'restore'])
+            ->name('pos-orders.restore');
+
         Route::apiResource('bank-accounts', BankAccountController::class);
         Route::post('bank-accounts/{bank_account}/restore', [BankAccountController::class, 'restore'])->name('bank-accounts.restore');
         Route::apiResource('bank-transactions', BankTransactionController::class);
@@ -186,6 +208,10 @@ Route::prefix('v1')->group(function () {
             ->name('dashboard.pending-shipments');
         Route::get('dashboard/crm-summary', [DashboardController::class, 'crmSummary'])
             ->name('dashboard.crm-summary');
+        Route::get('dashboard/project-summary', [DashboardController::class, 'projectSummary'])
+            ->name('dashboard.project-summary');
+        Route::get('dashboard/pos-summary', [DashboardController::class, 'posSummary'])
+            ->name('dashboard.pos-summary');
         Route::get('currencies', [CurrenciesController::class, 'index'])->name('currencies.index');
         Route::apiResource('currency-rates', CurrencyRateController::class);
         Route::post('currency-rates/{currency_rate}/restore', [CurrencyRateController::class, 'restore'])->name('currency-rates.restore');
@@ -227,6 +253,45 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('leads', LeadController::class);
         Route::post('leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
         Route::apiResource('deals', DealController::class);
+
+        // Projects: delivery tracking with the tasks and milestones that hang
+        // off each project. The summary feed is registered before the resource
+        // so `summary` is not swallowed by the {project} show route.
+        Route::get('projects/summary', [ProjectController::class, 'summary'])
+            ->name('projects.summary');
+        Route::apiResource('projects', ProjectController::class);
+        Route::post('projects/{project}/restore', [ProjectController::class, 'restore'])
+            ->name('projects.restore');
+        Route::apiResource('project-tasks', ProjectTaskController::class);
+        Route::post('project-tasks/{project_task}/restore', [ProjectTaskController::class, 'restore'])
+            ->name('project-tasks.restore');
+        Route::apiResource('project-milestones', ProjectMilestoneController::class);
+        Route::post('project-milestones/{project_milestone}/restore', [ProjectMilestoneController::class, 'restore'])
+            ->name('project-milestones.restore');
+
+        // HRM: org chart first (departments, designations), then the people
+        // on it, the days they work and the days they are away. The summary
+        // feed is registered before the employee resource so `summary` is not
+        // swallowed by the {hrm_employee} show route.
+        Route::get('hrm-employees/summary', [HrmEmployeeController::class, 'summary'])
+            ->name('hrm-employees.summary');
+        Route::apiResource('hrm-departments', HrmDepartmentController::class);
+        Route::post('hrm-departments/{hrm_department}/restore', [HrmDepartmentController::class, 'restore'])
+            ->name('hrm-departments.restore');
+        Route::apiResource('hrm-designations', HrmDesignationController::class);
+        Route::post('hrm-designations/{hrm_designation}/restore', [HrmDesignationController::class, 'restore'])
+            ->name('hrm-designations.restore');
+        Route::apiResource('hrm-employees', HrmEmployeeController::class);
+        Route::post('hrm-employees/{hrm_employee}/restore', [HrmEmployeeController::class, 'restore'])
+            ->name('hrm-employees.restore');
+        Route::apiResource('hrm-attendance', HrmAttendanceController::class);
+        Route::apiResource('hrm-leaves', HrmLeaveController::class);
+        Route::post('hrm-leaves/{hrm_leave}/restore', [HrmLeaveController::class, 'restore'])
+            ->name('hrm-leaves.restore');
+        Route::post('hrm-leaves/{hrm_leave}/approve', [HrmLeaveController::class, 'approve'])
+            ->name('hrm-leaves.approve');
+        Route::post('hrm-leaves/{hrm_leave}/reject', [HrmLeaveController::class, 'reject'])
+            ->name('hrm-leaves.reject');
 
         // Business settings (mirrors UltimatePOS Business Settings surface)
         Route::get('business-settings', [BusinessSettingsController::class, 'index'])->name('business-settings.index');
