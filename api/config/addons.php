@@ -128,4 +128,92 @@ return [
         ],
         'enabled_by_default' => true,
     ],
+
+    // ---- Cross-domain tools. Unlike the vertical solutions these are not
+    // tied to one industry: any company can switch on the panels it needs.
+    'form-builder' => [
+        'label' => 'Form Builder',
+        'description' => 'Build custom forms with typed fields, publish them and collect structured submissions.',
+        'category' => 'Tools',
+        'status' => 'free',
+        'module' => 'forms',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'forms', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'form-fields', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'form-submissions', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'messenger' => [
+        'label' => 'Messenger',
+        'description' => 'Unified inbox for internal, WhatsApp, Facebook, Instagram and email conversations.',
+        'category' => 'Tools',
+        'status' => 'free',
+        'module' => 'conversations',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'conversations', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'messages', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'document-manager' => [
+        'label' => 'Document Manager',
+        'description' => 'Folder tree, file metadata, versions and per-user sharing for company documents.',
+        'category' => 'Tools',
+        'status' => 'free',
+        'module' => 'document-folders',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'document-folders', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'documents', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'support-tickets' => [
+        'label' => 'Support Tickets',
+        'description' => 'Ticket lifecycle from open to resolved with threaded public and internal replies.',
+        'category' => 'Tools',
+        'status' => 'free',
+        'module' => 'tickets',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'tickets', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'ticket-replies', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'calendar-events' => [
+        'label' => 'Calendar & Events',
+        'description' => 'Schedule meetings, holidays and appointments with invited attendees and RSVP.',
+        'category' => 'Tools',
+        'status' => 'free',
+        'module' => 'events',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'events', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'event-attendees', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'asset-management' => [
+        'label' => 'Asset Management',
+        'description' => 'Track company assets by category, assignment and return over their lifecycle.',
+        'category' => 'Tools',
+        'status' => 'free',
+        'module' => 'assets',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'asset-categories', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'assets', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'asset-assignments', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
 ];

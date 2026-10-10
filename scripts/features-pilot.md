@@ -43,6 +43,30 @@ Merges kept from the research:
   reconciliations — the "double-entry" bucket that WorkDo puts in Finance.
 - **Stock** holds UltimatePOS's Stock Transfer + Stock Adjustment screens.
 
+### Add-ons (per-company toggle)
+
+Some modules are opt-in **add-ons**: `GET /api/v1/addons` lists them and each company
+toggles them independently. A switched-off add-on answers `403 {code:"addon_disabled"}`
+before the permission check. Everything derives from one `config/addons.php` entry —
+catalog listing, toggle state, permission seeding (`module` + `actions`) and route
+gating (`Route::middleware('addon:<id>')`).
+
+| Add-on id | Modules | Routes |
+|---|---|---|
+| `coworking-space` | `coworking-units`, `coworking-bookings` | `/api/v1/coworking-*` |
+| `laundry-dry-cleaning` | `laundry-orders`, `laundry-items` | `/api/v1/laundry-*` |
+| `gym-management` | `gym-plans`, `gym-members`, `gym-visits` | `/api/v1/gym-*` |
+| `rental` | `rental-agreements`, `rental-items` | `/api/v1/rental-*` |
+| `form-builder` | `forms`, `form-fields`, `form-submissions` | `/api/v1/forms`, `/api/v1/form-fields`, `/api/v1/form-submissions` |
+| `messenger` | `conversations`, `messages` | `/api/v1/conversations`, `/api/v1/messages` |
+| `document-manager` | `document-folders`, `documents` | `/api/v1/document-folders`, `/api/v1/documents` |
+| `support-tickets` | `tickets`, `ticket-replies` | `/api/v1/tickets`, `/api/v1/ticket-replies` |
+| `calendar-events` | `events`, `event-attendees` | `/api/v1/events`, `/api/v1/event-attendees` |
+| `asset-management` | `asset-categories`, `assets`, `asset-assignments` | `/api/v1/asset-categories`, `/api/v1/assets`, `/api/v1/asset-assignments` |
+
+The six most recent (`form-builder` … `asset-management`) are documented in
+`scripts/tools-pilot.md`.
+
 ---
 
 ## 2. Permission model

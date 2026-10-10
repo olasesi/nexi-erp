@@ -80,6 +80,18 @@ class EnsurePermitted
         'activate' => 'update',
         'suspend' => 'update',
         'return' => 'update',
+        // Cross-domain tool actions (forms, messaging, documents, tickets,
+        // calendar, assets). Each mutates its record, so they ride update.
+        'assign' => 'update',
+        'resolve' => 'update',
+        'close' => 'update',
+        'reopen' => 'update',
+        'respond' => 'update',
+        'share' => 'update',
+        'retire' => 'update',
+        'publish' => 'update',
+        'archive' => 'update',
+        'submit' => 'create',
     ];
 
     /**

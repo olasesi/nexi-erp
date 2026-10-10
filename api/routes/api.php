@@ -5,6 +5,9 @@ use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\MetricsController;
 use App\Http\Controllers\Api\V1\AddonController;
 use App\Http\Controllers\Api\V1\AnalyticsController;
+use App\Http\Controllers\Api\V1\AssetAssignmentController;
+use App\Http\Controllers\Api\V1\AssetCategoryController;
+use App\Http\Controllers\Api\V1\AssetController;
 use App\Http\Controllers\Api\V1\AuditLogController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BankAccountController;
@@ -15,6 +18,7 @@ use App\Http\Controllers\Api\V1\BusinessSettingsController;
 use App\Http\Controllers\Api\V1\ChartOfAccountController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\ContactController;
+use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\CoworkingBookingController;
 use App\Http\Controllers\Api\V1\CoworkingUnitController;
 use App\Http\Controllers\Api\V1\CrmStageController;
@@ -23,9 +27,16 @@ use App\Http\Controllers\Api\V1\CurrencyRateController;
 use App\Http\Controllers\Api\V1\CustomerPortalController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DealController;
+use App\Http\Controllers\Api\V1\DocumentController;
+use App\Http\Controllers\Api\V1\DocumentFolderController;
+use App\Http\Controllers\Api\V1\EventAttendeeController;
+use App\Http\Controllers\Api\V1\EventController;
 use App\Http\Controllers\Api\V1\ExpenseCategoryController;
 use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\FinancialReportController;
+use App\Http\Controllers\Api\V1\FormController;
+use App\Http\Controllers\Api\V1\FormFieldController;
+use App\Http\Controllers\Api\V1\FormSubmissionController;
 use App\Http\Controllers\Api\V1\GymMemberController;
 use App\Http\Controllers\Api\V1\GymPlanController;
 use App\Http\Controllers\Api\V1\GymVisitController;
@@ -41,6 +52,7 @@ use App\Http\Controllers\Api\V1\JournalEntryController;
 use App\Http\Controllers\Api\V1\LaundryItemController;
 use App\Http\Controllers\Api\V1\LaundryOrderController;
 use App\Http\Controllers\Api\V1\LeadController;
+use App\Http\Controllers\Api\V1\MessageController;
 use App\Http\Controllers\Api\V1\NoticeController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PaymentController;
@@ -64,6 +76,8 @@ use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\StockAdjustmentController;
 use App\Http\Controllers\Api\V1\StockTransferController;
 use App\Http\Controllers\Api\V1\SuggestionController;
+use App\Http\Controllers\Api\V1\TicketController;
+use App\Http\Controllers\Api\V1\TicketReplyController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WarehouseController;
 use App\Http\Controllers\Api\V1\WebhookDeliveryController;
@@ -453,6 +467,91 @@ Route::prefix('v1')->group(function () {
                 ->name('rental-items.return');
             Route::post('rental-items/{rental_item}/restore', [RentalItemController::class, 'restore'])
                 ->name('rental-items.restore');
+        });
+
+        // ---- Cross-domain tools. Same add-on contract as the verticals, but
+        // useful to any company. Read feeds (summary) are registered before
+        // their resource so the literal path is never read as an id.
+        Route::middleware('addon:form-builder')->group(function () {
+            Route::apiResource('forms', FormController::class);
+            Route::post('forms/{form}/restore', [FormController::class, 'restore'])->name('forms.restore');
+            Route::post('forms/{form}/publish', [FormController::class, 'publish'])->name('forms.publish');
+            Route::post('forms/{form}/archive', [FormController::class, 'archive'])->name('forms.archive');
+
+            Route::apiResource('form-fields', FormFieldController::class);
+            Route::post('form-fields/{form_field}/restore', [FormFieldController::class, 'restore'])
+                ->name('form-fields.restore');
+
+            Route::apiResource('form-submissions', FormSubmissionController::class);
+            Route::post('form-submissions/{form_submission}/restore', [FormSubmissionController::class, 'restore'])
+                ->name('form-submissions.restore');
+        });
+
+        Route::middleware('addon:messenger')->group(function () {
+            Route::apiResource('conversations', ConversationController::class);
+            Route::post('conversations/{conversation}/restore', [ConversationController::class, 'restore'])
+                ->name('conversations.restore');
+            Route::post('conversations/{conversation}/close', [ConversationController::class, 'close'])
+                ->name('conversations.close');
+            Route::post('conversations/{conversation}/reopen', [ConversationController::class, 'reopen'])
+                ->name('conversations.reopen');
+
+            Route::apiResource('messages', MessageController::class);
+            Route::post('messages/{message}/restore', [MessageController::class, 'restore'])
+                ->name('messages.restore');
+        });
+
+        Route::middleware('addon:document-manager')->group(function () {
+            Route::apiResource('document-folders', DocumentFolderController::class);
+            Route::post('document-folders/{document_folder}/restore', [DocumentFolderController::class, 'restore'])
+                ->name('document-folders.restore');
+
+            Route::apiResource('documents', DocumentController::class);
+            Route::post('documents/{document}/restore', [DocumentController::class, 'restore'])
+                ->name('documents.restore');
+            Route::post('documents/{document}/share', [DocumentController::class, 'share'])
+                ->name('documents.share');
+        });
+
+        Route::middleware('addon:support-tickets')->group(function () {
+            Route::apiResource('tickets', TicketController::class);
+            Route::post('tickets/{ticket}/restore', [TicketController::class, 'restore'])->name('tickets.restore');
+            Route::post('tickets/{ticket}/assign', [TicketController::class, 'assign'])->name('tickets.assign');
+            Route::post('tickets/{ticket}/resolve', [TicketController::class, 'resolve'])->name('tickets.resolve');
+            Route::post('tickets/{ticket}/close', [TicketController::class, 'close'])->name('tickets.close');
+            Route::post('tickets/{ticket}/reopen', [TicketController::class, 'reopen'])->name('tickets.reopen');
+
+            Route::apiResource('ticket-replies', TicketReplyController::class);
+            Route::post('ticket-replies/{ticket_reply}/restore', [TicketReplyController::class, 'restore'])
+                ->name('ticket-replies.restore');
+        });
+
+        Route::middleware('addon:calendar-events')->group(function () {
+            Route::apiResource('events', EventController::class);
+            Route::post('events/{event}/restore', [EventController::class, 'restore'])->name('events.restore');
+            Route::post('events/{event}/cancel', [EventController::class, 'cancel'])->name('events.cancel');
+
+            Route::apiResource('event-attendees', EventAttendeeController::class);
+            Route::post('event-attendees/{event_attendee}/restore', [EventAttendeeController::class, 'restore'])
+                ->name('event-attendees.restore');
+            Route::post('event-attendees/{event_attendee}/respond', [EventAttendeeController::class, 'respond'])
+                ->name('event-attendees.respond');
+        });
+
+        Route::middleware('addon:asset-management')->group(function () {
+            Route::apiResource('asset-categories', AssetCategoryController::class);
+            Route::post('asset-categories/{asset_category}/restore', [AssetCategoryController::class, 'restore'])
+                ->name('asset-categories.restore');
+
+            Route::apiResource('assets', AssetController::class);
+            Route::post('assets/{asset}/restore', [AssetController::class, 'restore'])->name('assets.restore');
+            Route::post('assets/{asset}/assign', [AssetController::class, 'assign'])->name('assets.assign');
+            Route::post('assets/{asset}/return', [AssetController::class, 'returnAsset'])->name('assets.return');
+            Route::post('assets/{asset}/retire', [AssetController::class, 'retire'])->name('assets.retire');
+
+            Route::apiResource('asset-assignments', AssetAssignmentController::class);
+            Route::post('asset-assignments/{asset_assignment}/restore', [AssetAssignmentController::class, 'restore'])
+                ->name('asset-assignments.restore');
         });
     });
 });
