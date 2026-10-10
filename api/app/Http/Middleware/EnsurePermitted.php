@@ -92,6 +92,8 @@ class EnsurePermitted
         'publish' => 'update',
         'archive' => 'update',
         'submit' => 'create',
+        'run' => 'view',
+        'progress' => 'update',
     ];
 
     /**

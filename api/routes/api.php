@@ -4,6 +4,9 @@ use App\Http\Controllers\Api\ApiVersionController;
 use App\Http\Controllers\Api\HealthController;
 use App\Http\Controllers\Api\MetricsController;
 use App\Http\Controllers\Api\V1\AddonController;
+use App\Http\Controllers\Api\V1\AiAgentMessageController;
+use App\Http\Controllers\Api\V1\AiAgentPromptController;
+use App\Http\Controllers\Api\V1\AiAgentThreadController;
 use App\Http\Controllers\Api\V1\AnalyticsController;
 use App\Http\Controllers\Api\V1\AssetAssignmentController;
 use App\Http\Controllers\Api\V1\AssetCategoryController;
@@ -12,6 +15,8 @@ use App\Http\Controllers\Api\V1\AuditLogController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BankAccountController;
 use App\Http\Controllers\Api\V1\BankTransactionController;
+use App\Http\Controllers\Api\V1\BudgetController;
+use App\Http\Controllers\Api\V1\BudgetLineController;
 use App\Http\Controllers\Api\V1\BusinessAdvisorController;
 use App\Http\Controllers\Api\V1\BusinessLocationController;
 use App\Http\Controllers\Api\V1\BusinessSettingsController;
@@ -37,6 +42,8 @@ use App\Http\Controllers\Api\V1\FinancialReportController;
 use App\Http\Controllers\Api\V1\FormController;
 use App\Http\Controllers\Api\V1\FormFieldController;
 use App\Http\Controllers\Api\V1\FormSubmissionController;
+use App\Http\Controllers\Api\V1\GoalController;
+use App\Http\Controllers\Api\V1\GoalKeyResultController;
 use App\Http\Controllers\Api\V1\GymMemberController;
 use App\Http\Controllers\Api\V1\GymPlanController;
 use App\Http\Controllers\Api\V1\GymVisitController;
@@ -73,15 +80,22 @@ use App\Http\Controllers\Api\V1\RentalItemController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\SalesOrderController;
 use App\Http\Controllers\Api\V1\SettingsController;
+use App\Http\Controllers\Api\V1\SmartReportController;
 use App\Http\Controllers\Api\V1\StockAdjustmentController;
 use App\Http\Controllers\Api\V1\StockTransferController;
 use App\Http\Controllers\Api\V1\SuggestionController;
 use App\Http\Controllers\Api\V1\TicketController;
 use App\Http\Controllers\Api\V1\TicketReplyController;
+use App\Http\Controllers\Api\V1\TrainingController;
+use App\Http\Controllers\Api\V1\TrainingTypeController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WarehouseController;
 use App\Http\Controllers\Api\V1\WebhookDeliveryController;
 use App\Http\Controllers\Api\V1\WebhookEndpointController;
+use App\Http\Controllers\Api\V1\YoutubeActivityController;
+use App\Http\Controllers\Api\V1\YoutubeChannelController;
+use App\Http\Controllers\Api\V1\YoutubePlaylistController;
+use App\Http\Controllers\Api\V1\YoutubeVideoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class);
@@ -552,6 +566,83 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('asset-assignments', AssetAssignmentController::class);
             Route::post('asset-assignments/{asset_assignment}/restore', [AssetAssignmentController::class, 'restore'])
                 ->name('asset-assignments.restore');
+        });
+
+        // ---- Phase 1: analytics + tools.
+        Route::middleware('addon:smart-reports')->group(function () {
+            Route::apiResource('smart-reports', SmartReportController::class);
+            Route::post('smart-reports/{smart_report}/restore', [SmartReportController::class, 'restore'])
+                ->name('smart-reports.restore');
+            Route::post('smart-reports/{smart_report}/run', [SmartReportController::class, 'run'])
+                ->name('smart-reports.run');
+        });
+
+        Route::middleware('addon:ai-agent')->group(function () {
+            Route::apiResource('ai-agent-threads', AiAgentThreadController::class);
+            Route::post('ai-agent-threads/{ai_agent_thread}/restore', [AiAgentThreadController::class, 'restore'])
+                ->name('ai-agent-threads.restore');
+
+            Route::get('ai-agent-threads/{ai_agent_thread}/messages', [AiAgentMessageController::class, 'index'])
+                ->name('ai-agent-messages.index');
+            Route::post('ai-agent-threads/{ai_agent_thread}/messages', [AiAgentMessageController::class, 'store'])
+                ->name('ai-agent-messages.store');
+            Route::apiResource('ai-agent-messages', AiAgentMessageController::class)->except(['index', 'store']);
+            Route::post('ai-agent-messages/{ai_agent_message}/restore', [AiAgentMessageController::class, 'restore'])
+                ->name('ai-agent-messages.restore');
+
+            Route::apiResource('ai-agent-prompts', AiAgentPromptController::class);
+            Route::post('ai-agent-prompts/{ai_agent_prompt}/restore', [AiAgentPromptController::class, 'restore'])
+                ->name('ai-agent-prompts.restore');
+        });
+
+        Route::middleware('addon:goals')->group(function () {
+            Route::apiResource('goals', GoalController::class);
+            Route::post('goals/{goal}/restore', [GoalController::class, 'restore'])->name('goals.restore');
+            Route::post('goals/{goal}/progress', [GoalController::class, 'progress'])->name('goals.progress');
+            Route::post('goals/{goal}/cancel', [GoalController::class, 'cancel'])->name('goals.cancel');
+
+            Route::apiResource('goal-key-results', GoalKeyResultController::class);
+            Route::post('goal-key-results/{goal_key_result}/restore', [GoalKeyResultController::class, 'restore'])
+                ->name('goal-key-results.restore');
+        });
+
+        Route::middleware('addon:budget-planner')->group(function () {
+            Route::apiResource('budgets', BudgetController::class);
+            Route::post('budgets/{budget}/restore', [BudgetController::class, 'restore'])->name('budgets.restore');
+            Route::post('budgets/{budget}/approve', [BudgetController::class, 'approve'])->name('budgets.approve');
+            Route::post('budgets/{budget}/close', [BudgetController::class, 'close'])->name('budgets.close');
+
+            Route::apiResource('budget-lines', BudgetLineController::class);
+            Route::post('budget-lines/{budget_line}/restore', [BudgetLineController::class, 'restore'])
+                ->name('budget-lines.restore');
+        });
+
+        Route::middleware('addon:training')->group(function () {
+            Route::apiResource('trainings', TrainingController::class);
+            Route::post('trainings/{training}/restore', [TrainingController::class, 'restore'])->name('trainings.restore');
+            Route::post('trainings/{training}/cancel', [TrainingController::class, 'cancel'])->name('trainings.cancel');
+
+            Route::apiResource('training-types', TrainingTypeController::class);
+            Route::post('training-types/{training_type}/restore', [TrainingTypeController::class, 'restore'])
+                ->name('training-types.restore');
+        });
+
+        Route::middleware('addon:youtube')->group(function () {
+            Route::apiResource('youtube-videos', YoutubeVideoController::class);
+            Route::post('youtube-videos/{youtube_video}/restore', [YoutubeVideoController::class, 'restore'])
+                ->name('youtube-videos.restore');
+
+            Route::apiResource('youtube-playlists', YoutubePlaylistController::class);
+            Route::post('youtube-playlists/{youtube_playlist}/restore', [YoutubePlaylistController::class, 'restore'])
+                ->name('youtube-playlists.restore');
+
+            Route::apiResource('youtube-channel', YoutubeChannelController::class);
+            Route::post('youtube-channel/{youtube_channel}/restore', [YoutubeChannelController::class, 'restore'])
+                ->name('youtube-channel.restore');
+
+            Route::apiResource('youtube-activity', YoutubeActivityController::class);
+            Route::post('youtube-activity/{youtube_activity}/restore', [YoutubeActivityController::class, 'restore'])
+                ->name('youtube-activity.restore');
         });
     });
 });

@@ -216,4 +216,88 @@ return [
         ],
         'enabled_by_default' => true,
     ],
+
+    // ---- Phase 1 analytics and tools.
+    'smart-reports' => [
+        'label' => 'Smart Reports',
+        'description' => 'Saved report definitions over your live data with columns, filters and grouping.',
+        'category' => 'Analytics',
+        'status' => 'free',
+        'module' => 'smart-reports',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'ai-agent' => [
+        'label' => 'AI Agent',
+        'description' => 'Conversational assistant with reusable prompts, thread history and a provider-agnostic driver.',
+        'category' => 'AI',
+        'status' => 'free',
+        'module' => 'ai-agent-threads',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'ai-agent-threads', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'ai-agent-messages', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'ai-agent-prompts', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'goals' => [
+        'label' => 'Goal',
+        'description' => 'Objectives and key results with progress tracking and a completion lifecycle.',
+        'category' => 'Tools',
+        'status' => 'free',
+        'module' => 'goals',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'goals', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'goal-key-results', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'budget-planner' => [
+        'label' => 'Budget Planner',
+        'description' => 'Plan income and expense lines by period and track planned versus actual spend.',
+        'category' => 'Tools',
+        'status' => 'free',
+        'module' => 'budgets',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'budgets', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'budget-lines', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'training' => [
+        'label' => 'Training',
+        'description' => 'Schedule internal trainings by type, trainer, branch and lifecycle status.',
+        'category' => 'Tools',
+        'status' => 'free',
+        'module' => 'trainings',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'trainings', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'training-types', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'youtube' => [
+        'label' => 'YouTube',
+        'description' => 'Manage channel, videos, playlists and activity; stays dormant until the channel is connected.',
+        'category' => 'Tools',
+        'status' => 'free',
+        'module' => 'youtube-videos',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'youtube-videos', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'youtube-playlists', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'youtube-channel', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'youtube-activity', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
 ];

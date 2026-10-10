@@ -63,9 +63,16 @@ gating (`Route::middleware('addon:<id>')`).
 | `support-tickets` | `tickets`, `ticket-replies` | `/api/v1/tickets`, `/api/v1/ticket-replies` |
 | `calendar-events` | `events`, `event-attendees` | `/api/v1/events`, `/api/v1/event-attendees` |
 | `asset-management` | `asset-categories`, `assets`, `asset-assignments` | `/api/v1/asset-categories`, `/api/v1/assets`, `/api/v1/asset-assignments` |
+| `smart-reports` | `smart-reports` | `/api/v1/smart-reports*` (+ `POST /api/v1/smart-reports/{smart_report}/run`) |
+| `ai-agent` | `ai-agent-threads`, `ai-agent-messages`, `ai-agent-prompts` | `/api/v1/ai-agent-threads*` (+ nested `/messages`), `/api/v1/ai-agent-messages*`, `/api/v1/ai-agent-prompts*` |
+| `goals` | `goals`, `goal-key-results` | `/api/v1/goals*` (+ `progress`, `cancel`), `/api/v1/goal-key-results*` |
+| `budget-planner` | `budgets`, `budget-lines` | `/api/v1/budgets*` (+ `approve`, `close`), `/api/v1/budget-lines*` |
+| `training` | `trainings`, `training-types` | `/api/v1/trainings*` (+ `cancel`), `/api/v1/training-types*` |
+| `youtube` | `youtube-videos`, `youtube-playlists`, `youtube-channel`, `youtube-activity` | `/api/v1/youtube-*` |
 
-The six most recent (`form-builder` … `asset-management`) are documented in
-`scripts/tools-pilot.md`.
+The cross-domain tools (`form-builder` … `asset-management`) are documented in
+`scripts/tools-pilot.md`; the Phase 1 add-ons (`smart-reports` … `youtube`) in
+`scripts/phase1-pilot.md`.
 
 ---
 
