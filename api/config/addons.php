@@ -300,4 +300,132 @@ return [
         ],
         'enabled_by_default' => true,
     ],
+
+    // ---- Phase 2: the HRM suite. Each add-on is a slice of staffing
+    // operations — performance, hiring, scheduling, time and compliance.
+    'performance' => [
+        'label' => 'Performance',
+        'description' => 'Employee performance reviews with scored ratings and an approve/reopen lifecycle.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'performance-reviews',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'performance-indicator' => [
+        'label' => 'Performance Indicator',
+        'description' => 'Catalog of weighted performance indicators used to score reviews.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'performance-indicators',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'recruitment' => [
+        'label' => 'Recruitment',
+        'description' => 'Job postings and the candidate pipeline from application to hire.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'job-postings',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'job-postings', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'job-candidates', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'job-search' => [
+        'label' => 'Job Search',
+        'description' => 'Candidate-facing job board listing open postings and collecting applications.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'job-openings',
+        'actions' => ['view-any', 'view'],
+        'modules' => [
+            ['module' => 'job-openings', 'actions' => ['view-any', 'view']],
+            ['module' => 'job-applications', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'work-permit' => [
+        'label' => 'Work Permit',
+        'description' => 'Track employee work permits, issuing country, expiry and renewals.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'work-permits',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'rotas' => [
+        'label' => 'Rotas',
+        'description' => 'Build weekly shift rotas and assign staff to dated shifts.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'rotas',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'rotas', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'rota-entries', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'commission' => [
+        'label' => 'Commission',
+        'description' => 'Sales commissions per employee with an approve and paid lifecycle.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'commissions',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'time-tracker' => [
+        'label' => 'Time Tracker',
+        'description' => 'Start/stop time entries against work, with billable flags and durations.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'time-entries',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'timesheet' => [
+        'label' => 'Timesheet',
+        'description' => 'Period timesheets with line entries and a submit/approve/reject workflow.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'timesheets',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'timesheets', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'timesheet-entries', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'team-workload' => [
+        'label' => 'Team Workload',
+        'description' => 'Read-only view of each employee’s active work and logged time.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'team-workload',
+        'actions' => ['view-any', 'view'],
+        'enabled_by_default' => true,
+    ],
+
+    'digital-certificate' => [
+        'label' => 'Digital Certificate',
+        'description' => 'Issue, track and revoke employee certificates and credentials.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'digital-certificates',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
 ];

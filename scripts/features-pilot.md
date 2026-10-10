@@ -69,10 +69,22 @@ gating (`Route::middleware('addon:<id>')`).
 | `budget-planner` | `budgets`, `budget-lines` | `/api/v1/budgets*` (+ `approve`, `close`), `/api/v1/budget-lines*` |
 | `training` | `trainings`, `training-types` | `/api/v1/trainings*` (+ `cancel`), `/api/v1/training-types*` |
 | `youtube` | `youtube-videos`, `youtube-playlists`, `youtube-channel`, `youtube-activity` | `/api/v1/youtube-*` |
+| `performance` | `performance-reviews` | `/api/v1/performance-reviews*` (+ `approve`, `reopen`) |
+| `performance-indicator` | `performance-indicators` | `/api/v1/performance-indicators*` |
+| `recruitment` | `job-postings`, `job-candidates`, `job-applications` | `/api/v1/job-postings*`, `/api/v1/job-candidates*`, `/api/v1/job-applications*` (+ `hire`) |
+| `job-search` | `job-openings` | `/api/v1/job-openings*` |
+| `work-permit` | `work-permits` | `/api/v1/work-permits*` (+ `renew`) |
+| `rotas` | `rotas`, `rota-entries` | `/api/v1/rotas*` (+ `publish`), `/api/v1/rota-entries*` |
+| `commission` | `commissions` | `/api/v1/commissions*` (+ `approve`, `mark-paid`) |
+| `time-tracker` | `time-entries` | `/api/v1/time-entries*` (+ `start`, `stop`) |
+| `timesheet` | `timesheets`, `timesheet-entries` | `/api/v1/timesheets*` (+ `submit`, `approve`, `reject`), `/api/v1/timesheet-entries*` |
+| `team-workload` | `team-workload` | `GET /api/v1/team-workload` (+ `/summary`) |
+| `digital-certificate` | `digital-certificates` | `/api/v1/digital-certificates*` (+ `generate`, `revoke`) |
 
 The cross-domain tools (`form-builder` … `asset-management`) are documented in
 `scripts/tools-pilot.md`; the Phase 1 add-ons (`smart-reports` … `youtube`) in
-`scripts/phase1-pilot.md`.
+`scripts/phase1-pilot.md`; the HRM suite (`performance` … `digital-certificate`)
+in `scripts/phase2-pilot.md`.
 
 ---
 

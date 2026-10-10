@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\BusinessAdvisorController;
 use App\Http\Controllers\Api\V1\BusinessLocationController;
 use App\Http\Controllers\Api\V1\BusinessSettingsController;
 use App\Http\Controllers\Api\V1\ChartOfAccountController;
+use App\Http\Controllers\Api\V1\CommissionController;
 use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\ConversationController;
@@ -32,6 +33,7 @@ use App\Http\Controllers\Api\V1\CurrencyRateController;
 use App\Http\Controllers\Api\V1\CustomerPortalController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DealController;
+use App\Http\Controllers\Api\V1\DigitalCertificateController;
 use App\Http\Controllers\Api\V1\DocumentController;
 use App\Http\Controllers\Api\V1\DocumentFolderController;
 use App\Http\Controllers\Api\V1\EventAttendeeController;
@@ -55,6 +57,10 @@ use App\Http\Controllers\Api\V1\HrmLeaveController;
 use App\Http\Controllers\Api\V1\IncomeCategoryController;
 use App\Http\Controllers\Api\V1\IncomeController;
 use App\Http\Controllers\Api\V1\InvoiceController;
+use App\Http\Controllers\Api\V1\JobApplicationController;
+use App\Http\Controllers\Api\V1\JobCandidateController;
+use App\Http\Controllers\Api\V1\JobOpeningController;
+use App\Http\Controllers\Api\V1\JobPostingController;
 use App\Http\Controllers\Api\V1\JournalEntryController;
 use App\Http\Controllers\Api\V1\LaundryItemController;
 use App\Http\Controllers\Api\V1\LaundryOrderController;
@@ -63,6 +69,8 @@ use App\Http\Controllers\Api\V1\MessageController;
 use App\Http\Controllers\Api\V1\NoticeController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PerformanceIndicatorController;
+use App\Http\Controllers\Api\V1\PerformanceReviewController;
 use App\Http\Controllers\Api\V1\PosOrderController;
 use App\Http\Controllers\Api\V1\PosRegisterController;
 use App\Http\Controllers\Api\V1\ProductCategoryController;
@@ -78,20 +86,27 @@ use App\Http\Controllers\Api\V1\ReconciliationController;
 use App\Http\Controllers\Api\V1\RentalAgreementController;
 use App\Http\Controllers\Api\V1\RentalItemController;
 use App\Http\Controllers\Api\V1\RoleController;
+use App\Http\Controllers\Api\V1\RotaController;
+use App\Http\Controllers\Api\V1\RotaEntryController;
 use App\Http\Controllers\Api\V1\SalesOrderController;
 use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\SmartReportController;
 use App\Http\Controllers\Api\V1\StockAdjustmentController;
 use App\Http\Controllers\Api\V1\StockTransferController;
 use App\Http\Controllers\Api\V1\SuggestionController;
+use App\Http\Controllers\Api\V1\TeamWorkloadController;
 use App\Http\Controllers\Api\V1\TicketController;
 use App\Http\Controllers\Api\V1\TicketReplyController;
+use App\Http\Controllers\Api\V1\TimeEntryController;
+use App\Http\Controllers\Api\V1\TimesheetController;
+use App\Http\Controllers\Api\V1\TimesheetEntryController;
 use App\Http\Controllers\Api\V1\TrainingController;
 use App\Http\Controllers\Api\V1\TrainingTypeController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WarehouseController;
 use App\Http\Controllers\Api\V1\WebhookDeliveryController;
 use App\Http\Controllers\Api\V1\WebhookEndpointController;
+use App\Http\Controllers\Api\V1\WorkPermitController;
 use App\Http\Controllers\Api\V1\YoutubeActivityController;
 use App\Http\Controllers\Api\V1\YoutubeChannelController;
 use App\Http\Controllers\Api\V1\YoutubePlaylistController;
@@ -643,6 +658,119 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('youtube-activity', YoutubeActivityController::class);
             Route::post('youtube-activity/{youtube_activity}/restore', [YoutubeActivityController::class, 'restore'])
                 ->name('youtube-activity.restore');
+        });
+
+        // ---- Phase 2: the HRM suite.
+        Route::middleware('addon:performance')->group(function () {
+            Route::apiResource('performance-reviews', PerformanceReviewController::class);
+            Route::post('performance-reviews/{performance_review}/restore', [PerformanceReviewController::class, 'restore'])
+                ->name('performance-reviews.restore');
+            Route::post('performance-reviews/{performance_review}/approve', [PerformanceReviewController::class, 'approve'])
+                ->name('performance-reviews.approve');
+            Route::post('performance-reviews/{performance_review}/reopen', [PerformanceReviewController::class, 'reopen'])
+                ->name('performance-reviews.reopen');
+        });
+
+        Route::middleware('addon:performance-indicator')->group(function () {
+            Route::apiResource('performance-indicators', PerformanceIndicatorController::class);
+            Route::post('performance-indicators/{performance_indicator}/restore', [PerformanceIndicatorController::class, 'restore'])
+                ->name('performance-indicators.restore');
+        });
+
+        Route::middleware('addon:recruitment')->group(function () {
+            Route::apiResource('job-postings', JobPostingController::class);
+            Route::post('job-postings/{job_posting}/restore', [JobPostingController::class, 'restore'])
+                ->name('job-postings.restore');
+            Route::post('job-postings/{job_posting}/publish', [JobPostingController::class, 'publish'])
+                ->name('job-postings.publish');
+            Route::post('job-postings/{job_posting}/close', [JobPostingController::class, 'close'])
+                ->name('job-postings.close');
+
+            Route::apiResource('job-candidates', JobCandidateController::class);
+            Route::post('job-candidates/{job_candidate}/restore', [JobCandidateController::class, 'restore'])
+                ->name('job-candidates.restore');
+            Route::post('job-candidates/{job_candidate}/hire', [JobCandidateController::class, 'hire'])
+                ->name('job-candidates.hire');
+            Route::post('job-candidates/{job_candidate}/reject', [JobCandidateController::class, 'reject'])
+                ->name('job-candidates.reject');
+        });
+
+        Route::middleware('addon:job-search')->group(function () {
+            Route::get('job-openings', [JobOpeningController::class, 'index'])->name('job-openings.index');
+            Route::get('job-openings/{id}', [JobOpeningController::class, 'show'])->name('job-openings.show');
+
+            Route::apiResource('job-applications', JobApplicationController::class);
+            Route::post('job-applications/{job_application}/restore', [JobApplicationController::class, 'restore'])
+                ->name('job-applications.restore');
+        });
+
+        Route::middleware('addon:work-permit')->group(function () {
+            Route::apiResource('work-permits', WorkPermitController::class);
+            Route::post('work-permits/{work_permit}/restore', [WorkPermitController::class, 'restore'])
+                ->name('work-permits.restore');
+            Route::post('work-permits/{work_permit}/renew', [WorkPermitController::class, 'renew'])
+                ->name('work-permits.renew');
+        });
+
+        Route::middleware('addon:rotas')->group(function () {
+            Route::apiResource('rotas', RotaController::class);
+            Route::post('rotas/{rota}/restore', [RotaController::class, 'restore'])->name('rotas.restore');
+            Route::post('rotas/{rota}/publish', [RotaController::class, 'publish'])->name('rotas.publish');
+
+            Route::apiResource('rota-entries', RotaEntryController::class);
+            Route::post('rota-entries/{rota_entry}/restore', [RotaEntryController::class, 'restore'])
+                ->name('rota-entries.restore');
+        });
+
+        Route::middleware('addon:commission')->group(function () {
+            Route::apiResource('commissions', CommissionController::class);
+            Route::post('commissions/{commission}/restore', [CommissionController::class, 'restore'])
+                ->name('commissions.restore');
+            Route::post('commissions/{commission}/approve', [CommissionController::class, 'approve'])
+                ->name('commissions.approve');
+            Route::post('commissions/{commission}/mark-paid', [CommissionController::class, 'markPaid'])
+                ->name('commissions.mark-paid');
+        });
+
+        Route::middleware('addon:time-tracker')->group(function () {
+            Route::apiResource('time-entries', TimeEntryController::class);
+            Route::post('time-entries/{time_entry}/restore', [TimeEntryController::class, 'restore'])
+                ->name('time-entries.restore');
+            Route::post('time-entries/{time_entry}/start', [TimeEntryController::class, 'start'])
+                ->name('time-entries.start');
+            Route::post('time-entries/{time_entry}/stop', [TimeEntryController::class, 'stop'])
+                ->name('time-entries.stop');
+        });
+
+        Route::middleware('addon:timesheet')->group(function () {
+            Route::apiResource('timesheets', TimesheetController::class);
+            Route::post('timesheets/{timesheet}/restore', [TimesheetController::class, 'restore'])
+                ->name('timesheets.restore');
+            Route::post('timesheets/{timesheet}/submit', [TimesheetController::class, 'submit'])
+                ->name('timesheets.submit');
+            Route::post('timesheets/{timesheet}/approve', [TimesheetController::class, 'approve'])
+                ->name('timesheets.approve');
+            Route::post('timesheets/{timesheet}/reject', [TimesheetController::class, 'reject'])
+                ->name('timesheets.reject');
+
+            Route::apiResource('timesheet-entries', TimesheetEntryController::class);
+            Route::post('timesheet-entries/{timesheet_entry}/restore', [TimesheetEntryController::class, 'restore'])
+                ->name('timesheet-entries.restore');
+        });
+
+        Route::middleware('addon:team-workload')->group(function () {
+            Route::get('team-workload', [TeamWorkloadController::class, 'index'])->name('team-workload.index');
+            Route::get('team-workload/summary', [TeamWorkloadController::class, 'summary'])->name('team-workload.summary');
+        });
+
+        Route::middleware('addon:digital-certificate')->group(function () {
+            Route::apiResource('digital-certificates', DigitalCertificateController::class);
+            Route::post('digital-certificates/{digital_certificate}/restore', [DigitalCertificateController::class, 'restore'])
+                ->name('digital-certificates.restore');
+            Route::post('digital-certificates/{digital_certificate}/generate', [DigitalCertificateController::class, 'generate'])
+                ->name('digital-certificates.generate');
+            Route::post('digital-certificates/{digital_certificate}/revoke', [DigitalCertificateController::class, 'revoke'])
+                ->name('digital-certificates.revoke');
         });
     });
 });

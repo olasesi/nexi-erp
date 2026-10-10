@@ -94,6 +94,15 @@ class EnsurePermitted
         'submit' => 'create',
         'run' => 'view',
         'progress' => 'update',
+        // HRM suite actions. Lifecycle transitions mutate their record and
+        // ride update; issuing a certificate writes a new one.
+        'renew' => 'update',
+        'hire' => 'update',
+        'mark-paid' => 'update',
+        'start' => 'update',
+        'stop' => 'update',
+        'generate' => 'create',
+        'revoke' => 'update',
     ];
 
     /**
