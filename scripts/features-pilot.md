@@ -89,12 +89,19 @@ gating (`Route::middleware('addon:<id>')`).
 | `customer-group` | `customer-groups` | `/api/v1/customer-groups*` |
 | `product-unit` | `product-units` | `/api/v1/product-units*` |
 | `deal-activity` | `deal-activities` | `/api/v1/deal-activities*` (+ `complete`) |
+| `announcement` | `announcements` | `/api/v1/announcements*` (+ `publish`, `archive`) |
+| `todo` | `todos` | `/api/v1/todos*` (+ `complete`) |
+| `knowledge-base` | `kb-categories`, `kb-articles` | `/api/v1/kb-categories*`, `/api/v1/kb-articles*` (+ `publish`) |
+| `note` | `notes` | `/api/v1/notes*` |
+| `award` | `awards` | `/api/v1/awards*` |
+| `company-policy` | `company-policies` | `/api/v1/company-policies*` (+ `publish`, `archive`) |
 
 The cross-domain tools (`form-builder` … `asset-management`) are documented in
 `scripts/tools-pilot.md`; the Phase 1 add-ons (`smart-reports` … `youtube`) in
 `scripts/phase1-pilot.md`; the HRM suite (`performance` … `digital-certificate`)
 in `scripts/phase2-pilot.md`; the sales/CRM extras (`proposal` … `deal-activity`)
-in `scripts/phase3-pilot.md`.
+in `scripts/phase3-pilot.md`; the collaboration add-ons (`announcement` …
+`company-policy`) in `scripts/phase4-pilot.md`.
 
 ---
 
