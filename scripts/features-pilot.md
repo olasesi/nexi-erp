@@ -95,13 +95,15 @@ gating (`Route::middleware('addon:<id>')`).
 | `note` | `notes` | `/api/v1/notes*` |
 | `award` | `awards` | `/api/v1/awards*` |
 | `company-policy` | `company-policies` | `/api/v1/company-policies*` (+ `publish`, `archive`) |
+| `bookings` | `booking-resources`, `bookings` | `/api/v1/booking-resources*`, `/api/v1/bookings*` (+ `confirm`, `check-in`, `complete`, `cancel`, `no-show`) |
 
 The cross-domain tools (`form-builder` … `asset-management`) are documented in
 `scripts/tools-pilot.md`; the Phase 1 add-ons (`smart-reports` … `youtube`) in
 `scripts/phase1-pilot.md`; the HRM suite (`performance` … `digital-certificate`)
 in `scripts/phase2-pilot.md`; the sales/CRM extras (`proposal` … `deal-activity`)
 in `scripts/phase3-pilot.md`; the collaboration add-ons (`announcement` …
-`company-policy`) in `scripts/phase4-pilot.md`.
+`company-policy`) in `scripts/phase4-pilot.md`; the bookings add-on
+(`bookings`) in `scripts/phase5-pilot.md`.
 
 ---
 

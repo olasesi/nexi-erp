@@ -77,6 +77,8 @@ class EnsurePermitted
         'check-out' => 'update',
         'advance' => 'update',
         'deliver' => 'update',
+        // Generic booking lifecycle: a no-show is a terminal state.
+        'no-show' => 'update',
         'activate' => 'update',
         'suspend' => 'update',
         'return' => 'update',

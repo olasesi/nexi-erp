@@ -605,4 +605,18 @@ return [
         'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
         'enabled_by_default' => true,
     ],
+
+    'bookings' => [
+        'label' => 'Bookings',
+        'description' => 'Book rooms, vehicles, equipment and services with a status lifecycle and double-booking checks.',
+        'category' => 'Operations',
+        'status' => 'free',
+        'module' => 'booking-resources',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'booking-resources', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'bookings', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
 ];

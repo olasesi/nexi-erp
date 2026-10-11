@@ -17,6 +17,8 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AwardController;
 use App\Http\Controllers\Api\V1\BankAccountController;
 use App\Http\Controllers\Api\V1\BankTransactionController;
+use App\Http\Controllers\Api\V1\BookingController;
+use App\Http\Controllers\Api\V1\BookingResourceController;
 use App\Http\Controllers\Api\V1\BudgetController;
 use App\Http\Controllers\Api\V1\BudgetLineController;
 use App\Http\Controllers\Api\V1\BusinessAdvisorController;
@@ -950,6 +952,30 @@ Route::prefix('v1')->group(function () {
                 ->name('company-policies.publish');
             Route::post('company-policies/{company_policy}/archive', [CompanyPolicyController::class, 'archive'])
                 ->name('company-policies.archive');
+        });
+
+        Route::middleware('addon:bookings')->group(function () {
+            Route::get('booking-resources/summary', [BookingResourceController::class, 'summary'])
+                ->name('booking-resources.summary');
+            Route::apiResource('booking-resources', BookingResourceController::class);
+            Route::post('booking-resources/{booking_resource}/restore', [BookingResourceController::class, 'restore'])
+                ->name('booking-resources.restore');
+
+            Route::get('bookings/summary', [BookingController::class, 'summary'])
+                ->name('bookings.summary');
+            Route::apiResource('bookings', BookingController::class);
+            Route::post('bookings/{booking}/confirm', [BookingController::class, 'confirm'])
+                ->name('bookings.confirm');
+            Route::post('bookings/{booking}/check-in', [BookingController::class, 'checkIn'])
+                ->name('bookings.check-in');
+            Route::post('bookings/{booking}/complete', [BookingController::class, 'complete'])
+                ->name('bookings.complete');
+            Route::post('bookings/{booking}/cancel', [BookingController::class, 'cancel'])
+                ->name('bookings.cancel');
+            Route::post('bookings/{booking}/no-show', [BookingController::class, 'noShow'])
+                ->name('bookings.no-show');
+            Route::post('bookings/{booking}/restore', [BookingController::class, 'restore'])
+                ->name('bookings.restore');
         });
     });
 });
