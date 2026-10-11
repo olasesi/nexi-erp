@@ -541,4 +541,68 @@ return [
         'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
         'enabled_by_default' => true,
     ],
+
+    'announcement' => [
+        'label' => 'Announcement',
+        'description' => 'Company-wide announcements with audience targeting and a publish/archive lifecycle.',
+        'category' => 'Collaboration',
+        'status' => 'free',
+        'module' => 'announcements',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'todo' => [
+        'label' => 'To-Do',
+        'description' => 'Personal and team to-dos with priority, due dates and completion.',
+        'category' => 'Collaboration',
+        'status' => 'free',
+        'module' => 'todos',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'knowledge-base' => [
+        'label' => 'Knowledge Base',
+        'description' => 'Categorised help articles with draft/published lifecycle.',
+        'category' => 'Collaboration',
+        'status' => 'free',
+        'module' => 'kb-categories',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'kb-categories', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'kb-articles', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'note' => [
+        'label' => 'Note',
+        'description' => 'Quick personal notes with pinning.',
+        'category' => 'Collaboration',
+        'status' => 'free',
+        'module' => 'notes',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'award' => [
+        'label' => 'Award',
+        'description' => 'Recognise employees with awards, gifts and awarded dates.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'awards',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'company-policy' => [
+        'label' => 'Company Policy',
+        'description' => 'Versioned company policies with a publish/archive lifecycle.',
+        'category' => 'HRM',
+        'status' => 'free',
+        'module' => 'company-policies',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
 ];

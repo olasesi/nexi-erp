@@ -8,11 +8,13 @@ use App\Http\Controllers\Api\V1\AiAgentMessageController;
 use App\Http\Controllers\Api\V1\AiAgentPromptController;
 use App\Http\Controllers\Api\V1\AiAgentThreadController;
 use App\Http\Controllers\Api\V1\AnalyticsController;
+use App\Http\Controllers\Api\V1\AnnouncementController;
 use App\Http\Controllers\Api\V1\AssetAssignmentController;
 use App\Http\Controllers\Api\V1\AssetCategoryController;
 use App\Http\Controllers\Api\V1\AssetController;
 use App\Http\Controllers\Api\V1\AuditLogController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\AwardController;
 use App\Http\Controllers\Api\V1\BankAccountController;
 use App\Http\Controllers\Api\V1\BankTransactionController;
 use App\Http\Controllers\Api\V1\BudgetController;
@@ -23,6 +25,7 @@ use App\Http\Controllers\Api\V1\BusinessSettingsController;
 use App\Http\Controllers\Api\V1\ChartOfAccountController;
 use App\Http\Controllers\Api\V1\CommissionController;
 use App\Http\Controllers\Api\V1\CompanyController;
+use App\Http\Controllers\Api\V1\CompanyPolicyController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\CoworkingBookingController;
@@ -68,10 +71,13 @@ use App\Http\Controllers\Api\V1\JobCandidateController;
 use App\Http\Controllers\Api\V1\JobOpeningController;
 use App\Http\Controllers\Api\V1\JobPostingController;
 use App\Http\Controllers\Api\V1\JournalEntryController;
+use App\Http\Controllers\Api\V1\KbArticleController;
+use App\Http\Controllers\Api\V1\KbCategoryController;
 use App\Http\Controllers\Api\V1\LaundryItemController;
 use App\Http\Controllers\Api\V1\LaundryOrderController;
 use App\Http\Controllers\Api\V1\LeadController;
 use App\Http\Controllers\Api\V1\MessageController;
+use App\Http\Controllers\Api\V1\NoteController;
 use App\Http\Controllers\Api\V1\NoticeController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PaymentController;
@@ -114,6 +120,7 @@ use App\Http\Controllers\Api\V1\TicketReplyController;
 use App\Http\Controllers\Api\V1\TimeEntryController;
 use App\Http\Controllers\Api\V1\TimesheetController;
 use App\Http\Controllers\Api\V1\TimesheetEntryController;
+use App\Http\Controllers\Api\V1\TodoController;
 use App\Http\Controllers\Api\V1\TrainingController;
 use App\Http\Controllers\Api\V1\TrainingTypeController;
 use App\Http\Controllers\Api\V1\UserController;
@@ -890,6 +897,59 @@ Route::prefix('v1')->group(function () {
                 ->name('deal-activities.restore');
             Route::post('deal-activities/{deal_activity}/complete', [DealActivityController::class, 'complete'])
                 ->name('deal-activities.complete');
+        });
+
+        // ---- Phase 4: collaboration.
+        Route::middleware('addon:announcement')->group(function () {
+            Route::apiResource('announcements', AnnouncementController::class);
+            Route::post('announcements/{announcement}/restore', [AnnouncementController::class, 'restore'])
+                ->name('announcements.restore');
+            Route::post('announcements/{announcement}/publish', [AnnouncementController::class, 'publish'])
+                ->name('announcements.publish');
+            Route::post('announcements/{announcement}/archive', [AnnouncementController::class, 'archive'])
+                ->name('announcements.archive');
+        });
+
+        Route::middleware('addon:todo')->group(function () {
+            Route::apiResource('todos', TodoController::class);
+            Route::post('todos/{todo}/restore', [TodoController::class, 'restore'])
+                ->name('todos.restore');
+            Route::post('todos/{todo}/complete', [TodoController::class, 'complete'])
+                ->name('todos.complete');
+        });
+
+        Route::middleware('addon:knowledge-base')->group(function () {
+            Route::apiResource('kb-categories', KbCategoryController::class);
+            Route::post('kb-categories/{kb_category}/restore', [KbCategoryController::class, 'restore'])
+                ->name('kb-categories.restore');
+
+            Route::apiResource('kb-articles', KbArticleController::class);
+            Route::post('kb-articles/{kb_article}/restore', [KbArticleController::class, 'restore'])
+                ->name('kb-articles.restore');
+            Route::post('kb-articles/{kb_article}/publish', [KbArticleController::class, 'publish'])
+                ->name('kb-articles.publish');
+        });
+
+        Route::middleware('addon:note')->group(function () {
+            Route::apiResource('notes', NoteController::class);
+            Route::post('notes/{note}/restore', [NoteController::class, 'restore'])
+                ->name('notes.restore');
+        });
+
+        Route::middleware('addon:award')->group(function () {
+            Route::apiResource('awards', AwardController::class);
+            Route::post('awards/{award}/restore', [AwardController::class, 'restore'])
+                ->name('awards.restore');
+        });
+
+        Route::middleware('addon:company-policy')->group(function () {
+            Route::apiResource('company-policies', CompanyPolicyController::class);
+            Route::post('company-policies/{company_policy}/restore', [CompanyPolicyController::class, 'restore'])
+                ->name('company-policies.restore');
+            Route::post('company-policies/{company_policy}/publish', [CompanyPolicyController::class, 'publish'])
+                ->name('company-policies.publish');
+            Route::post('company-policies/{company_policy}/archive', [CompanyPolicyController::class, 'archive'])
+                ->name('company-policies.archive');
         });
     });
 });
