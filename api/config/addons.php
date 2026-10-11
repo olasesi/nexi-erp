@@ -428,4 +428,117 @@ return [
         'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
         'enabled_by_default' => true,
     ],
+
+    // Phase 3 broadens sales and CRM beyond the order-to-invoice core:
+    // proposals, targets, returns, adjustment notes, referral agents and a
+    // couple of product/customer catalog helpers.
+    'proposal' => [
+        'label' => 'Proposal',
+        'description' => 'Client proposals with line items that convert into an invoice once accepted.',
+        'category' => 'Sales',
+        'status' => 'free',
+        'module' => 'proposals',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'proposals', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'proposal-items', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'sales-target' => [
+        'label' => 'Sales Target',
+        'description' => 'Per-rep sales targets with achieved-to-date progress tracking.',
+        'category' => 'Sales',
+        'status' => 'free',
+        'module' => 'sales-targets',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'sales-return' => [
+        'label' => 'Sales Return',
+        'description' => 'Customer returns with line items and a completion workflow.',
+        'category' => 'Sales',
+        'status' => 'free',
+        'module' => 'sales-returns',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'sales-returns', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'sales-return-items', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'credit-note' => [
+        'label' => 'Credit Note',
+        'description' => 'Credit notes issued against sales returns, with approve and apply lifecycle.',
+        'category' => 'Sales',
+        'status' => 'free',
+        'module' => 'credit-notes',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'credit-notes', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'credit-note-items', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'debit-note' => [
+        'label' => 'Debit Note',
+        'description' => 'Debit notes raised on vendors, with approve and apply lifecycle.',
+        'category' => 'Sales',
+        'status' => 'free',
+        'module' => 'debit-notes',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'debit-notes', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'debit-note-items', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'sales-agent' => [
+        'label' => 'Sales Agent',
+        'description' => 'Referral agents onboarded by request, with the agent order pipeline.',
+        'category' => 'CRM',
+        'status' => 'free',
+        'module' => 'sales-agents',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'sales-agents', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+            ['module' => 'sales-agent-orders', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'customer-group' => [
+        'label' => 'Customer Group',
+        'description' => 'Customer segments carrying a shared discount rate.',
+        'category' => 'CRM',
+        'status' => 'free',
+        'module' => 'customer-groups',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'product-unit' => [
+        'label' => 'Product Unit',
+        'description' => 'Units of measure used across products and order lines.',
+        'category' => 'Products',
+        'status' => 'free',
+        'module' => 'product-units',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
+
+    'deal-activity' => [
+        'label' => 'Deal Activity',
+        'description' => 'Log calls, meetings and notes against deals and mark them complete.',
+        'category' => 'CRM',
+        'status' => 'free',
+        'module' => 'deal-activities',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'enabled_by_default' => true,
+    ],
 ];

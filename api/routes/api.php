@@ -27,12 +27,18 @@ use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\ConversationController;
 use App\Http\Controllers\Api\V1\CoworkingBookingController;
 use App\Http\Controllers\Api\V1\CoworkingUnitController;
+use App\Http\Controllers\Api\V1\CreditNoteController;
+use App\Http\Controllers\Api\V1\CreditNoteItemController;
 use App\Http\Controllers\Api\V1\CrmStageController;
 use App\Http\Controllers\Api\V1\CurrenciesController;
 use App\Http\Controllers\Api\V1\CurrencyRateController;
+use App\Http\Controllers\Api\V1\CustomerGroupController;
 use App\Http\Controllers\Api\V1\CustomerPortalController;
 use App\Http\Controllers\Api\V1\DashboardController;
+use App\Http\Controllers\Api\V1\DealActivityController;
 use App\Http\Controllers\Api\V1\DealController;
+use App\Http\Controllers\Api\V1\DebitNoteController;
+use App\Http\Controllers\Api\V1\DebitNoteItemController;
 use App\Http\Controllers\Api\V1\DigitalCertificateController;
 use App\Http\Controllers\Api\V1\DocumentController;
 use App\Http\Controllers\Api\V1\DocumentFolderController;
@@ -75,9 +81,12 @@ use App\Http\Controllers\Api\V1\PosOrderController;
 use App\Http\Controllers\Api\V1\PosRegisterController;
 use App\Http\Controllers\Api\V1\ProductCategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
+use App\Http\Controllers\Api\V1\ProductUnitController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\ProjectMilestoneController;
 use App\Http\Controllers\Api\V1\ProjectTaskController;
+use App\Http\Controllers\Api\V1\ProposalController;
+use App\Http\Controllers\Api\V1\ProposalItemController;
 use App\Http\Controllers\Api\V1\PublicPaymentController;
 use App\Http\Controllers\Api\V1\PurchaseOrderController;
 use App\Http\Controllers\Api\V1\PurchaseReceiptController;
@@ -88,7 +97,12 @@ use App\Http\Controllers\Api\V1\RentalItemController;
 use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\RotaController;
 use App\Http\Controllers\Api\V1\RotaEntryController;
+use App\Http\Controllers\Api\V1\SalesAgentController;
+use App\Http\Controllers\Api\V1\SalesAgentOrderController;
 use App\Http\Controllers\Api\V1\SalesOrderController;
+use App\Http\Controllers\Api\V1\SalesReturnController;
+use App\Http\Controllers\Api\V1\SalesReturnItemController;
+use App\Http\Controllers\Api\V1\SalesTargetController;
 use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\SmartReportController;
 use App\Http\Controllers\Api\V1\StockAdjustmentController;
@@ -771,6 +785,111 @@ Route::prefix('v1')->group(function () {
                 ->name('digital-certificates.generate');
             Route::post('digital-certificates/{digital_certificate}/revoke', [DigitalCertificateController::class, 'revoke'])
                 ->name('digital-certificates.revoke');
+        });
+
+        // ---- Phase 3: sales and CRM extras.
+        Route::middleware('addon:proposal')->group(function () {
+            Route::apiResource('proposals', ProposalController::class);
+            Route::post('proposals/{proposal}/restore', [ProposalController::class, 'restore'])
+                ->name('proposals.restore');
+            Route::post('proposals/{proposal}/send', [ProposalController::class, 'send'])
+                ->name('proposals.send');
+            Route::post('proposals/{proposal}/accept', [ProposalController::class, 'accept'])
+                ->name('proposals.accept');
+            Route::post('proposals/{proposal}/reject', [ProposalController::class, 'reject'])
+                ->name('proposals.reject');
+            Route::post('proposals/{proposal}/convert', [ProposalController::class, 'convert'])
+                ->name('proposals.convert');
+
+            Route::apiResource('proposal-items', ProposalItemController::class);
+            Route::post('proposal-items/{proposal_item}/restore', [ProposalItemController::class, 'restore'])
+                ->name('proposal-items.restore');
+        });
+
+        Route::middleware('addon:sales-target')->group(function () {
+            Route::apiResource('sales-targets', SalesTargetController::class);
+            Route::post('sales-targets/{sales_target}/restore', [SalesTargetController::class, 'restore'])
+                ->name('sales-targets.restore');
+            Route::post('sales-targets/{sales_target}/progress', [SalesTargetController::class, 'progress'])
+                ->name('sales-targets.progress');
+        });
+
+        Route::middleware('addon:sales-return')->group(function () {
+            Route::apiResource('sales-returns', SalesReturnController::class);
+            Route::post('sales-returns/{sales_return}/restore', [SalesReturnController::class, 'restore'])
+                ->name('sales-returns.restore');
+            Route::post('sales-returns/{sales_return}/complete', [SalesReturnController::class, 'complete'])
+                ->name('sales-returns.complete');
+
+            Route::apiResource('sales-return-items', SalesReturnItemController::class);
+            Route::post('sales-return-items/{sales_return_item}/restore', [SalesReturnItemController::class, 'restore'])
+                ->name('sales-return-items.restore');
+        });
+
+        Route::middleware('addon:credit-note')->group(function () {
+            Route::apiResource('credit-notes', CreditNoteController::class);
+            Route::post('credit-notes/{credit_note}/restore', [CreditNoteController::class, 'restore'])
+                ->name('credit-notes.restore');
+            Route::post('credit-notes/{credit_note}/approve', [CreditNoteController::class, 'approve'])
+                ->name('credit-notes.approve');
+            Route::post('credit-notes/{credit_note}/apply', [CreditNoteController::class, 'apply'])
+                ->name('credit-notes.apply');
+
+            Route::apiResource('credit-note-items', CreditNoteItemController::class);
+            Route::post('credit-note-items/{credit_note_item}/restore', [CreditNoteItemController::class, 'restore'])
+                ->name('credit-note-items.restore');
+        });
+
+        Route::middleware('addon:debit-note')->group(function () {
+            Route::apiResource('debit-notes', DebitNoteController::class);
+            Route::post('debit-notes/{debit_note}/restore', [DebitNoteController::class, 'restore'])
+                ->name('debit-notes.restore');
+            Route::post('debit-notes/{debit_note}/approve', [DebitNoteController::class, 'approve'])
+                ->name('debit-notes.approve');
+            Route::post('debit-notes/{debit_note}/apply', [DebitNoteController::class, 'apply'])
+                ->name('debit-notes.apply');
+
+            Route::apiResource('debit-note-items', DebitNoteItemController::class);
+            Route::post('debit-note-items/{debit_note_item}/restore', [DebitNoteItemController::class, 'restore'])
+                ->name('debit-note-items.restore');
+        });
+
+        Route::middleware('addon:sales-agent')->group(function () {
+            Route::apiResource('sales-agents', SalesAgentController::class);
+            Route::post('sales-agents/{sales_agent}/restore', [SalesAgentController::class, 'restore'])
+                ->name('sales-agents.restore');
+            Route::post('sales-agents/{sales_agent}/request', [SalesAgentController::class, 'request'])
+                ->name('sales-agents.request');
+            Route::post('sales-agents/{sales_agent}/accept', [SalesAgentController::class, 'accept'])
+                ->name('sales-agents.accept');
+            Route::post('sales-agents/{sales_agent}/reject', [SalesAgentController::class, 'reject'])
+                ->name('sales-agents.reject');
+
+            Route::apiResource('sales-agent-orders', SalesAgentOrderController::class);
+            Route::post('sales-agent-orders/{sales_agent_order}/restore', [SalesAgentOrderController::class, 'restore'])
+                ->name('sales-agent-orders.restore');
+            Route::post('sales-agent-orders/{sales_agent_order}/update-status', [SalesAgentOrderController::class, 'updateStatus'])
+                ->name('sales-agent-orders.update-status');
+        });
+
+        Route::middleware('addon:customer-group')->group(function () {
+            Route::apiResource('customer-groups', CustomerGroupController::class);
+            Route::post('customer-groups/{customer_group}/restore', [CustomerGroupController::class, 'restore'])
+                ->name('customer-groups.restore');
+        });
+
+        Route::middleware('addon:product-unit')->group(function () {
+            Route::apiResource('product-units', ProductUnitController::class);
+            Route::post('product-units/{product_unit}/restore', [ProductUnitController::class, 'restore'])
+                ->name('product-units.restore');
+        });
+
+        Route::middleware('addon:deal-activity')->group(function () {
+            Route::apiResource('deal-activities', DealActivityController::class);
+            Route::post('deal-activities/{deal_activity}/restore', [DealActivityController::class, 'restore'])
+                ->name('deal-activities.restore');
+            Route::post('deal-activities/{deal_activity}/complete', [DealActivityController::class, 'complete'])
+                ->name('deal-activities.complete');
         });
     });
 });

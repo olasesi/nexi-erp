@@ -103,6 +103,12 @@ class EnsurePermitted
         'stop' => 'update',
         'generate' => 'create',
         'revoke' => 'update',
+        // Sales/CRM extras. Applying a note consumes a credit, requesting an
+        // agent opens a new record, and status moves mutate their record.
+        'apply' => 'update',
+        'request' => 'create',
+        'update-status' => 'update',
+        'send' => 'update',
     ];
 
     /**

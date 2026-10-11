@@ -80,11 +80,21 @@ gating (`Route::middleware('addon:<id>')`).
 | `timesheet` | `timesheets`, `timesheet-entries` | `/api/v1/timesheets*` (+ `submit`, `approve`, `reject`), `/api/v1/timesheet-entries*` |
 | `team-workload` | `team-workload` | `GET /api/v1/team-workload` (+ `/summary`) |
 | `digital-certificate` | `digital-certificates` | `/api/v1/digital-certificates*` (+ `generate`, `revoke`) |
+| `proposal` | `proposals`, `proposal-items` | `/api/v1/proposals*` (+ `send`, `accept`, `reject`, `convert`), `/api/v1/proposal-items*` |
+| `sales-target` | `sales-targets` | `/api/v1/sales-targets*` (+ `progress`) |
+| `sales-return` | `sales-returns`, `sales-return-items` | `/api/v1/sales-returns*` (+ `complete`), `/api/v1/sales-return-items*` |
+| `credit-note` | `credit-notes`, `credit-note-items` | `/api/v1/credit-notes*` (+ `approve`, `apply`), `/api/v1/credit-note-items*` |
+| `debit-note` | `debit-notes`, `debit-note-items` | `/api/v1/debit-notes*` (+ `approve`, `apply`), `/api/v1/debit-note-items*` |
+| `sales-agent` | `sales-agents`, `sales-agent-orders` | `/api/v1/sales-agents*` (+ `request`, `accept`, `reject`), `/api/v1/sales-agent-orders*` (+ `update-status`) |
+| `customer-group` | `customer-groups` | `/api/v1/customer-groups*` |
+| `product-unit` | `product-units` | `/api/v1/product-units*` |
+| `deal-activity` | `deal-activities` | `/api/v1/deal-activities*` (+ `complete`) |
 
 The cross-domain tools (`form-builder` … `asset-management`) are documented in
 `scripts/tools-pilot.md`; the Phase 1 add-ons (`smart-reports` … `youtube`) in
 `scripts/phase1-pilot.md`; the HRM suite (`performance` … `digital-certificate`)
-in `scripts/phase2-pilot.md`.
+in `scripts/phase2-pilot.md`; the sales/CRM extras (`proposal` … `deal-activity`)
+in `scripts/phase3-pilot.md`.
 
 ---
 
