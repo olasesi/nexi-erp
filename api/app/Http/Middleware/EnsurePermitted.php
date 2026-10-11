@@ -111,6 +111,10 @@ class EnsurePermitted
         'request' => 'create',
         'update-status' => 'update',
         'send' => 'update',
+        // Integration connectors. Connecting, disconnecting and testing a
+        // provider all mutate its stored connection state.
+        'connect' => 'update',
+        'disconnect' => 'update',
     ];
 
     /**

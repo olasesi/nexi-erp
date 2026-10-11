@@ -73,6 +73,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'addons' => ['view-any', 'update'],
             'audit-logs' => ['view-any', 'view'],
             'currencies' => ['view-any'],
+            'integrations' => ['view-any', 'view', 'update'],
             'webhook-deliveries' => ['view-any', 'view', 'update'],
             'webhook-events' => ['view-any'],
         ];

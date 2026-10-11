@@ -67,6 +67,7 @@ use App\Http\Controllers\Api\V1\HrmEmployeeController;
 use App\Http\Controllers\Api\V1\HrmLeaveController;
 use App\Http\Controllers\Api\V1\IncomeCategoryController;
 use App\Http\Controllers\Api\V1\IncomeController;
+use App\Http\Controllers\Api\V1\IntegrationController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\JobApplicationController;
 use App\Http\Controllers\Api\V1\JobCandidateController;
@@ -372,6 +373,17 @@ Route::prefix('v1')->group(function () {
         Route::get('business-settings', [BusinessSettingsController::class, 'index'])->name('business-settings.index');
         Route::get('business-settings/{group}', [BusinessSettingsController::class, 'show'])->name('business-settings.show');
         Route::put('business-settings/{group}', [BusinessSettingsController::class, 'update'])->name('business-settings.update');
+
+        // Third-party integration connectors. Credentials live in the matching
+        // business-settings group; connection state lives on the integrations
+        // table. No provider is ever called out to — connect validates that the
+        // required credentials are present and test reports the stored state.
+        Route::get('integrations', [IntegrationController::class, 'index'])->name('integrations.index');
+        Route::get('integrations/{provider}', [IntegrationController::class, 'show'])->name('integrations.show');
+        Route::put('integrations/{provider}', [IntegrationController::class, 'update'])->name('integrations.update');
+        Route::post('integrations/{provider}/connect', [IntegrationController::class, 'connect'])->name('integrations.connect');
+        Route::post('integrations/{provider}/disconnect', [IntegrationController::class, 'disconnect'])->name('integrations.disconnect');
+        Route::post('integrations/{provider}/test', [IntegrationController::class, 'test'])->name('integrations.test');
 
         // Business locations (mirrors UltimatePOS Business Locations settings surface)
         Route::apiResource('business-locations', BusinessLocationController::class);

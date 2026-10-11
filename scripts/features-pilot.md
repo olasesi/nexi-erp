@@ -31,6 +31,7 @@ and `EnsurePermitted` derives the permission name from the route name
 | Reports | `reports` | `GET /api/v1/reports/*` |
 | Notifications | `notifications` | `/api/v1/notifications*` (in-app inbox + bell) |
 | Settings | `settings`, `business-settings` | `/api/v1/settings*`, `/api/v1/business-settings*` |
+| Integrations | `integrations` | `/api/v1/integrations*` (provider connectors: catalog, credentials, connect/disconnect/test) |
 
 Merges kept from the research:
 - **Settings top level**: WorkDo's Dash settings and UltimatePOS's Business
@@ -104,6 +105,15 @@ in `scripts/phase2-pilot.md`; the sales/CRM extras (`proposal` … `deal-activit
 in `scripts/phase3-pilot.md`; the collaboration add-ons (`announcement` …
 `company-policy`) in `scripts/phase4-pilot.md`; the bookings add-on
 (`bookings`) in `scripts/phase5-pilot.md`.
+
+### Integrations connectors (settings-gated)
+
+A separate, **non add-on** surface (`integrations` permission module) turns the
+provider catalog in `config/business-integrations.php` into a connectable
+connector list. Credentials live in the matching `business-settings` group;
+connection state lives on the `integrations` table. Nothing is ever called out
+to — `connect` validates that every credential is present and `test` reports the
+stored state. See `scripts/phase6-pilot.md`.
 
 ---
 
