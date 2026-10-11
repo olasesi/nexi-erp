@@ -60,7 +60,7 @@ gating (`Route::middleware('addon:<id>')`).
 | `rental` | `rental-agreements`, `rental-items` | `/api/v1/rental-*` |
 | `form-builder` | `forms`, `form-fields`, `form-submissions` | `/api/v1/forms`, `/api/v1/form-fields`, `/api/v1/form-submissions` |
 | `messenger` | `conversations`, `messages` | `/api/v1/conversations`, `/api/v1/messages` |
-| `document-manager` | `document-folders`, `documents` | `/api/v1/document-folders`, `/api/v1/documents` |
+| `document-manager` | `document-folders`, `documents` | `/api/v1/document-folders*`, `/api/v1/documents*` (+ `POST /documents/{id}/share`, `POST /documents/{id}/restore`, `POST /document-folders/{id}/restore`) |
 | `support-tickets` | `tickets`, `ticket-replies` | `/api/v1/tickets`, `/api/v1/ticket-replies` |
 | `calendar-events` | `events`, `event-attendees` | `/api/v1/events`, `/api/v1/event-attendees` |
 | `asset-management` | `asset-categories`, `assets`, `asset-assignments` | `/api/v1/asset-categories`, `/api/v1/assets`, `/api/v1/asset-assignments` |
