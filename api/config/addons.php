@@ -619,4 +619,30 @@ return [
         ],
         'enabled_by_default' => true,
     ],
+
+    'ai-document' => [
+        'label' => 'AI Document',
+        'description' => 'Draft and rewrite long-form business documents from a prompt with a provider-agnostic driver.',
+        'category' => 'AI',
+        'status' => 'free',
+        'module' => 'ai-documents',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'ai-documents', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
+
+    'ai-image' => [
+        'label' => 'AI Image',
+        'description' => 'Render images from a prompt with a provider-agnostic driver and an offline deterministic stub.',
+        'category' => 'AI',
+        'status' => 'free',
+        'module' => 'ai-images',
+        'actions' => ['view-any', 'view', 'create', 'update', 'delete'],
+        'modules' => [
+            ['module' => 'ai-images', 'actions' => ['view-any', 'view', 'create', 'update', 'delete']],
+        ],
+        'enabled_by_default' => true,
+    ],
 ];

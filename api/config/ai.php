@@ -1,6 +1,8 @@
 <?php
 
 use App\Ai\Drivers\StubAiAgentDriver;
+use App\Ai\Drivers\StubAiDocumentDriver;
+use App\Ai\Drivers\StubAiImageDriver;
 
 return [
     /*
@@ -15,5 +17,31 @@ return [
 
     'drivers' => [
         'stub' => StubAiAgentDriver::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | AI Document Driver
+    |--------------------------------------------------------------------------
+    | Resolves the driver used to draft or rewrite long-form documents. The
+    | stub keeps generation deterministic and offline.
+    */
+    'document_driver' => env('AI_DOCUMENT_DRIVER', 'stub'),
+
+    'document_drivers' => [
+        'stub' => StubAiDocumentDriver::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | AI Image Driver
+    |--------------------------------------------------------------------------
+    | Resolves the driver used to render images from a prompt. The stub returns
+    | a deterministic inline SVG data URI so the add-on never calls out.
+    */
+    'image_driver' => env('AI_IMAGE_DRIVER', 'stub'),
+
+    'image_drivers' => [
+        'stub' => StubAiImageDriver::class,
     ],
 ];

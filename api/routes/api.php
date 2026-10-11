@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\V1\AddonController;
 use App\Http\Controllers\Api\V1\AiAgentMessageController;
 use App\Http\Controllers\Api\V1\AiAgentPromptController;
 use App\Http\Controllers\Api\V1\AiAgentThreadController;
+use App\Http\Controllers\Api\V1\AiDocumentController;
+use App\Http\Controllers\Api\V1\AiImageController;
 use App\Http\Controllers\Api\V1\AnalyticsController;
 use App\Http\Controllers\Api\V1\AnnouncementController;
 use App\Http\Controllers\Api\V1\AssetAssignmentController;
@@ -643,6 +645,22 @@ Route::prefix('v1')->group(function () {
             Route::apiResource('ai-agent-prompts', AiAgentPromptController::class);
             Route::post('ai-agent-prompts/{ai_agent_prompt}/restore', [AiAgentPromptController::class, 'restore'])
                 ->name('ai-agent-prompts.restore');
+        });
+
+        Route::middleware('addon:ai-document')->group(function () {
+            Route::post('ai-documents/{ai_document}/generate', [AiDocumentController::class, 'generate'])
+                ->name('ai-documents.generate');
+            Route::apiResource('ai-documents', AiDocumentController::class);
+            Route::post('ai-documents/{ai_document}/restore', [AiDocumentController::class, 'restore'])
+                ->name('ai-documents.restore');
+        });
+
+        Route::middleware('addon:ai-image')->group(function () {
+            Route::post('ai-images/{ai_image}/generate', [AiImageController::class, 'generate'])
+                ->name('ai-images.generate');
+            Route::apiResource('ai-images', AiImageController::class);
+            Route::post('ai-images/{ai_image}/restore', [AiImageController::class, 'restore'])
+                ->name('ai-images.restore');
         });
 
         Route::middleware('addon:goals')->group(function () {

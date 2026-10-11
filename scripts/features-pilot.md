@@ -65,7 +65,7 @@ gating (`Route::middleware('addon:<id>')`).
 | `calendar-events` | `events`, `event-attendees` | `/api/v1/events`, `/api/v1/event-attendees` |
 | `asset-management` | `asset-categories`, `assets`, `asset-assignments` | `/api/v1/asset-categories`, `/api/v1/assets`, `/api/v1/asset-assignments` |
 | `smart-reports` | `smart-reports` | `/api/v1/smart-reports*` (+ `POST /api/v1/smart-reports/{smart_report}/run`) |
-| `ai-agent` | `ai-agent-threads`, `ai-agent-messages`, `ai-agent-prompts` | `/api/v1/ai-agent-threads*` (+ nested `/messages`), `/api/v1/ai-agent-messages*`, `/api/v1/ai-agent-prompts*` |
+| `ai-agent`, `ai-document`, `ai-image` | `ai-agent-threads`, `ai-agent-messages`, `ai-agent-prompts`, `ai-documents`, `ai-images` | `/api/v1/ai-agent-threads*` (+ nested `/messages`), `/api/v1/ai-documents*`, `/api/v1/ai-images*`, `/api/v1/ai-agent-messages*`, `/api/v1/ai-agent-prompts*` |
 | `goals` | `goals`, `goal-key-results` | `/api/v1/goals*` (+ `progress`, `cancel`), `/api/v1/goal-key-results*` |
 | `budget-planner` | `budgets`, `budget-lines` | `/api/v1/budgets*` (+ `approve`, `close`), `/api/v1/budget-lines*` |
 | `training` | `trainings`, `training-types` | `/api/v1/trainings*` (+ `cancel`), `/api/v1/training-types*` |
