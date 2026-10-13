@@ -109,8 +109,10 @@ in `scripts/phase3-pilot.md`; the collaboration add-ons (`announcement` …
 (`bookings`) in `scripts/phase5-pilot.md`; the Vertical Solutions
 (`coworking-space` … `rental`) in `scripts/phase11-pilot.md`; the core Point of
 Sale surface (`pos-registers`/`pos-orders`) in `scripts/phase12-pilot.md`; the
-outbound webhooks surface in `scripts/phase13-pilot.md`. The core Projects & HRM
-surfaces are documented in `scripts/phase10-pilot.md`.
+outbound webhooks surface in `scripts/phase13-pilot.md`; the core Stock &
+Warehousing surfaces (`warehouses`/`stock-adjustments`/`stock-transfers`) in
+`scripts/phase14-pilot.md`. The core Projects & HRM surfaces are documented in
+`scripts/phase10-pilot.md`.
 
 ### Integrations connectors (settings-gated)
 
