@@ -19,7 +19,7 @@ and `EnsurePermitted` derives the permission name from the route name
 | Users & Roles | `users`, `roles` | `/api/v1/users`, `/api/v1/roles` |
 | Contacts | `contacts` | `/api/v1/contacts` |
 | Products | `product-categories`, `products`, `warehouses` | `/api/v1/product-categories`, `/api/v1/products`, `/api/v1/warehouses` |
-| Purchases | `purchase-orders` | `/api/v1/purchase-orders` |
+| Purchases | `purchase-orders`, `purchase-receipts` | `/api/v1/purchase-orders`, `/api/v1/purchase-receipts` |
 | Sales | `sales-orders`, `quotations`, `invoices` | `/api/v1/sales-orders`, `/api/v1/quotations`, `/api/v1/invoices` |
 | Point of Sale | `pos-registers`, `pos-orders` | `/api/v1/pos-registers`, `/api/v1/pos-orders` (+ `GET /api/v1/pos-orders/summary`, `GET /api/v1/dashboard/pos-summary`) |
 | CRM | `leads`, `deals`, `crm-stages` | `/api/v1/leads`, `/api/v1/deals`, `/api/v1/crm-stages` (+ `POST /api/v1/leads/{lead}/convert`, `GET /api/v1/dashboard/crm-summary`) |
@@ -116,7 +116,9 @@ Warehousing surfaces (`warehouses`/`stock-adjustments`/`stock-transfers`) in
 `scripts/phase15-pilot.md`; the core Currencies & FX surface
 (`currencies`/`currency-rates`) in `scripts/phase16-pilot.md`; the core Product
 catalogue (`product-categories`/`products`, incl. CSV import/export) in
-`scripts/phase17-pilot.md`. The core Projects & HRM surfaces are documented in
+`scripts/phase17-pilot.md`; the core Purchasing flow (`purchase-orders` /
+`purchase-receipts`) in `scripts/phase18-pilot.md`. The core Projects & HRM
+surfaces are documented in
 `scripts/phase10-pilot.md`.
 
 ### Integrations connectors (settings-gated)
