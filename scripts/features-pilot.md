@@ -104,7 +104,9 @@ The cross-domain tools (`form-builder` … `asset-management`) are documented in
 in `scripts/phase2-pilot.md`; the sales/CRM extras (`proposal` … `deal-activity`)
 in `scripts/phase3-pilot.md`; the collaboration add-ons (`announcement` …
 `company-policy`) in `scripts/phase4-pilot.md`; the bookings add-on
-(`bookings`) in `scripts/phase5-pilot.md`.
+(`bookings`) in `scripts/phase5-pilot.md`; the Vertical Solutions
+(`coworking-space` … `rental`) in `scripts/phase11-pilot.md`. The core Projects
+and HRM surfaces are documented in `scripts/phase10-pilot.md`.
 
 ### Integrations connectors (settings-gated)
 
