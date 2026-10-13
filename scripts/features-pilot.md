@@ -117,7 +117,9 @@ Warehousing surfaces (`warehouses`/`stock-adjustments`/`stock-transfers`) in
 (`currencies`/`currency-rates`) in `scripts/phase16-pilot.md`; the core Product
 catalogue (`product-categories`/`products`, incl. CSV import/export) in
 `scripts/phase17-pilot.md`; the core Purchasing flow (`purchase-orders` /
-`purchase-receipts`) in `scripts/phase18-pilot.md`. The core Projects & HRM
+`purchase-receipts`) in `scripts/phase18-pilot.md`; the core Sales & Invoicing
+documents (`sales-orders`/`quotations`/`invoices`) in `scripts/phase19-pilot.md`.
+The core Projects & HRM
 surfaces are documented in
 `scripts/phase10-pilot.md`.
 
