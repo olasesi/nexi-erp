@@ -114,8 +114,10 @@ Warehousing surfaces (`warehouses`/`stock-adjustments`/`stock-transfers`) in
 `scripts/phase14-pilot.md`; the core Banking & Reconciliation surfaces
 (`bank-accounts`/`bank-transactions`/`reconciliations`) in
 `scripts/phase15-pilot.md`; the core Currencies & FX surface
-(`currencies`/`currency-rates`) in `scripts/phase16-pilot.md`. The core Projects &
-HRM surfaces are documented in `scripts/phase10-pilot.md`.
+(`currencies`/`currency-rates`) in `scripts/phase16-pilot.md`; the core Product
+catalogue (`product-categories`/`products`, incl. CSV import/export) in
+`scripts/phase17-pilot.md`. The core Projects & HRM surfaces are documented in
+`scripts/phase10-pilot.md`.
 
 ### Integrations connectors (settings-gated)
 
