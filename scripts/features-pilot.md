@@ -111,7 +111,9 @@ in `scripts/phase3-pilot.md`; the collaboration add-ons (`announcement` …
 Sale surface (`pos-registers`/`pos-orders`) in `scripts/phase12-pilot.md`; the
 outbound webhooks surface in `scripts/phase13-pilot.md`; the core Stock &
 Warehousing surfaces (`warehouses`/`stock-adjustments`/`stock-transfers`) in
-`scripts/phase14-pilot.md`. The core Projects & HRM surfaces are documented in
+`scripts/phase14-pilot.md`; the core Banking & Reconciliation surfaces
+(`bank-accounts`/`bank-transactions`/`reconciliations`) in
+`scripts/phase15-pilot.md`. The core Projects & HRM surfaces are documented in
 `scripts/phase10-pilot.md`.
 
 ### Integrations connectors (settings-gated)
