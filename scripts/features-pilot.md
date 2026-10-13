@@ -21,6 +21,7 @@ and `EnsurePermitted` derives the permission name from the route name
 | Products | `product-categories`, `products`, `warehouses` | `/api/v1/product-categories`, `/api/v1/products`, `/api/v1/warehouses` |
 | Purchases | `purchase-orders` | `/api/v1/purchase-orders` |
 | Sales | `sales-orders`, `quotations`, `invoices` | `/api/v1/sales-orders`, `/api/v1/quotations`, `/api/v1/invoices` |
+| Point of Sale | `pos-registers`, `pos-orders` | `/api/v1/pos-registers`, `/api/v1/pos-orders` (+ `GET /api/v1/pos-orders/summary`, `GET /api/v1/dashboard/pos-summary`) |
 | CRM | `leads`, `deals`, `crm-stages` | `/api/v1/leads`, `/api/v1/deals`, `/api/v1/crm-stages` (+ `POST /api/v1/leads/{lead}/convert`, `GET /api/v1/dashboard/crm-summary`) |
 | Stock | `stock-adjustments`, `stock-transfers` | `/api/v1/stock-adjustments`, `/api/v1/stock-transfers` |
 | Expenses | `expense-categories`, `expenses`, `income-categories`, `incomes` | `/api/v1/expense-categories`, `/api/v1/expenses`, `/api/v1/income-categories`, `/api/v1/incomes` |
@@ -105,8 +106,9 @@ in `scripts/phase2-pilot.md`; the sales/CRM extras (`proposal` … `deal-activit
 in `scripts/phase3-pilot.md`; the collaboration add-ons (`announcement` …
 `company-policy`) in `scripts/phase4-pilot.md`; the bookings add-on
 (`bookings`) in `scripts/phase5-pilot.md`; the Vertical Solutions
-(`coworking-space` … `rental`) in `scripts/phase11-pilot.md`. The core Projects
-and HRM surfaces are documented in `scripts/phase10-pilot.md`.
+(`coworking-space` … `rental`) in `scripts/phase11-pilot.md`; the core Point of
+Sale surface (`pos-registers`/`pos-orders`) in `scripts/phase12-pilot.md`. The
+core Projects & HRM surfaces are documented in `scripts/phase10-pilot.md`.
 
 ### Integrations connectors (settings-gated)
 
