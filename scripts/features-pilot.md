@@ -33,6 +33,7 @@ and `EnsurePermitted` derives the permission name from the route name
 | Notifications | `notifications` | `/api/v1/notifications*` (in-app inbox + bell) |
 | Settings | `settings`, `business-settings` | `/api/v1/settings*`, `/api/v1/business-settings*` |
 | Integrations | `integrations` | `/api/v1/integrations*` (provider connectors: catalog, credentials, connect/disconnect/test) |
+| Webhooks | `webhook-endpoints`, `webhook-deliveries`, `webhook-events` | `/api/v1/webhook-endpoints*`, `/api/v1/webhook-deliveries*`, `/api/v1/webhook-events` (outbound subscriptions + delivery log) |
 
 Merges kept from the research:
 - **Settings top level**: WorkDo's Dash settings and UltimatePOS's Business
@@ -107,8 +108,9 @@ in `scripts/phase3-pilot.md`; the collaboration add-ons (`announcement` …
 `company-policy`) in `scripts/phase4-pilot.md`; the bookings add-on
 (`bookings`) in `scripts/phase5-pilot.md`; the Vertical Solutions
 (`coworking-space` … `rental`) in `scripts/phase11-pilot.md`; the core Point of
-Sale surface (`pos-registers`/`pos-orders`) in `scripts/phase12-pilot.md`. The
-core Projects & HRM surfaces are documented in `scripts/phase10-pilot.md`.
+Sale surface (`pos-registers`/`pos-orders`) in `scripts/phase12-pilot.md`; the
+outbound webhooks surface in `scripts/phase13-pilot.md`. The core Projects & HRM
+surfaces are documented in `scripts/phase10-pilot.md`.
 
 ### Integrations connectors (settings-gated)
 
