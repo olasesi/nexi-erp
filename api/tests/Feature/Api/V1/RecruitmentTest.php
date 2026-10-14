@@ -164,6 +164,8 @@ it('creates a candidate defaulting its stage to applied', function () {
 });
 
 it('hires a candidate, stamps hired_at and refuses to finalise them twice', function () {
+    $this->travelTo(now());
+
     $candidate = recruitmentCandidate();
 
     $this->postJson("/api/v1/job-candidates/{$candidate->id}/hire")
