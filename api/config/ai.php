@@ -1,10 +1,33 @@
 <?php
 
+use App\Ai\Drivers\OpenAiAgentDriver;
+use App\Ai\Drivers\OpenAiDocumentDriver;
+use App\Ai\Drivers\OpenAiImageDriver;
 use App\Ai\Drivers\StubAiAgentDriver;
 use App\Ai\Drivers\StubAiDocumentDriver;
 use App\Ai\Drivers\StubAiImageDriver;
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Provider credentials
+    |--------------------------------------------------------------------------
+    | Defaults used when a company has not stored its own key in the matching
+    | business-integration settings group. Keep the keys out of source and set
+    | them through the environment in production.
+    */
+    'providers' => [
+        'openai' => [
+            'api_key' => env('OPENAI_API_KEY'),
+            'base_url' => env('OPENAI_BASE_URL', 'https://api.openai.com/v1'),
+            'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
+            'image_model' => env('OPENAI_IMAGE_MODEL', 'dall-e-3'),
+            'system_prompt' => env('OPENAI_SYSTEM_PROMPT'),
+        ],
+    ],
+
+    'timeout' => (int) env('AI_TIMEOUT', 30),
+
     /*
     |--------------------------------------------------------------------------
     | AI Agent Driver
@@ -17,6 +40,7 @@ return [
 
     'drivers' => [
         'stub' => StubAiAgentDriver::class,
+        'openai' => OpenAiAgentDriver::class,
     ],
 
     /*
@@ -30,6 +54,7 @@ return [
 
     'document_drivers' => [
         'stub' => StubAiDocumentDriver::class,
+        'openai' => OpenAiDocumentDriver::class,
     ],
 
     /*
@@ -43,5 +68,6 @@ return [
 
     'image_drivers' => [
         'stub' => StubAiImageDriver::class,
+        'openai' => OpenAiImageDriver::class,
     ],
 ];

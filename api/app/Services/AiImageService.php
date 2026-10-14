@@ -31,6 +31,7 @@ class AiImageService
             'negative_prompt' => $image->negative_prompt,
             'style' => $image->style,
             'size' => $image->size,
+            'company_id' => $image->company_id,
         ]);
 
         $image->forceFill([

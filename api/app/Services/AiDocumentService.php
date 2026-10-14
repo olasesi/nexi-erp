@@ -31,6 +31,7 @@ class AiDocumentService
             'title' => $document->title,
             'template' => $document->template,
             'language' => $document->language,
+            'company_id' => $document->company_id,
         ]);
 
         $document->forceFill([
