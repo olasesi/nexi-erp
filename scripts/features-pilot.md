@@ -121,7 +121,8 @@ catalogue (`product-categories`/`products`, incl. CSV import/export) in
 documents (`sales-orders`/`quotations`/`invoices`) in `scripts/phase19-pilot.md`;
 the core Payments surface (`payments`) in `scripts/phase20-pilot.md`; the core
 Expenses & Income surfaces (`expense-categories`/`expenses`/`income-categories`/
-`incomes`) in `scripts/phase21-pilot.md`.
+`incomes`) in `scripts/phase21-pilot.md`; the core accounting surfaces
+(`chart-of-accounts`/`journal-entries`) in `scripts/phase22-pilot.md`.
 The core Projects & HRM
 surfaces are documented in
 `scripts/phase10-pilot.md`.
