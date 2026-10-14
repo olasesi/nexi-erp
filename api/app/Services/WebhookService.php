@@ -26,12 +26,14 @@ class WebhookService
      */
     public const DOMAIN_EVENTS = [
         'invoice.sent',
+        'invoice.overdue',
         'payment.completed',
         'quotation.accepted',
         'quotation.rejected',
         'purchase_receipt.received',
         'stock_transfer.completed',
         'stock_adjustment.posted',
+        'stock.low',
         'reconciliation.matched',
         'lead.converted',
     ];

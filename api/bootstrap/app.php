@@ -27,6 +27,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->command('webhooks:retry')->everyMinute()->withoutOverlapping();
         $schedule->command('webhooks:prune')->dailyAt('02:15')->withoutOverlapping();
         $schedule->command('advisor:snapshot')->dailyAt('01:45')->withoutOverlapping();
+        $schedule->command('invoices:mark-overdue')->dailyAt('00:30')->withoutOverlapping();
+        $schedule->command('stock:alerts')->dailyAt('07:00')->withoutOverlapping();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(CollectMetrics::class);
