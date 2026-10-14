@@ -56,6 +56,10 @@ return [
             // Always set the `Accept: application/json` header.
             AcceptJson::class,
 
+            // Share the API rate limiter so the GraphQL endpoint cannot be
+            // hammered any harder than the REST surface.
+            'throttle:api',
+
             // Logs in a user if they are authenticated. In contrast to Laravel's 'auth'
             // middleware, this delegates auth and permission checks to the field level.
             AttemptAuthentication::class,
@@ -83,7 +87,7 @@ return [
     |
     */
 
-    'guards' => null,
+    'guards' => ['api'],
 
     /*
     |--------------------------------------------------------------------------

@@ -1,28 +1,67 @@
 "A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 
+"A date string with format `Y-m-d`, e.g. `2018-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
 "Indicates what fields are available at the top level of a query operation."
 type Query {
-    "Find a single user by an identifying attribute."
-    user(
-      "Search by primary key."
-      id: ID @eq @rules(apply: ["prohibits:email", "required_without:email"])
+    "The authenticated staff account."
+    me: User @auth(guard: "api")
 
-      "Search by email address."
-      email: String @eq @rules(apply: ["prohibits:id", "required_without:id", "email"])
-    ): User @find
+    "Find a single user by primary key."
+    user(id: ID! @eq): User @guard(with: ["api"]) @can(ability: "users.view", model: "App\\Models\\User") @find
 
-    "List multiple users."
+    "List users, optionally filtered by name."
     users(
       "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
       name: String @where(operator: "like")
-    ): [User!]! @paginate(defaultCount: 10)
+    ): [User!]! @guard(with: ["api"]) @can(ability: "users.view-any", model: "App\\Models\\User") @paginate(defaultCount: 15)
+
+    "Find a single sales invoice by primary key."
+    invoice(id: ID! @eq): Invoice @guard(with: ["api"]) @can(ability: "invoices.view", model: "App\\Models\\Invoice") @find
+
+    "List sales invoices, newest first, optionally filtered by status or number."
+    invoices(
+      "Exact status match (draft, sent, partial, paid, overdue, cancelled)."
+      status: String @eq
+
+      "Case-insensitive match against the invoice number."
+      search: String @where(operator: "like", key: "invoice_number")
+    ): [Invoice!]! @guard(with: ["api"]) @can(ability: "invoices.view-any", model: "App\\Models\\Invoice") @orderBy(column: "issue_date", direction: DESC) @paginate(defaultCount: 15)
+
+    "Find a single product by primary key."
+    product(id: ID! @eq): Product @guard(with: ["api"]) @can(ability: "products.view", model: "App\\Models\\Product") @find
+
+    "List products, optionally filtered by an active flag or a name match."
+    products(
+      "Exact match against the active flag."
+      is_active: Boolean @eq
+
+      "Case-insensitive match against the product name."
+      search: String @where(operator: "like", key: "name")
+    ): [Product!]! @guard(with: ["api"]) @can(ability: "products.view-any", model: "App\\Models\\Product") @paginate(defaultCount: 15)
+
+    "Find a single contact by primary key."
+    contact(id: ID! @eq): Contact @guard(with: ["api"]) @can(ability: "contacts.view", model: "App\\Models\\Contact") @find
+
+    "List contacts, optionally filtered by type or a name match."
+    contacts(
+      "Exact match against the contact type."
+      type: String @eq
+
+      "Case-insensitive match against the last name."
+      search: String @where(operator: "like", key: "last_name")
+    ): [Contact!]! @guard(with: ["api"]) @can(ability: "contacts.view-any", model: "App\\Models\\Contact") @paginate(defaultCount: 15)
 }
 
 "Account of a person who uses this application."
 type User {
     "Unique primary key."
     id: ID!
+
+    "The company the user belongs to."
+    company_id: ID
 
     "Non-unique name."
     name: String!
@@ -37,5 +76,116 @@ type User {
     created_at: DateTime!
 
     "When the account was last updated."
+    updated_at: DateTime!
+}
+
+"A sales or purchase invoice."
+type Invoice {
+    "Unique primary key."
+    id: ID!
+
+    "Human-readable invoice number."
+    invoice_number: String!
+
+    "Whether this is a sales (`invoice`) or purchase (`bill`) document."
+    type: String!
+
+    "Lifecycle status (draft, sent, partial, paid, overdue, cancelled)."
+    status: String!
+
+    "ISO currency code."
+    currency: String!
+
+    "Date the invoice was issued."
+    issue_date: Date
+
+    "Date payment is due."
+    due_date: Date
+
+    "Net amount before tax and discounts."
+    subtotal: Float!
+
+    "Tax charged."
+    tax_amount: Float!
+
+    "Discount applied."
+    discount_amount: Float!
+
+    "Grand total."
+    total: Float!
+
+    "Amount already paid."
+    paid_amount: Float!
+
+    "Amount still outstanding."
+    balance_due: Float!
+
+    "When the record was created."
+    created_at: DateTime!
+
+    "When the record was last updated."
+    updated_at: DateTime!
+}
+
+"A stock item or service offered by the company."
+type Product {
+    "Unique primary key."
+    id: ID!
+
+    "Display name."
+    name: String!
+
+    "Stock keeping unit."
+    sku: String
+
+    "Unit of measure."
+    unit: String
+
+    "Quantity currently on hand."
+    stock_quantity: Int!
+
+    "Reorder level that raises a low-stock alert."
+    min_stock_level: Int!
+
+    "Selling price."
+    sale_price: Float!
+
+    "Whether the product is active."
+    is_active: Boolean!
+
+    "When the record was created."
+    created_at: DateTime!
+
+    "When the record was last updated."
+    updated_at: DateTime!
+}
+
+"A customer, supplier or other business contact."
+type Contact {
+    "Unique primary key."
+    id: ID!
+
+    "Contact type (customer, supplier, ...)."
+    type: String!
+
+    "Given name."
+    first_name: String
+
+    "Family name."
+    last_name: String
+
+    "Email address."
+    email: String
+
+    "Primary phone number."
+    phone: String
+
+    "Whether the contact is active."
+    is_active: Boolean!
+
+    "When the record was created."
+    created_at: DateTime!
+
+    "When the record was last updated."
     updated_at: DateTime!
 }
