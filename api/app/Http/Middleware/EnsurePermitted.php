@@ -56,6 +56,7 @@ class EnsurePermitted
         'email-test' => 'update',
         'pdf' => 'view',
         'email' => 'update',
+        'payment-link' => 'update',
         'restore' => 'update',
         'snapshots' => 'view',
         'toggle' => 'update',

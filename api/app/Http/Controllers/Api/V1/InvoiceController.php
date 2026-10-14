@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /** @property Invoice $model */
@@ -135,6 +136,32 @@ class InvoiceController extends BaseController
         WebhookService::dispatch('invoice.sent', $invoice, ['recipient' => $invoice->contact->email]);
 
         return response()->json(['message' => 'Invoice emailed to '.$invoice->contact->email.'.']);
+    }
+
+    /**
+     * Ensure the invoice has a public payment token and return its pay-link
+     * URL. The token is generated lazily on first request and then reused.
+     */
+    public function paymentLink(int $id): JsonResponse
+    {
+        $invoice = $this->model->findOrFail($id);
+
+        if (! $invoice->isSales()) {
+            return response()->json(['message' => 'Only sales invoices can be shared for payment.'], 422);
+        }
+
+        if (! $invoice->payment_token) {
+            $invoice->forceFill(['payment_token' => (string) Str::uuid()])->save();
+        }
+
+        return response()->json([
+            'data' => [
+                'invoice_id' => $invoice->id,
+                'invoice_number' => $invoice->invoice_number,
+                'payment_token' => $invoice->payment_token,
+                'payment_url' => url("/api/v1/public/invoices/pay/{$invoice->payment_token}"),
+            ],
+        ]);
     }
 
     /**

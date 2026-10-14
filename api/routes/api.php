@@ -86,6 +86,7 @@ use App\Http\Controllers\Api\V1\NoteController;
 use App\Http\Controllers\Api\V1\NoticeController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PaymentWebhookController;
 use App\Http\Controllers\Api\V1\PerformanceIndicatorController;
 use App\Http\Controllers\Api\V1\PerformanceReviewController;
 use App\Http\Controllers\Api\V1\PosOrderController;
@@ -157,6 +158,9 @@ Route::prefix('v1')->group(function () {
     Route::prefix('public')->group(function () {
         Route::get('invoices/pay/{token}', [PublicPaymentController::class, 'show']);
         Route::post('invoices/pay/{token}', [PublicPaymentController::class, 'store']);
+        Route::post('invoices/pay/{token}/checkout', [PublicPaymentController::class, 'checkout']);
+        Route::post('payments/webhooks/{provider}', [PaymentWebhookController::class, 'handle'])
+            ->name('payments.webhooks');
     });
 
     // Password self-service (staff and customers both authenticate here).
@@ -222,6 +226,7 @@ Route::prefix('v1')->group(function () {
         Route::post('invoices/{invoice}/restore', [InvoiceController::class, 'restore'])->name('invoices.restore');
         Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
         Route::post('invoices/{invoice}/email', [InvoiceController::class, 'email'])->name('invoices.email');
+        Route::post('invoices/{invoice}/payment-link', [InvoiceController::class, 'paymentLink'])->name('invoices.payment-link');
 
         Route::apiResource('payments', PaymentController::class);
         Route::post('payments/{payment}/restore', [PaymentController::class, 'restore'])->name('payments.restore');

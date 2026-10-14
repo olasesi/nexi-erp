@@ -4,14 +4,18 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
-use App\Models\Payment;
-use App\Services\AccountingService;
+use App\Services\PaymentGatewayManager;
+use App\Services\PaymentLinkService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PublicPaymentController extends Controller
 {
+    public function __construct(
+        protected PaymentGatewayManager $gateways,
+        protected PaymentLinkService $links,
+    ) {}
+
     public function show(string $token): JsonResponse
     {
         $invoice = $this->resolveInvoice($token);
@@ -19,52 +23,87 @@ class PublicPaymentController extends Controller
         return response()->json(['data' => $this->summary($invoice)]);
     }
 
+    /**
+     * Manual pay-link settlement. Used directly by the offline stub and by
+     * customers who reconcile outside a hosted checkout.
+     */
     public function store(string $token, Request $request): JsonResponse
     {
         $invoice = $this->resolveInvoice($token);
 
-        if (in_array($invoice->status, ['draft', 'cancelled'])) {
-            return response()->json(['message' => 'This invoice is not ready for payment.'], 422);
+        if ($error = $this->guardPayable($invoice)) {
+            return $error;
         }
 
-        if ((float) $invoice->balance_due <= 0) {
-            return response()->json(['message' => 'This invoice has no outstanding balance.'], 422);
+        $amount = $this->resolveAmount($request, $invoice);
+
+        if ($amount instanceof JsonResponse) {
+            return $amount;
         }
 
-        $validated = $request->validate([
-            'amount' => ['nullable', 'numeric', 'min:0.01'],
-        ]);
-
-        $amount = isset($validated['amount']) ? round((float) $validated['amount'], 2) : (float) $invoice->balance_due;
-
-        if ($amount > (float) $invoice->balance_due + 0.005) {
-            return response()->json(['message' => 'Amount exceeds the outstanding balance.'], 422);
-        }
-
-        $payment = DB::transaction(function () use ($invoice, $amount) {
-            $payment = Payment::create([
-                'company_id' => $invoice->company_id,
-                'payment_number' => $this->nextPaymentNumber(),
-                'type' => 'receipt',
-                'contact_id' => $invoice->contact_id,
-                'invoice_id' => $invoice->id,
-                'payment_date' => now()->toDateString(),
-                'amount' => $amount,
-                'method' => 'payment_link',
-                'status' => 'completed',
-                'reference' => 'link-'.$invoice->invoice_number,
-            ]);
-
-            app(AccountingService::class)->postPayment($payment);
-            app(AccountingService::class)->refreshInvoiceFromPayments($invoice);
-
-            return $payment;
-        });
+        $payment = $this->links->record(
+            $invoice,
+            $amount,
+            'payment_link',
+            'link-'.$invoice->invoice_number,
+        );
 
         $invoice = Invoice::findOrFail($invoice->id);
 
         return response()->json([
             'data' => array_merge($this->summary($invoice), ['payment_number' => $payment->payment_number]),
+        ], 201);
+    }
+
+    /**
+     * Start a hosted checkout with the company's active gateway. Offline
+     * gateways settle inline and return the recorded payment; hosted gateways
+     * return a redirect URL and settle later via webhook.
+     */
+    public function checkout(string $token, Request $request): JsonResponse
+    {
+        $invoice = $this->resolveInvoice($token);
+
+        if ($error = $this->guardPayable($invoice)) {
+            return $error;
+        }
+
+        $validated = $request->validate([
+            'amount' => ['nullable', 'numeric', 'min:0.01'],
+            'success_url' => ['nullable', 'url'],
+            'cancel_url' => ['nullable', 'url'],
+        ]);
+
+        $amount = $this->resolveAmount($request, $invoice);
+
+        if ($amount instanceof JsonResponse) {
+            return $amount;
+        }
+
+        $gateway = $this->gateways->driver($invoice->company_id);
+
+        $successUrl = $validated['success_url'] ?? url("/api/v1/public/invoices/pay/{$token}");
+        $cancelUrl = $validated['cancel_url'] ?? $successUrl;
+
+        $session = $gateway->createCheckout($invoice, $amount, $successUrl, $cancelUrl);
+
+        if (! $session->completed) {
+            return response()->json(['data' => $session->toArray()], 201);
+        }
+
+        $payment = $this->links->record(
+            $invoice,
+            $amount,
+            $gateway->provider() === 'stub' ? 'payment_link' : $gateway->provider(),
+            'link-'.$invoice->invoice_number,
+        );
+
+        $invoice = Invoice::findOrFail($invoice->id);
+
+        return response()->json([
+            'data' => array_merge($session->toArray(), $this->summary($invoice), [
+                'payment_number' => $payment->payment_number,
+            ]),
         ], 201);
     }
 
@@ -77,6 +116,40 @@ class PublicPaymentController extends Controller
         }
 
         return $invoice;
+    }
+
+    /**
+     * @return JsonResponse|null An error response when the invoice cannot be paid.
+     */
+    private function guardPayable(Invoice $invoice): ?JsonResponse
+    {
+        if (in_array($invoice->status, ['draft', 'cancelled'], true)) {
+            return response()->json(['message' => 'This invoice is not ready for payment.'], 422);
+        }
+
+        if ((float) $invoice->balance_due <= 0) {
+            return response()->json(['message' => 'This invoice has no outstanding balance.'], 422);
+        }
+
+        return null;
+    }
+
+    /**
+     * Resolve the requested amount, rejecting an overpayment.
+     */
+    private function resolveAmount(Request $request, Invoice $invoice): float|JsonResponse
+    {
+        $validated = $request->validate([
+            'amount' => ['nullable', 'numeric', 'min:0.01'],
+        ]);
+
+        $amount = isset($validated['amount']) ? round((float) $validated['amount'], 2) : (float) $invoice->balance_due;
+
+        if ($amount > (float) $invoice->balance_due + 0.005) {
+            return response()->json(['message' => 'Amount exceeds the outstanding balance.'], 422);
+        }
+
+        return $amount;
     }
 
     /**
@@ -104,10 +177,5 @@ class PublicPaymentController extends Controller
                 'total' => (float) $item->total,
             ])->values(),
         ];
-    }
-
-    protected function nextPaymentNumber(): string
-    {
-        return 'REC-'.now()->format('Ymd').'-'.str_pad((string) (Payment::max('id') + 1), 5, '0', STR_PAD_LEFT);
     }
 }

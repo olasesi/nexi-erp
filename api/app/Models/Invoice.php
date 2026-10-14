@@ -45,6 +45,7 @@ class Invoice extends Model
         'balance_due',
         'notes',
         'terms',
+        'payment_token',
     ];
 
     /** Fulfilment states an invoice can move through, in fulfilment order. */
