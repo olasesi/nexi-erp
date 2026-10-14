@@ -76,6 +76,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'integrations' => ['view-any', 'view', 'update'],
             'webhook-deliveries' => ['view-any', 'view', 'update'],
             'webhook-events' => ['view-any'],
+            'uploads' => ['create'],
         ];
 
         foreach ($partialActions as $module => $suffixes) {

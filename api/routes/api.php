@@ -129,6 +129,7 @@ use App\Http\Controllers\Api\V1\TimesheetEntryController;
 use App\Http\Controllers\Api\V1\TodoController;
 use App\Http\Controllers\Api\V1\TrainingController;
 use App\Http\Controllers\Api\V1\TrainingTypeController;
+use App\Http\Controllers\Api\V1\UploadController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\WarehouseController;
 use App\Http\Controllers\Api\V1\WebhookDeliveryController;
@@ -191,6 +192,8 @@ Route::prefix('v1')->group(function () {
         // outside the admin users.* permission gate: any staff may edit their
         // own name, username, and phone.
         Route::put('/user', [AuthController::class, 'updateProfile']);
+
+        Route::post('uploads', [UploadController::class, 'store'])->name('uploads.store');
 
         Route::apiResource('companies', CompanyController::class);
         Route::post('companies/{company}/restore', [CompanyController::class, 'restore'])->name('companies.restore');
