@@ -50,7 +50,7 @@ Run the unit checks, then the end-to-end smoke test:
 # api/
 php vendor\bin\pint --test
 php vendor\bin\phpstan analyse --no-progress
-php artisan test --filter=Auth           # AuthControllerTest + CustomerLoginTest + AuthMetricsTest
+php artisan test --filter='Auth|PasswordSelfService'   # AuthControllerTest + CustomerLoginTest + AuthMetricsTest + PasswordSelfServiceTest
 
 # repo root
 .\scripts\test-auth.ps1                  # expects the server on :8000, seeds a temp customer contact

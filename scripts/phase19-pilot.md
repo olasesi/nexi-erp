@@ -86,12 +86,14 @@ cd api
 php artisan migrate:fresh --seed
 php vendor/bin/pint app tests database routes
 php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress
-php artisan test --filter='SalesOrderTest|QuotationTest|InvoiceTest|InvoiceExportTest'
+php artisan test --filter='SalesOrderTest|QuotationTest|InvoiceTest|InvoiceExportTest|DocumentDiscountTest'
 php artisan test --filter=PermissionCoverageTest
 ```
 
 Expected: `SalesOrderTest` 8 + `QuotationTest` 8 + `InvoiceTest` 7 +
-`InvoiceExportTest` 11 — 34 passed (100 assertions). `PermissionCoverageTest` 5
+`InvoiceExportTest` 11 + `DocumentDiscountTest` 4 — 38 passed (120 assertions).
+`DocumentDiscountTest` covers the document-wide `discount_rate` on sales orders
+and invoices (and that the ledger stays balanced). `PermissionCoverageTest` 5
 passed. Full suite remains green.
 
 ## 5. Notes

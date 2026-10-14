@@ -122,6 +122,8 @@ it('rejects an invalid employment type', function () {
 });
 
 it('publishes a draft posting and refuses to publish it twice', function () {
+    $this->travelTo(now());
+
     $posting = recruitmentPosting();
 
     $this->postJson("/api/v1/job-postings/{$posting->id}/publish")

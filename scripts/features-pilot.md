@@ -102,6 +102,7 @@ gating (`Route::middleware('addon:<id>')`).
 | `smart-dashboard` | `analytics` | `GET /api/v1/analytics/{executive,financial,sales,operations}` |
 | `business-advisor` | `business-advisor` | `GET /api/v1/business-advisor/report`, `GET /api/v1/business-advisor/snapshots` |
 | `suggestion-box` | `suggestions` | `/api/v1/suggestions*` (+ `POST /suggestions/{id}/restore`) |
+| `notice-board` | `notices` | `/api/v1/notices*` (+ `POST /notices/{id}/restore`) |
 
 The cross-domain tools (`form-builder` … `asset-management`) are documented in
 `scripts/tools-pilot.md`; the Phase 1 add-ons (`smart-reports` … `youtube`) in
@@ -133,8 +134,9 @@ surface (`audit-logs`) in `scripts/phase25-pilot.md`; the Financial Reports
 (`reports/*`) in `scripts/phase26-pilot.md`; the Smart Dashboard analytics add-on
 (`analytics`) in `scripts/phase27-pilot.md`; the AI Business Advisor add-on
 (`business-advisor`) in `scripts/phase28-pilot.md`; the Suggestion Box add-on
-(`suggestion-box`) in `scripts/phase29-pilot.md`; and the core Dashboard KPI
-summary and card feeds in `scripts/phase30-pilot.md`.
+(`suggestion-box`) in `scripts/phase29-pilot.md`; the core Dashboard KPI
+summary and card feeds in `scripts/phase30-pilot.md`; and the Notice Board add-on
+(`notices`) in `scripts/phase31-pilot.md`.
 The core Projects & HRM
 surfaces are documented in
 `scripts/phase10-pilot.md`.
@@ -166,6 +168,15 @@ stored state. See `scripts/phase6-pilot.md`.
 Enforcement is **data-driven**: a route is only gated while its permission row
 exists (seeded by `RolesAndPermissionsSeeder`). Add/remove a permission to toggle
 a whole module without code changes.
+
+The whole model is covered by `AuthorizationTest` (per-action enforcement, role
+grants, the "seeded permission" rule) and `AddonTest` (catalog, per-company
+toggle, and `addon_disabled` route gating):
+
+```powershell
+# api/
+php artisan test --filter='AuthorizationTest|AddonTest'
+```
 
 ### Seeded role perms (admin · manager · user)
 
