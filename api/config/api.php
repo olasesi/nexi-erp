@@ -55,4 +55,19 @@ return [
             'notice' => null,
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Rate limit (requests per minute)
+    |--------------------------------------------------------------------------
+    |
+    | Applied by the `throttle:api` middleware to every route in the API group.
+    | Requests are bucketed per authenticated user, falling back to the client
+    | IP for guests. Raise this behind a trusted proxy or lower it to tighten
+    | abuse protection. Tests raise the limit through API_RATE_LIMIT in
+    | phpunit.xml so suite-wide fixtures do not trip the limiter.
+    |
+    */
+
+    'rate_limit' => (int) env('API_RATE_LIMIT', 120),
 ];

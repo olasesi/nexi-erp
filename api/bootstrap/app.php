@@ -33,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(CollectMetrics::class);
 
+        $middleware->throttleApi('api');
         $middleware->api(append: [ApiVersion::class]);
 
         $middleware->alias([
