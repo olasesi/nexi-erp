@@ -99,6 +99,9 @@ gating (`Route::middleware('addon:<id>')`).
 | `award` | `awards` | `/api/v1/awards*` |
 | `company-policy` | `company-policies` | `/api/v1/company-policies*` (+ `publish`, `archive`) |
 | `bookings` | `booking-resources`, `bookings` | `/api/v1/booking-resources*`, `/api/v1/bookings*` (+ `confirm`, `check-in`, `complete`, `cancel`, `no-show`) |
+| `smart-dashboard` | `analytics` | `GET /api/v1/analytics/{executive,financial,sales,operations}` |
+| `business-advisor` | `business-advisor` | `GET /api/v1/business-advisor/report`, `GET /api/v1/business-advisor/snapshots` |
+| `suggestion-box` | `suggestions` | `/api/v1/suggestions*` (+ `POST /suggestions/{id}/restore`) |
 
 The cross-domain tools (`form-builder` … `asset-management`) are documented in
 `scripts/tools-pilot.md`; the Phase 1 add-ons (`smart-reports` … `youtube`) in
@@ -122,7 +125,16 @@ documents (`sales-orders`/`quotations`/`invoices`) in `scripts/phase19-pilot.md`
 the core Payments surface (`payments`) in `scripts/phase20-pilot.md`; the core
 Expenses & Income surfaces (`expense-categories`/`expenses`/`income-categories`/
 `incomes`) in `scripts/phase21-pilot.md`; the core accounting surfaces
-(`chart-of-accounts`/`journal-entries`) in `scripts/phase22-pilot.md`.
+(`chart-of-accounts`/`journal-entries`) in `scripts/phase22-pilot.md`; the core
+Companies & Locations surfaces (`companies`/`business-locations`) in
+`scripts/phase23-pilot.md`; the core Contacts & Customer Groups
+(`contacts`/`customer-group`) in `scripts/phase24-pilot.md`; the Audit Logs
+surface (`audit-logs`) in `scripts/phase25-pilot.md`; the Financial Reports
+(`reports/*`) in `scripts/phase26-pilot.md`; the Smart Dashboard analytics add-on
+(`analytics`) in `scripts/phase27-pilot.md`; the AI Business Advisor add-on
+(`business-advisor`) in `scripts/phase28-pilot.md`; the Suggestion Box add-on
+(`suggestion-box`) in `scripts/phase29-pilot.md`; and the core Dashboard KPI
+summary and card feeds in `scripts/phase30-pilot.md`.
 The core Projects & HRM
 surfaces are documented in
 `scripts/phase10-pilot.md`.
