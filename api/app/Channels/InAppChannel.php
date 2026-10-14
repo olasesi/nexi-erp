@@ -4,6 +4,7 @@ namespace App\Channels;
 
 use App\Models\Notification as InAppNotification;
 use App\Services\MetricsService;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notification;
 
 /**
@@ -25,11 +26,11 @@ class InAppChannel
 
         InAppNotification::create([
             'company_id' => $notifiable->company_id ?? null,
-            'user_id' => $notifiable->getKey(),
+            'user_id' => $notifiable instanceof Model ? $notifiable->getKey() : null,
             'type' => $payload['type'],
             'title' => $payload['title'],
             'body' => $payload['body'] ?? null,
-            'data' => $payload['data'] ?? [],
+            'data' => $payload['data'],
         ]);
 
         app(MetricsService::class)->recordNotification();

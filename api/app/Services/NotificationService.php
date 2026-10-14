@@ -45,7 +45,7 @@ class NotificationService
             'type' => $payload['type'],
             'title' => $payload['title'],
             'body' => $payload['body'] ?? null,
-            'data' => $payload['data'] ?? [],
+            'data' => $payload['data'],
         ]);
 
         $this->metrics->recordNotification();

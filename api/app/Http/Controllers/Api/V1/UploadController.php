@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 
 /**
  * Generic file upload endpoint. Validates the payload against the allow-list in
@@ -30,6 +31,10 @@ class UploadController extends Controller
         $directory = $base.'/'.now()->format('Y/m');
 
         $path = $file->store($directory, $disk);
+
+        if ($path === false) {
+            throw new RuntimeException('The uploaded file could not be stored.');
+        }
 
         return response()->json([
             'data' => [

@@ -18,7 +18,7 @@ class OpenAiAgentDriver implements AiAgentDriver
     public function reply(AiAgentThread $thread, string $message): string
     {
         $settings = $this->openAiSettings(
-            $thread->company_id !== null ? (int) $thread->company_id : null,
+            (int) $thread->company_id,
             'ai_assistant',
             (string) config('ai.providers.openai.model', 'gpt-4o-mini'),
         );

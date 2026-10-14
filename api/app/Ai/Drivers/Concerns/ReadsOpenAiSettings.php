@@ -56,7 +56,7 @@ trait ReadsOpenAiSettings
      */
     protected function openAiClient(array $settings): PendingRequest
     {
-        if (($settings['api_key'] ?? '') === '') {
+        if ($settings['api_key'] === '') {
             throw new RuntimeException('OpenAI API key is not configured.');
         }
 
