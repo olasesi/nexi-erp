@@ -1,0 +1,164 @@
+# Nexi ERP - production stack.
+#
+# One command brings up the full application: React SPA + ingress, Laravel API
+# (php-fpm), queue worker, scheduler, MySQL and Redis.
+#
+#   cp api/.env.production.example api/.env.production   # then edit the secrets
+#   docker compose --env-file api/.env.production -f docker-compose.prod.yml build
+#   docker compose --env-file api/.env.production -f docker-compose.prod.yml up -d
+#
+# The SPA is published on http://localhost:${HTTP_PORT} and reaches the API
+# through the bundled Nginx ingress (same origin - no CORS setup needed).
+#
+# One-time first-run steps (see docs/DEPLOY.md):
+#   docker compose ... exec app php artisan passport:client --password
+#   # put the printed id/secret in api/.env.production, then restart:
+
+name: nexi-erp
+
+x-app: &app
+  build:
+    context: ./api
+    dockerfile: Dockerfile
+  image: nexi-erp-api:latest
+  restart: unless-stopped
+  env_file:
+    - ./api/.env.production
+  environment:
+    APP_ENV: production
+    LOG_CHANNEL: stderr
+    DB_CONNECTION: mysql
+    DB_HOST: db
+    DB_PORT: "3306"
+    REDIS_CLIENT: phpredis
+    REDIS_HOST: redis
+    REDIS_PORT: "6379"
+    SESSION_DRIVER: database
+    QUEUE_CONNECTION: redis
+    CACHE_STORE: redis
+  volumes:
+    - app_storage:/var/www/html/storage
+
+services:
+  # One-shot: prepares the shared storage volume, runs migrations and generates
+  # Passport keys. Everything else waits for it to finish.
+  init:
+    <<: *app
+    container_name: nexi-erp-init
+    restart: "no"
+    command: >
+      sh -c "
+      mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs storage/app/public bootstrap/cache &&
+      chmod -R 0777 storage bootstrap/cache &&
+      php artisan migrate --force &&
+      (php artisan passport:keys --force 2>/dev/null || true) &&
+      (php artisan storage:link || true)
+      "
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # PHP-FPM application server (no host port; reached through `web`).
+  app:
+    <<: *app
+    container_name: nexi-erp-app
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Nginx serving Laravel's public/ dir and forwarding PHP to `app`.
+  web:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.web
+    container_name: nexi-erp-web
+    restart: unless-stopped
+    volumes:
+      - app_storage:/var/www/html/storage
+    depends_on:
+      app:
+        condition: service_started
+
+  # Background queue worker (webhooks, mails, etc.).
+  queue:
+    <<: *app
+    container_name: nexi-erp-queue
+    command: php artisan queue:work --tries=3 --timeout=90 --sleep=1
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Laravel task scheduler (invoices:mark-overdue, stock:alerts, webhooks:*).
+  scheduler:
+    <<: *app
+    container_name: nexi-erp-scheduler
+    command: php artisan schedule:work
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # React SPA + same-origin ingress. The only container published to the host.
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ""
+    container_name: nexi-erp-frontend
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - ./deploy/docker/nginx/frontend.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - web
+
+  db:
+    image: mysql:8.0
+    container_name: nexi-erp-db
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-nexi_erp}
+      MYSQL_USER: ${DB_USERNAME:-nexi}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in api/.env.production}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in api/.env.production}
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    container_name: nexi-erp-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  db_data:
+  redis_data:
+  app_storage:

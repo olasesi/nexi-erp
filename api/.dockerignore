@@ -1,0 +1,16 @@
+# Keep the image build lean and reproducible: install vendor/composer in the
+# image (composer install), never copy the host's vendor or secrets in.
+/vendor
+/node_modules
+/.env
+/.env.*
+/storage/*.key
+/storage/logs/*.log
+/storage/pail
+/storage/debugbar
+/tests
+phpstan.out
+serve.out
+.phpunit.result.cache
+_ide_helper.php
+_ide_helper_models.php

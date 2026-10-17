@@ -23,6 +23,7 @@ phpstan.out
 /storage/pail
 /storage/debugbar
 /vendor
+!.dockerignore
 Homestead.json
 Homestead.yaml
 Thumbs.db
