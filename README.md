@@ -123,3 +123,19 @@ docker run -p 8080:80 nexi-erp-frontend
 | Variable        | Default                  | Description                        |
 | --------------- | ------------------------ | ---------------------------------- |
 | `VITE_API_URL`  | `http://localhost:8000`  | Laravel API base URL (build-time)  |
+
+Leave `VITE_API_URL` empty for a same-origin deploy (the bundled Nginx proxies
+`/api` and `/graphql` to the backend - see `deploy/docker/nginx/frontend.conf`).
+
+## Deploying
+
+Full deployment guides live in [`docs/`](docs/DEPLOY.md):
+
+- **Docker Compose (recommended, any host)** - `docker-compose.prod.yml` brings
+  up the SPA, PHP-FPM, queue worker, scheduler, MySQL and Redis in one command.
+  See [docs/DEPLOY.md](docs/DEPLOY.md#option-a---docker-compose-recommended).
+- **cPanel / shared hosting** - step-by-step for document root, cron-driven
+  scheduler and queue, and building the SPA:
+  [docs/DEPLOY-cpanel.md](docs/DEPLOY-cpanel.md).
+- **Other platforms** (Laravel Cloud/Forge, Render, Railway, Fly.io, Coolify,
+  AWS, ...): [docs/DEPLOY.md](docs/DEPLOY.md#option-c---other-platforms).
