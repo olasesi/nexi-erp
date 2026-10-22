@@ -1,25 +1,21 @@
 import type { ColumnDef } from "@/lib/table";
 
 export function LoadingState() {
-  return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-500">
-      Loading...
-    </div>
-  );
+  return <div className="state state--loading">Loading…</div>;
 }
 
 export function ErrorState({ message }: { message: string }) {
   return (
-    <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
-      {message}
+    <div role="alert" className="state state--error">
+      <p className="state__title">{message}</p>
     </div>
   );
 }
 
 export function EmptyState({ message = "No records found." }: { message?: string }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-500">
-      {message}
+    <div className="state">
+      <p className="state__title">{message}</p>
     </div>
   );
 }
@@ -36,32 +32,31 @@ export function Table<T extends { id: number }>({
   }
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            {columns.map((col) => (
-              <th
-                key={String(col.header)}
-                className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase"
-              >
-                {col.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100 bg-white">
-          {rows.map((row) => (
-            <tr key={row.id}>
+    <div className="table">
+      <div className="table__scroll">
+        <table className="table__grid">
+          <thead className="table__head">
+            <tr>
               {columns.map((col) => (
-                <td key={String(col.header)} className="px-4 py-3 text-sm text-gray-700">
-                  {col.accessor(row)}
-                </td>
+                <th key={String(col.header)} className="table__th">
+                  {col.header}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.id} className="table__row">
+                {columns.map((col) => (
+                  <td key={String(col.header)} className="table__td">
+                    {col.accessor(row)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -2,9 +2,24 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   clearSettingsCache,
+  getAdvisorReport,
+  getAdvisorSnapshots,
+  getAging,
+  getCoworkingSummary,
+  getDashboardSummary,
+  getFinancialYearSales,
+  getHrmSummary,
+  getOperationsAnalytics,
+  getPosSummary,
+  getProfitAndLoss,
+  getSalesAnalytics,
+  getSalesByProduct,
   getSettings,
+  getStockAlert,
+  getTeamWorkload,
   login,
   logout,
+  requireCompanyId,
   sendTestEmail,
   updateSettingsGroup,
 } from "./api";
@@ -135,5 +150,134 @@ describe("api client", () => {
       expect.stringContaining("/api/v1/settings/email/test"),
       expect.objectContaining({ method: "POST" }),
     );
+  });
+});
+
+describe("requireCompanyId", () => {
+  it("returns the company id off the user", () => {
+    expect(requireCompanyId({ company: { id: 7 } } as never)).toBe(7);
+  });
+
+  it("throws when the account has no company", () => {
+    expect(() => requireCompanyId(null)).toThrow(/no company/i);
+    expect(() => requireCompanyId({ company: null } as never)).toThrow(/no company/i);
+  });
+});
+
+function mockJson(payload: unknown) {
+  fetchMock.mockResolvedValueOnce({ status: 200, ok: true, json: async () => payload });
+}
+
+describe("analytics and dashboard endpoints", () => {
+  it("getSalesAnalytics hits the sales tab and forwards params", async () => {
+    mockJson({ tab: "sales", data: { kpis: {} } });
+
+    await getSalesAnalytics(3, { limit: 25 });
+
+    const url = fetchMock.mock.calls[0][0] as string;
+    expect(url).toContain("/api/v1/analytics/sales");
+    expect(url).toContain("company_id=3");
+    expect(url).toContain("limit=25");
+  });
+
+  it("getOperationsAnalytics hits the operations tab", async () => {
+    mockJson({ tab: "operations", data: {} });
+
+    await getOperationsAnalytics(3, { limit: 10 });
+
+    expect(fetchMock.mock.calls[0][0]).toContain("/api/v1/analytics/operations");
+  });
+
+  it("getDashboardSummary requests the dashboard endpoint", async () => {
+    mockJson({ data: { today_sales: 1 } });
+
+    await getDashboardSummary({ company_id: 3 });
+
+    const url = fetchMock.mock.calls[0][0] as string;
+    expect(url).toContain("/api/v1/dashboard?");
+    expect(url).toContain("company_id=3");
+  });
+
+  it("getFinancialYearSales sends from/to when provided", async () => {
+    mockJson({ data: { months: [] } });
+
+    await getFinancialYearSales({ company_id: 3, from: "2025-04-01", to: "2026-03-31" });
+
+    const url = fetchMock.mock.calls[0][0] as string;
+    expect(url).toContain("/api/v1/dashboard/financial-year-sales");
+    expect(url).toContain("from=2025-04-01");
+    expect(url).toContain("to=2026-03-31");
+  });
+
+  it("getStockAlert forwards the days window", async () => {
+    mockJson({ data: { products: [] } });
+
+    await getStockAlert({ company_id: 3, days: 7 });
+
+    const url = fetchMock.mock.calls[0][0] as string;
+    expect(url).toContain("/api/v1/dashboard/stock-alert");
+    expect(url).toContain("days=7");
+  });
+
+  it("getProfitAndLoss hits the profit-and-loss report", async () => {
+    mockJson({ data: {} });
+
+    await getProfitAndLoss({ company_id: 3 });
+
+    expect(fetchMock.mock.calls[0][0]).toContain("/api/v1/reports/profit-and-loss");
+  });
+
+  it("getAging sends the type param", async () => {
+    mockJson({ data: { buckets: [] } });
+
+    await getAging({ company_id: 3, type: "receivable" });
+
+    const url = fetchMock.mock.calls[0][0] as string;
+    expect(url).toContain("/api/v1/reports/aging");
+    expect(url).toContain("type=receivable");
+  });
+
+  it("getSalesByProduct hits the sales-by-product report", async () => {
+    mockJson({ data: { products: [] } });
+
+    await getSalesByProduct({ company_id: 3 });
+
+    expect(fetchMock.mock.calls[0][0]).toContain("/api/v1/reports/sales-by-product");
+  });
+
+  it("getAdvisorReport and snapshots hit the business-advisor routes", async () => {
+    mockJson({ data: { score: 70 } });
+    await getAdvisorReport(3);
+    expect(fetchMock.mock.calls[0][0]).toContain("/api/v1/business-advisor/report");
+
+    mockJson({ data: [] });
+    await getAdvisorSnapshots(3);
+    expect(fetchMock.mock.calls[1][0]).toContain("/api/v1/business-advisor/snapshots");
+  });
+
+  it("getHrmSummary and getTeamWorkload hit the HRM routes", async () => {
+    mockJson({ data: {} });
+    await getHrmSummary(3);
+    expect(fetchMock.mock.calls[0][0]).toContain("/api/v1/hrm-employees/summary");
+
+    mockJson({ data: [] });
+    await getTeamWorkload(3);
+    expect(fetchMock.mock.calls[1][0]).toContain("/api/v1/team-workload");
+  });
+
+  it("getPosSummary hits the POS summary route", async () => {
+    mockJson({ data: { date: "2026-10-22" } });
+
+    await getPosSummary({ company_id: 3, limit: 10 });
+
+    expect(fetchMock.mock.calls[0][0]).toContain("/api/v1/dashboard/pos-summary");
+  });
+
+  it("getCoworkingSummary hits the coworking bookings route", async () => {
+    mockJson({ data: {} });
+
+    await getCoworkingSummary(3);
+
+    expect(fetchMock.mock.calls[0][0]).toContain("/api/v1/coworking-bookings/summary");
   });
 });

@@ -1,4 +1,5 @@
 import { EmptyState, ErrorState, LoadingState, Table } from "@/components/table";
+import { PageHeader } from "@/components/ui/page-header";
 import { companies } from "@/lib/api";
 import type { ColumnDef } from "@/lib/table";
 import { useResource } from "@/lib/use-resource";
@@ -16,11 +17,8 @@ export function CompaniesPage() {
   const { data, loading, error } = useResource(companies.list);
 
   return (
-    <div>
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
-        <p className="mt-1 text-gray-600">Manage business entities</p>
-      </header>
+    <div className="page">
+      <PageHeader title="Companies" description="Manage business entities" />
 
       {loading ? (
         <LoadingState />

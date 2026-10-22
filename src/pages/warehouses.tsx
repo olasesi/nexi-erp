@@ -1,4 +1,5 @@
 import { EmptyState, ErrorState, LoadingState, Table } from "@/components/table";
+import { PageHeader } from "@/components/ui/page-header";
 import { warehouses } from "@/lib/api";
 import type { ColumnDef } from "@/lib/table";
 import { useResource } from "@/lib/use-resource";
@@ -17,11 +18,8 @@ export function WarehousesPage() {
   const { data, loading, error } = useResource(warehouses.list);
 
   return (
-    <div>
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Warehouses</h1>
-        <p className="mt-1 text-gray-600">Storage locations</p>
-      </header>
+    <div className="page">
+      <PageHeader title="Warehouses" description="Storage locations" />
 
       {loading ? (
         <LoadingState />

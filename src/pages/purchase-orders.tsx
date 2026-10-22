@@ -1,4 +1,5 @@
 import { EmptyState, ErrorState, LoadingState, Table } from "@/components/table";
+import { PageHeader } from "@/components/ui/page-header";
 import { purchaseOrders } from "@/lib/api";
 import type { ColumnDef } from "@/lib/table";
 import { useResource } from "@/lib/use-resource";
@@ -19,11 +20,8 @@ export function PurchaseOrdersPage() {
   const { data, loading, error } = useResource(purchaseOrders.list);
 
   return (
-    <div>
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Purchase Orders</h1>
-        <p className="mt-1 text-gray-600">Supplier orders &amp; procurement</p>
-      </header>
+    <div className="page">
+      <PageHeader title="Purchase Orders" description="Supplier orders & procurement" />
 
       {loading ? (
         <LoadingState />

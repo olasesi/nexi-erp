@@ -1,4 +1,5 @@
 import { EmptyState, ErrorState, LoadingState, Table } from "@/components/table";
+import { PageHeader } from "@/components/ui/page-header";
 import { salesOrders } from "@/lib/api";
 import type { ColumnDef } from "@/lib/table";
 import { useResource } from "@/lib/use-resource";
@@ -19,11 +20,8 @@ export function SalesOrdersPage() {
   const { data, loading, error } = useResource(salesOrders.list);
 
   return (
-    <div>
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Sales Orders</h1>
-        <p className="mt-1 text-gray-600">Customer orders &amp; invoicing</p>
-      </header>
+    <div className="page">
+      <PageHeader title="Sales Orders" description="Customer orders & invoicing" />
 
       {loading ? (
         <LoadingState />

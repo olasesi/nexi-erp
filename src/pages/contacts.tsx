@@ -1,4 +1,5 @@
 import { EmptyState, ErrorState, LoadingState, Table } from "@/components/table";
+import { PageHeader } from "@/components/ui/page-header";
 import { contacts } from "@/lib/api";
 import type { ColumnDef } from "@/lib/table";
 import { useResource } from "@/lib/use-resource";
@@ -18,11 +19,8 @@ export function ContactsPage() {
   const { data, loading, error } = useResource(contacts.list);
 
   return (
-    <div>
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Contacts</h1>
-        <p className="mt-1 text-gray-600">Customers, suppliers &amp; leads</p>
-      </header>
+    <div className="page">
+      <PageHeader title="Contacts" description="Customers, suppliers & leads" />
 
       {loading ? (
         <LoadingState />

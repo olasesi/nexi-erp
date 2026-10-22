@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { healthCheck } from "@/lib/api";
 import { logger } from "@/lib/logger";
+import { PageHeader } from "@/components/ui/page-header";
 
 interface HealthState {
   status: string | null;
@@ -31,13 +32,10 @@ export function DashboardPage() {
   }, []);
 
   return (
-    <div>
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-gray-600">Welcome to Nexi ERP</p>
-      </header>
+    <div className="page">
+      <PageHeader title="Dashboard" description="Welcome to Nexi ERP" />
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid-fixed grid-fixed--4">
         <StatCard
           label="API Status"
           value={health.connected ? (health.status ?? "ok") : "Offline"}
@@ -50,11 +48,11 @@ export function DashboardPage() {
 
 function StatCard({ label, value, good }: { label: string; value: string; good: boolean }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-      <p className="text-sm font-medium text-gray-500">{label}</p>
-      <p className={`mt-2 text-2xl font-bold ${good ? "text-emerald-600" : "text-red-600"}`}>
-        {value}
-      </p>
+    <div className="card">
+      <div className="card__body">
+        <p className="stat__label">{label}</p>
+        <p className={`stat__value ${good ? "text-success" : "text-danger"}`}>{value}</p>
+      </div>
     </div>
   );
 }

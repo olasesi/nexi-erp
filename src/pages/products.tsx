@@ -1,4 +1,5 @@
 import { EmptyState, ErrorState, LoadingState, Table } from "@/components/table";
+import { PageHeader } from "@/components/ui/page-header";
 import { products } from "@/lib/api";
 import type { ColumnDef } from "@/lib/table";
 import { useResource } from "@/lib/use-resource";
@@ -19,11 +20,8 @@ export function ProductsPage() {
   const { data, loading, error } = useResource(products.list);
 
   return (
-    <div>
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-        <p className="mt-1 text-gray-600">Product catalog &amp; inventory</p>
-      </header>
+    <div className="page">
+      <PageHeader title="Products" description="Product catalog & inventory" />
 
       {loading ? (
         <LoadingState />

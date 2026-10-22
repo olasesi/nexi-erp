@@ -3,6 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 import { ErrorState, LoadingState } from "@/components/table";
 import { clearSettingsCache, getSettings, sendTestEmail, updateSettingsGroup } from "@/lib/api";
 import { logger } from "@/lib/logger";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import type { AppSettings, SettingsMeta, SettingsValue } from "@/types";
 
 type FieldType = "text" | "number" | "email" | "password" | "url" | "textarea" | "select";
@@ -272,9 +276,6 @@ const GROUP_SPECS: GroupSpec[] = [
   },
 ];
 
-const INPUT_CLASS =
-  "w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
-
 function Control({
   field,
   value,
@@ -291,7 +292,7 @@ function Control({
   if (field.type === "select") {
     return (
       <select
-        className={INPUT_CLASS}
+        className="form-field__select"
         value={stringValue}
         onChange={(e) => onChange(e.target.value)}
       >
@@ -307,7 +308,7 @@ function Control({
   if (field.type === "textarea") {
     return (
       <textarea
-        className={INPUT_CLASS}
+        className="form-field__textarea"
         rows={3}
         value={stringValue}
         onChange={(e) => onChange(e.target.value)}
@@ -318,7 +319,7 @@ function Control({
   return (
     <input
       type={field.type}
-      className={INPUT_CLASS}
+      className="form-field__input"
       value={stringValue}
       placeholder={field.placeholder}
       autoComplete={field.type === "password" ? "new-password" : undefined}
@@ -411,10 +412,8 @@ export function SettingsPage() {
 
   if (loading) {
     return (
-      <div>
-        <header className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        </header>
+      <div className="page">
+        <PageHeader title="Settings" />
         <LoadingState />
       </div>
     );
@@ -422,128 +421,112 @@ export function SettingsPage() {
 
   if (!meta || !values) {
     return (
-      <div>
-        <header className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        </header>
+      <div className="page">
+        <PageHeader title="Settings" />
         <ErrorState message={message?.text ?? "Settings could not be loaded."} />
       </div>
     );
   }
 
   return (
-    <div>
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="mt-1 text-gray-600">Appearance, system, currency and email configuration</p>
-      </header>
+    <div className="page">
+      <PageHeader
+        title="Settings"
+        description="Appearance, system, currency and email configuration"
+      />
 
       {message ? (
-        <div
-          className={`mb-6 rounded-xl border p-4 text-sm ${
-            message.kind === "success"
-              ? "border-green-200 bg-green-50 text-green-700"
-              : "border-red-200 bg-red-50 text-red-700"
-          }`}
-        >
+        <Alert variant={message.kind === "success" ? "success" : "error"} title="">
           {message.text}
-        </div>
+        </Alert>
       ) : null}
 
-      <div className="mb-6 flex flex-wrap gap-1 border-b border-gray-200">
-        {GROUP_SPECS.map((spec) => (
-          <button
-            key={spec.key}
-            type="button"
-            onClick={() => setActive(spec.key)}
-            className={`rounded-t-lg px-4 py-2 text-sm font-medium transition-colors ${
-              active === spec.key
-                ? "border-b-2 border-blue-600 text-blue-700"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            {spec.label}
-          </button>
-        ))}
-      </div>
+      <div className="settings-layout">
+        <nav className="settings-nav" aria-label="Settings groups">
+          {GROUP_SPECS.map((spec) => (
+            <button
+              key={spec.key}
+              type="button"
+              onClick={() => setActive(spec.key)}
+              aria-current={active === spec.key ? "page" : undefined}
+              className={`settings-nav__item ${active === spec.key ? "settings-nav__item--active" : ""}`}
+            >
+              {spec.label}
+            </button>
+          ))}
+        </nav>
 
-      {activeSpec ? (
-        <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-          <form
-            key={activeSpec.key}
-            className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSave();
-            }}
-          >
-            <h2 className="text-sm font-semibold text-gray-900">{activeSpec.label}</h2>
-            <p className="mt-1 text-xs text-gray-500">{activeSpec.description}</p>
+        {activeSpec ? (
+          <div className="settings-panels">
+            <form
+              key={activeSpec.key}
+              className="card"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSave();
+              }}
+            >
+              <div className="card__body">
+                <div className="settings-group">
+                  <h2 className="settings-group__title">{activeSpec.label}</h2>
+                  <p className="settings-group__description">{activeSpec.description}</p>
+                </div>
 
-            <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {activeSpec.fields.map((field) => (
-                <label key={field.key} className="block">
-                  <span className="mb-1 block text-xs font-medium text-gray-600">
-                    {field.label}
-                  </span>
-                  <Control
-                    field={field}
-                    value={values[active]?.[field.key]}
-                    meta={meta}
-                    onChange={(value) => updateValue(active, field.key, value)}
+                <div className="settings-group__fields">
+                  {activeSpec.fields.map((field) => (
+                    <label key={field.key} className="form-field">
+                      <span className="form-field__label">{field.label}</span>
+                      <Control
+                        field={field}
+                        value={values[active]?.[field.key]}
+                        meta={meta}
+                        onChange={(value) => updateValue(active, field.key, value)}
+                      />
+                    </label>
+                  ))}
+                </div>
+
+                <div className="settings-group__footer">
+                  <Button type="submit" disabled={saving}>
+                    {saving ? "Saving..." : "Save changes"}
+                  </Button>
+                </div>
+              </div>
+            </form>
+
+            <aside className="settings-rail">
+              <Card title="System" description={`Cache footprint: ${meta.cache_size} MB`}>
+                <Button variant="secondary" block onClick={() => void handleClearCache()}>
+                  Clear application cache
+                </Button>
+              </Card>
+
+              <Card
+                title="Email"
+                description="Send a test message using the configured mail transport"
+              >
+                <div className="form-field">
+                  <input
+                    type="email"
+                    value={testEmail}
+                    placeholder="ops@example.com"
+                    className="form-field__input"
+                    onChange={(e) => setTestEmail(e.target.value)}
                   />
-                </label>
-              ))}
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <button
-                type="submit"
-                disabled={saving}
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {saving ? "Saving..." : "Save changes"}
-              </button>
-            </div>
-          </form>
-
-          <aside className="space-y-6">
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-gray-900">System</h2>
-              <p className="mt-1 text-xs text-gray-500">Cache footprint: {meta.cache_size} MB</p>
-              <button
-                type="button"
-                onClick={handleClearCache}
-                className="mt-4 w-full rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-              >
-                Clear application cache
-              </button>
-            </div>
-
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="text-sm font-semibold text-gray-900">Email</h2>
-              <p className="mt-1 text-xs text-gray-500">
-                Send a test message using the configured mail transport
-              </p>
-              <input
-                type="email"
-                value={testEmail}
-                placeholder="ops@example.com"
-                className={`${INPUT_CLASS} mt-4`}
-                onChange={(e) => setTestEmail(e.target.value)}
-              />
-              <button
-                type="button"
-                disabled={sending || !testEmail.trim()}
-                onClick={handleSendTestEmail}
-                className="mt-3 w-full rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {sending ? "Sending..." : "Send test email"}
-              </button>
-            </div>
-          </aside>
-        </div>
-      ) : null}
+                </div>
+                <Button
+                  variant="secondary"
+                  block
+                  disabled={sending || !testEmail.trim()}
+                  onClick={() => void handleSendTestEmail()}
+                >
+                  {sending ? "Sending..." : "Send test email"}
+                </Button>
+              </Card>
+            </aside>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

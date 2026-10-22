@@ -1,0 +1,63 @@
+/* ==========================================================================
+   Block: Alert
+   Inline banner for form- and page-level messages.
+   ========================================================================== */
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+.alert__icon {
+  display: flex;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.alert__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.alert__title {
+  margin: 0;
+  font-weight: var(--weight-semibold);
+}
+
+.alert__text {
+  margin: var(--space-1) 0 0;
+  color: inherit;
+  opacity: 0.9;
+}
+
+/* ---- Variants ---- */
+
+.alert--error {
+  background-color: var(--danger-soft);
+  border-color: var(--danger-border);
+  color: var(--danger-soft-text);
+}
+
+.alert--success {
+  background-color: var(--success-soft);
+  border-color: transparent;
+  color: var(--success-text);
+}
+
+.alert--info {
+  background-color: var(--info-soft);
+  border-color: transparent;
+  color: var(--info);
+}
+
+.alert--warning {
+  background-color: var(--warning-soft);
+  border-color: transparent;
+  color: var(--warning);
+}

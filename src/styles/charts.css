@@ -1,0 +1,306 @@
+/* ==========================================================================
+   Charts
+   Shared presentational classes for the Recharts wrappers plus the hand-built
+   HTML/SVG charts. Series colours stay in TS (theme.ts) because they are
+   assigned per data series; these rules handle the chrome around them.
+   ========================================================================== */
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.chart__canvas {
+  width: 100%;
+  min-width: 0;
+}
+
+/* ---- Empty state shared by every chart ---- */
+
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 10rem;
+  font-size: var(--text-sm);
+  color: var(--text-subtle);
+}
+
+/* ---- Legend ---- */
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.chart-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--gray-600);
+}
+
+.chart-legend__swatch {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Block: Donut
+   ========================================================================== */
+
+.donut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.donut__canvas {
+  position: relative;
+  width: 12.5rem;
+  flex-shrink: 0;
+}
+
+.donut__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  text-align: center;
+}
+
+.donut__center-value {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  color: var(--text);
+}
+
+.donut__center-caption {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.donut__list {
+  flex: 1;
+  min-width: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-15, 0.375rem);
+}
+
+.donut__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.donut__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.donut__dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.donut__name {
+  color: var(--gray-600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.donut__value {
+  flex-shrink: 0;
+  font-weight: var(--weight-semibold);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   Block: Funnel
+   ========================================================================== */
+
+.funnel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.funnel__step {
+  display: flex;
+  flex-direction: column;
+}
+
+.funnel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+  font-size: var(--text-xs);
+}
+
+.funnel__name {
+  font-weight: var(--weight-medium);
+  color: var(--gray-700);
+}
+
+.funnel__figures {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+}
+
+.funnel__count {
+  font-weight: var(--weight-semibold);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.funnel__track {
+  height: 1.5rem;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background-color: var(--gray-100);
+}
+
+.funnel__fill {
+  height: 100%;
+  border-radius: var(--radius-md);
+  transition: width var(--duration-normal) var(--ease);
+}
+
+/* ==========================================================================
+   Block: HorizontalBars
+   ========================================================================== */
+
+.hbars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.hbars__row {
+  display: flex;
+  flex-direction: column;
+}
+
+.hbars__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.hbars__label {
+  color: var(--gray-700);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hbars__figures {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.hbars__meta {
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+.hbars__value {
+  font-weight: var(--weight-semibold);
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.hbars__track {
+  height: 0.5rem;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background-color: var(--gray-100);
+}
+
+.hbars__fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--duration-normal) var(--ease);
+}
+
+/* ==========================================================================
+   Block: Radial (gauge)
+   ========================================================================== */
+
+.radial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.radial__svg {
+  display: block;
+}
+
+.radial__value {
+  fill: var(--text);
+  font-weight: var(--weight-bold);
+}
+
+.radial__caption {
+  fill: var(--text-muted);
+  font-size: 7px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.radial__label {
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--gray-600);
+}
+
+.radial__sublabel {
+  font-size: 11px;
+  color: var(--text-subtle);
+}
+
+/* ==========================================================================
+   Block: Sparkline
+   ========================================================================== */
+
+.sparkline {
+  width: 100%;
+}

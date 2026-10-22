@@ -1,0 +1,31 @@
+/* ==========================================================================
+   Nexi ERP — stylesheet entry point
+   ------------------------------------------------------------------
+   Order matters: tokens first (they define every custom property),
+   then the base reset, then blocks/components, then page-specific rules.
+   Each file is plain CSS with BEM class names; components import the
+   file they need, but everything is funnelled through this index so a
+   single import in main.tsx loads the whole system.
+   ========================================================================== */
+
+@import "./tokens.css";
+@import "./base.css";
+
+/* Layout helpers */
+@import "./layout-utils.css";
+
+/* Shared blocks */
+@import "./layout.css";
+@import "./button.css";
+@import "./badge.css";
+@import "./alert.css";
+@import "./card.css";
+@import "./components.css";
+@import "./table.css";
+@import "./forms.css";
+
+/* Charts */
+@import "./charts.css";
+
+/* Page-level rules */
+@import "./pages.css";

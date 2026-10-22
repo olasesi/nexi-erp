@@ -1,0 +1,384 @@
+/* ==========================================================================
+   Block: FormField
+   ========================================================================== */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-15, 0.375rem);
+}
+
+.form-field__label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--gray-700);
+}
+
+/* Wrapper for an input that carries a leading icon and/or a trailing action. */
+.form-field__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-field__icon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--text-subtle);
+  pointer-events: none;
+}
+
+.form-field__action {
+  position: absolute;
+  right: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--text-muted);
+}
+
+.form-field__action:hover {
+  background-color: var(--gray-100);
+  color: var(--text);
+}
+
+/* Indent text past a leading icon. */
+.form-field__input--icon {
+  padding-left: 2.25rem;
+}
+
+/* Reserve room on the right for a trailing action button. */
+.form-field__input--action {
+  padding-right: 2.5rem;
+}
+
+.form-field__required {
+  color: var(--danger);
+  margin-left: 2px;
+}
+
+.form-field__input,
+.form-field__select,
+.form-field__textarea {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface);
+  font-size: var(--text-sm);
+  color: var(--text);
+  transition:
+    border-color var(--duration-fast) var(--ease),
+    box-shadow var(--duration-fast) var(--ease);
+}
+
+.form-field__input::placeholder,
+.form-field__textarea::placeholder {
+  color: var(--text-subtle);
+}
+
+.form-field__input:focus,
+.form-field__select:focus,
+.form-field__textarea:focus {
+  outline: none;
+  border-color: var(--accent-ring);
+  box-shadow: var(--shadow-focus);
+}
+
+.form-field__input[aria-invalid="true"],
+.form-field__select[aria-invalid="true"],
+.form-field__textarea[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.form-field__input:disabled,
+.form-field__select:disabled,
+.form-field__textarea:disabled {
+  background-color: var(--gray-100);
+  color: var(--text-subtle);
+  cursor: not-allowed;
+}
+
+.form-field__textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+.form-field__hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.form-field__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--danger-soft-text);
+}
+
+/* ==========================================================================
+   Block: AuthLayout (login screen)
+   ========================================================================== */
+
+.auth {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  min-height: 100vh;
+  background-color: var(--gray-50);
+}
+
+/* ---- Brand / marketing panel ---- */
+
+.auth__brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-10);
+  padding: var(--space-12);
+  color: var(--text-inverse);
+  overflow: hidden;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(255, 255, 255, 0.18), transparent 60%),
+    linear-gradient(150deg, #1e3a8a 0%, #2563eb 45%, #0ea5e9 100%);
+}
+
+.auth__brand::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(120% 80% at 30% 20%, #000 30%, transparent 75%);
+  pointer-events: none;
+}
+
+.auth__brand > * {
+  position: relative;
+  z-index: 1;
+}
+
+.auth__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.auth__logo-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-lg);
+  background-color: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+}
+
+.auth__logo-text {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.01em;
+}
+
+.auth__headline {
+  margin: 0;
+  max-width: 20ch;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: var(--weight-bold);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.auth__subline {
+  margin: var(--space-4) 0 0;
+  max-width: 42ch;
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.auth__features {
+  list-style: none;
+  margin: var(--space-8) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.auth__feature {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.auth__feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+.auth__feature-text {
+  padding-top: 2px;
+}
+
+.auth__footnote {
+  font-size: var(--text-xs);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ---- Form panel ---- */
+
+.auth__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-8);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 26rem;
+}
+
+.auth-card__header {
+  margin-bottom: var(--space-8);
+}
+
+.auth-card__title {
+  margin: 0;
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.02em;
+}
+
+.auth-card__subtitle {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.auth-card__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.auth-card__footer {
+  margin-top: var(--space-6);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.auth-card__link {
+  font-weight: var(--weight-medium);
+}
+
+/* Password input with a reveal toggle. */
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field__input {
+  padding-right: 2.75rem;
+}
+
+.password-field__toggle {
+  position: absolute;
+  right: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  color: var(--text-muted);
+}
+
+.password-field__toggle:hover {
+  background-color: var(--gray-100);
+  color: var(--text);
+}
+
+@media (max-width: 880px) {
+  .auth {
+    grid-template-columns: 1fr;
+  }
+
+  .auth__brand {
+    display: none;
+  }
+
+  .auth__panel {
+    padding: var(--space-8) var(--space-5);
+  }
+}
+
+/* ==========================================================================
+   Block: Select (compact standalone control for filters and row counts)
+   ========================================================================== */
+
+.select {
+  appearance: none;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface);
+  font-size: var(--text-sm);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease),
+    box-shadow var(--duration-fast) var(--ease);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--accent-ring);
+  box-shadow: var(--shadow-focus);
+}
+
+.select:disabled {
+  background-color: var(--gray-100);
+  color: var(--text-subtle);
+  cursor: not-allowed;
+}
+
+/* Label + select on one line. */
+.select-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
