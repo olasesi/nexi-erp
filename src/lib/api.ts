@@ -46,7 +46,10 @@ import type {
   Warehouse,
 } from "@/types";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+// Empty by default so browser requests are same-origin: the Vite dev server
+// proxies /api to localhost:8000 and the Nginx image proxies it to the API
+// container. Set VITE_API_URL at build time for a split-origin deployment.
+const API_BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/+$/, "");
 
 export class ApiError extends Error {
   status: number;
