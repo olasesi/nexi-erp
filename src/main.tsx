@@ -9,7 +9,7 @@ import { createQueryClient } from "@/lib/query";
 import { initMonitoring } from "@/lib/sentry";
 import { reportWebVitals } from "@/lib/vitals";
 
-initMonitoring();
+void initMonitoring();
 reportWebVitals();
 
 const queryClient = createQueryClient();

@@ -1,7 +1,6 @@
 import log from "loglevel";
-import * as Sentry from "@sentry/react";
 
-import { monitoringEnabled } from "@/lib/sentry";
+import { addBreadcrumb } from "@/lib/sentry";
 
 const LOG_LEVELS = ["trace", "debug", "info", "warn", "error"] as const;
 export type LogLevel = (typeof LOG_LEVELS)[number];
@@ -26,9 +25,8 @@ function stringify(value: unknown): string {
   }
 }
 
-function breadcrumb(level: Sentry.SeverityLevel, args: unknown[]): void {
-  if (!monitoringEnabled) return;
-  Sentry.addBreadcrumb({
+function breadcrumb(level: "info" | "warning" | "error", args: unknown[]): void {
+  addBreadcrumb({
     category: "app",
     level,
     message: args.map(stringify).join(" "),

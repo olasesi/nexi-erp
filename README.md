@@ -161,8 +161,9 @@ docker build --build-arg VITE_API_URL=https://api.example.com -t nexi-erp-fronte
 ## Monitoring & operations
 
 - **Errors** — `initMonitoring()` (called from `src/main.tsx`) starts Sentry when
-  `VITE_SENTRY_DSN` is set; `ErrorBoundary` and the API layer forward failures
-  with `captureException()`. Console logging stays local at `VITE_LOG_LEVEL`.
+  `VITE_SENTRY_DSN` is set; the SDK is imported on demand, so an unset DSN costs
+  nothing at runtime. `ErrorBoundary` and the API layer forward failures with
+  `captureException()`. Console logging stays local at `VITE_LOG_LEVEL`.
 - **Performance** — `reportWebVitals()` streams CLS/INP/LCP/TTFB/FCP to Sentry as
   measurements and breadcrumbs; browser tracing runs at 10% in production.
 - **Request health** — TanStack Query caches dashboard/report reads for 30s,
