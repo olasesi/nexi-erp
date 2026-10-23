@@ -2,12 +2,18 @@ import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Activity, AlertTriangle, Info, Sparkles } from "lucide-react";
 
-import { getAdvisorReport } from "@/lib/api";
+import {
+  getAdvisorReport,
+  getHrmSummary,
+  getTeamWorkload,
+  getTeamWorkloadSummary,
+} from "@/lib/api";
 import { formatMonth, formatPercent } from "@/lib/format";
 import { useCompany } from "@/lib/use-company";
 import { SeverityBadge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
+import { Stat } from "@/components/ui/stat";
 import { ErrorState, LoadingState } from "@/components/ui/states";
 import { RadialGauge, TrendChart } from "@/components/charts";
 import type { AdvisorReport } from "@/types";
@@ -53,10 +59,10 @@ export function HealthPage() {
   }
   if (!query.data) return <LoadingState />;
 
-  return <HealthContent report={query.data} />;
+  return <HealthContent report={query.data} companyId={companyId} />;
 }
 
-function HealthContent({ report }: { report: AdvisorReport }) {
+function HealthContent({ report, companyId }: { report: AdvisorReport; companyId: number }) {
   const categories = Object.entries(report.categories);
   const trend = report.trend.points;
 
@@ -153,6 +159,8 @@ function HealthContent({ report }: { report: AdvisorReport }) {
         <FeedCard title="Recommendations" items={report.recommendations} />
       </div>
 
+      <TeamWorkloadSection companyId={companyId} />
+
       <p className="tally">
         <Activity className="icon icon--xs" />
         Recomputed by the scheduled advisor snapshot job.
@@ -192,6 +200,123 @@ function FeedCard({
         </ul>
       )}
     </Card>
+  );
+}
+
+function TeamWorkloadSection({ companyId }: { companyId: number }) {
+  const hrm = useQuery({
+    queryKey: ["hrm", "summary", companyId],
+    queryFn: () => getHrmSummary(companyId),
+  });
+  const workloadSummary = useQuery({
+    queryKey: ["team-workload", "summary", companyId],
+    queryFn: () => getTeamWorkloadSummary(companyId),
+  });
+  const workload = useQuery({
+    queryKey: ["team-workload", "rows", companyId],
+    queryFn: () => getTeamWorkload(companyId),
+  });
+
+  const rows = [...(workload.data?.data ?? [])]
+    .sort((a, b) => b.total_load - a.total_load)
+    .slice(0, 6);
+
+  return (
+    <div className="stack stack--4">
+      <div className="grid-fixed grid-fixed--2">
+        <Card
+          title="Headcount"
+          description={hrm.data ? `As of ${hrm.data.as_of}` : "People and attendance today"}
+        >
+          {hrm.isLoading ? (
+            <div className="skeleton skeleton--stat" />
+          ) : hrm.isError || !hrm.data ? (
+            <p className="state__empty">Headcount could not be loaded.</p>
+          ) : (
+            <div className="stack stack--4">
+              <div className="grid-fixed grid-fixed--2">
+                <Stat label="Employees" value={hrm.data.total_employees} />
+                <Stat label="Working" value={hrm.data.working_employees} />
+                <Stat
+                  label="Attendance today"
+                  value={Math.round(hrm.data.attendance_rate * 100)}
+                  unit="%"
+                />
+                <Stat
+                  label="Pending leave"
+                  value={hrm.data.pending_leaves}
+                  tone={hrm.data.pending_leaves > 0 ? "danger" : "default"}
+                />
+              </div>
+              <p className="tally">
+                {hrm.data.attendance_today.present} present · {hrm.data.attendance_today.absent}{" "}
+                absent · {hrm.data.attendance_today.leave} on leave · {hrm.data.on_leave_today} away
+                today
+              </p>
+            </div>
+          )}
+        </Card>
+
+        <Card title="Open work" description="Tasks, tickets and timesheets awaiting action">
+          {workloadSummary.isLoading ? (
+            <div className="skeleton skeleton--stat" />
+          ) : workloadSummary.isError || !workloadSummary.data ? (
+            <p className="state__empty">Workload could not be loaded.</p>
+          ) : (
+            <div className="grid-fixed grid-fixed--2">
+              <Stat label="Open tasks" value={workloadSummary.data.total_open_tasks} />
+              <Stat label="Open tickets" value={workloadSummary.data.total_open_tickets} />
+              <Stat
+                label="Pending timesheets"
+                value={workloadSummary.data.total_pending_timesheets}
+              />
+              <Stat label="Average load" value={workloadSummary.data.average_load} />
+            </div>
+          )}
+        </Card>
+      </div>
+
+      <Card title="Heaviest workload" description="Top six employees by open items" flush>
+        {workload.isLoading ? (
+          <div className="skeleton skeleton--table" />
+        ) : workload.isError ? (
+          <p className="state__empty">Workload could not be loaded.</p>
+        ) : rows.length === 0 ? (
+          <p className="state__empty">Nobody has open work right now.</p>
+        ) : (
+          <div className="inline-table__scroll">
+            <table className="inline-table">
+              <thead>
+                <tr className="inline-table__head-row">
+                  <th className="inline-table__th">Employee</th>
+                  <th className="inline-table__th inline-table__th--num">Tasks</th>
+                  <th className="inline-table__th inline-table__th--num">Tickets</th>
+                  <th className="inline-table__th inline-table__th--num">Timesheets</th>
+                  <th className="inline-table__th inline-table__th--num">Total load</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr className="inline-table__row" key={row.employee_id}>
+                    <td className="inline-table__td inline-table__td--strong">
+                      {row.employee_name}
+                    </td>
+                    <td className="inline-table__td inline-table__td--num">{row.open_tasks}</td>
+                    <td className="inline-table__td inline-table__td--num">{row.open_tickets}</td>
+                    <td className="inline-table__td inline-table__td--num">
+                      {row.pending_timesheets}
+                    </td>
+                    <td className="inline-table__td inline-table__td--num inline-table__td--strong">
+                      {row.total_load}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+    </div>
   );
 }
 
