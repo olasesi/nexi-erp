@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import {
   Activity,
+  BarChart3,
   Building2,
   CreditCard,
   LayoutDashboard,
@@ -41,6 +42,7 @@ const SECTIONS: NavSection[] = [
       { name: "Smart Dashboard", href: "/smart-dashboard", icon: Sparkles, badge: "Free" },
       { name: "Business Health", href: "/health", icon: Activity },
       { name: "Receivables", href: "/receivables", icon: Receipt },
+      { name: "Reports", href: "/reports", icon: BarChart3 },
       { name: "Point of sale", href: "/pos", icon: CreditCard },
       { name: "Verticals", href: "/verticals", icon: Zap },
     ],

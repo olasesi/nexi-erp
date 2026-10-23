@@ -24,6 +24,9 @@ const HealthPage = lazy(() =>
 const ReceivablesPage = lazy(() =>
   import("@/pages/receivables").then((module) => ({ default: module.ReceivablesPage })),
 );
+const ReportsPage = lazy(() =>
+  import("@/pages/reports").then((module) => ({ default: module.ReportsPage })),
+);
 const PosPage = lazy(() => import("@/pages/pos").then((module) => ({ default: module.PosPage })));
 const VerticalsPage = lazy(() =>
   import("@/pages/verticals").then((module) => ({ default: module.VerticalsPage })),
@@ -79,6 +82,7 @@ export default function App() {
               <Route path="/smart-dashboard" element={<SmartDashboardPage />} />
               <Route path="/health" element={<HealthPage />} />
               <Route path="/receivables" element={<ReceivablesPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
               <Route path="/pos" element={<PosPage />} />
               <Route path="/verticals" element={<VerticalsPage />} />
               <Route path="/companies" element={<CompaniesPage />} />
