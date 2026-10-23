@@ -24,6 +24,9 @@ const HealthPage = lazy(() =>
 const ReceivablesPage = lazy(() =>
   import("@/pages/receivables").then((module) => ({ default: module.ReceivablesPage })),
 );
+const AuditLogsPage = lazy(() =>
+  import("@/pages/audit-logs").then((module) => ({ default: module.AuditLogsPage })),
+);
 const ProfilePage = lazy(() =>
   import("@/pages/profile").then((module) => ({ default: module.ProfilePage })),
 );
@@ -106,6 +109,7 @@ export default function App() {
               <Route path="/sales-orders" element={<SalesOrdersPage />} />
               <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/audit-logs" element={<AuditLogsPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />

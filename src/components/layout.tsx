@@ -11,6 +11,7 @@ import {
   MapPin,
   Package,
   Receipt,
+  ScrollText,
   Settings,
   ShoppingCart,
   Sparkles,
@@ -64,6 +65,7 @@ const SECTIONS: NavSection[] = [
   {
     label: "System",
     items: [
+      { name: "Audit trail", href: "/audit-logs", icon: ScrollText },
       { name: "Notifications", href: "/notifications", icon: Bell },
       { name: "Profile", href: "/profile", icon: User },
       { name: "Settings", href: "/settings", icon: Settings },

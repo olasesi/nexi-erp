@@ -297,7 +297,7 @@ function TeamWorkloadSection({ companyId }: { companyId: number }) {
               </thead>
               <tbody>
                 {rows.map((row) => (
-                  <tr className="inline-table__row" key={row.employee_id}>
+                  <tr className="inline-table__body-row" key={row.employee_id}>
                     <td className="inline-table__td inline-table__td--strong">
                       {row.employee_name}
                     </td>
