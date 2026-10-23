@@ -5,10 +5,13 @@ Monorepo with a **React (Vite)** frontend and a **Laravel 12** API backend.
 ```
 nexi-erp/
 ├── api/            # Laravel 12 API (PHP 8.2+, Passport OAuth2)
-├── src/            # React SPA (Vite, TypeScript, Tailwind v4, React Router)
-│   ├── components/ # Shared UI (Layout, Table, ErrorBoundary)
-│   ├── pages/      # Route pages (Dashboard, Companies, Contacts, etc.)
-│   ├── lib/        # API client, hooks, utilities
+├── src/            # React SPA (Vite, TypeScript, React Router, BEM CSS)
+│   ├── components/ # App shell, auth guard, charts and UI primitives
+│   ├── features/   # Analytics views (executive, financial, sales, operations)
+│   ├── pages/      # Route pages (Dashboard, Reports, Companies, Contacts, …)
+│   ├── styles/     # BEM stylesheet (tokens, layout, blocks, pages)
+│   ├── lib/        # API client, auth store, query config, logging, monitoring
+│   ├── __tests__/  # Page-level integration tests
 │   └── types/      # TypeScript types matching Laravel resources
 ├── e2e/            # Playwright end-to-end tests
 ├── deploy/
@@ -70,7 +73,26 @@ npm install
 npm run dev                # runs on http://localhost:3000
 ```
 
-The Vite dev server proxies `/api/*` requests to `http://localhost:8000`.
+The Vite dev server proxies `/api/*` to `http://localhost:8000`, so the SPA
+talks to the API through the same origin in development and production.
+
+### What the SPA covers
+
+- **Authentication** — Passport password grant, token persistence, session
+  bootstrap, route guard and a central 401 sign-out.
+- **Dashboard** — company KPIs, financial-year sales trend, payment-due feeds,
+  stock alerts, pending shipments, CRM pipeline, project delivery and today's
+  POS activity, all from `/api/v1/dashboard*`.
+- **Reports** — profit & loss, balance sheet, cash flow, VAT summary and sales
+  by product/category, with CSV export (`/api/v1/reports/*`).
+- **Analytics** — executive, financial, sales and operations tabs, business
+  health, receivables aging and the opt-in vertical add-ons.
+- **Operations** — companies, contacts, products, warehouses, sales orders,
+  purchase orders and settings.
+
+Every route is code-split with `React.lazy`, all HTTP goes through
+`src/lib/api.ts`, and every page renders from the shared BEM component set in
+`src/styles/` (no utility CSS framework).
 
 ## Scripts
 
@@ -95,14 +117,13 @@ The Vite dev server proxies `/api/*` requests to `http://localhost:8000`.
 - **Vite 6** + **React 19** - Fast build & HMR
 - **React Router 7** - Client-side routing (SPA)
 - **TypeScript** - Strict mode
-- **Tailwind CSS v4** - Utility-first styling
+- **BEM CSS** - Hand-written design system (`src/styles/`), no CSS framework
+- **TanStack Query** - Request caching, retries and stale-while-revalidate
 - **ESLint 9** (flat config) + **Prettier** - Code quality & formatting
 - **Vitest** + **Testing Library** - Unit/integration tests
 - **Playwright** - E2E tests
-- **MSW** - API mocking for tests
-- **Husky** + **lint-staged** + **commitlint** - Pre-commit checks
 - **Loglevel** - Client-side logging
-- **Web Vitals** - Performance monitoring
+- **Sentry** + **Web Vitals** - Error and performance monitoring
 
 ## Deployment (Static)
 
@@ -120,12 +141,40 @@ docker run -p 8080:80 nexi-erp-frontend
 
 ### Environment Variables
 
-| Variable        | Default                  | Description                        |
-| --------------- | ------------------------ | ---------------------------------- |
-| `VITE_API_URL`  | `http://localhost:8000`  | Laravel API base URL (build-time)  |
+| Variable           | Default         | Description                                             |
+| ------------------ | --------------- | ------------------------------------------------------- |
+| `VITE_API_URL`     | empty           | API origin baked in at build time; empty = same origin  |
+| `VITE_SENTRY_DSN`  | unset           | Enables Sentry error and performance reporting          |
+| `VITE_LOG_LEVEL`   | `warn` (`debug` in dev) | `trace`/`debug`/`info`/`warn`/`error`           |
+| `VITE_APP_VERSION` | package version | Sentry release name                                      |
 
+Copy `.env.example` to `.env.local` for development. All `VITE_*` values are
+**build-time**: nothing is read at runtime, so changing them requires a rebuild.
 Leave `VITE_API_URL` empty for a same-origin deploy (the bundled Nginx proxies
-`/api` and `/graphql` to the backend - see `deploy/docker/nginx/frontend.conf`).
+`/api`, `/graphql` and `/storage` to the backend — see
+`deploy/docker/nginx/frontend.conf`) or pass a build arg:
+
+```bash
+docker build --build-arg VITE_API_URL=https://api.example.com -t nexi-erp-frontend .
+```
+
+## Monitoring & operations
+
+- **Errors** — `initMonitoring()` (called from `src/main.tsx`) starts Sentry when
+  `VITE_SENTRY_DSN` is set; `ErrorBoundary` and the API layer forward failures
+  with `captureException()`. Console logging stays local at `VITE_LOG_LEVEL`.
+- **Performance** — `reportWebVitals()` streams CLS/INP/LCP/TTFB/FCP to Sentry as
+  measurements and breadcrumbs; browser tracing runs at 10% in production.
+- **Request health** — TanStack Query caches dashboard/report reads for 30s,
+  5-minute garbage collection, two retries for 5xx/network errors and none for
+  4xx, so a flaky API degrades gracefully instead of hammering it.
+- **Scaling** — the deployable is a static bundle: cache hashed `/assets/*`
+  immutably, serve `index.html` with `no-store`, and scale replicas/CDN. The
+  Kubernetes manifests (`deploy/kubernetes/`) ship 2 replicas, rolling updates
+  and a CPU/memory HPA up to 8 pods.
+- **Bundle budget** — vendor chunks are split by group (React, charts, query,
+  Sentry) and routes are lazy-loaded; run `ANALYZE=1 npm run build` to produce
+  `stats.html`.
 
 ## Deploying
 

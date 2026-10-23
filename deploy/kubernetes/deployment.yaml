@@ -30,9 +30,9 @@ spec:
           ports:
             - containerPort: 80
               name: http
-          env:
-            - name: VITE_API_URL
-              value: "http://nexi-erp:80"
+          # VITE_* values are compiled into the bundle at image build time.
+          # Build the image with VITE_API_URL set (or leave it empty and route
+          # /api through the ingress); container env cannot change the bundle.
           livenessProbe:
             httpGet:
               path: /
