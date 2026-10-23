@@ -126,7 +126,7 @@ export function ReportsPage() {
   });
 
   if (isLoading) {
-    return <LoadingState label="Resolving your companyâ€¦" />;
+    return <LoadingState label="Resolving your company…" />;
   }
 
   if (error || companyId === null) {
@@ -431,7 +431,7 @@ function CashFlowReport({ data }: { data: CashFlowResponse }) {
         value={data.net_cash_flow}
         currency
         tone={data.net_cash_flow >= 0 ? "success" : "danger"}
-        hint={`${data.from} â†’ ${data.to}`}
+        hint={`${data.from} → ${data.to}`}
       />
     </div>
   );
@@ -446,10 +446,7 @@ function VatReport({ data }: { data: VatSummaryResponse }) {
         <Stat label="Gross" value={data.total_gross} currency />
       </div>
 
-      <Card
-        title="By tax rate"
-        description={`${data.base_currency} Â· ${data.from} â†’ ${data.to}`}
-      >
+      <Card title="By tax rate" description={`${data.base_currency} · ${data.from} → ${data.to}`}>
         {data.rates.length === 0 ? (
           <p className="state__empty">No taxed documents in this period.</p>
         ) : (
@@ -505,7 +502,7 @@ function SalesProductsReport({
   return (
     <Card
       title="Sales by product"
-      description={`${data.base_currency} Â· ${formatNumber(data.total_quantity)} units Â· ${formatCurrency(data.total_revenue)}`}
+      description={`${data.base_currency} · ${formatNumber(data.total_quantity)} units · ${formatCurrency(data.total_revenue)}`}
       flush
       action={
         <ExportCsvButton
@@ -573,7 +570,7 @@ function SalesCategoriesReport({
   return (
     <Card
       title="Sales by category"
-      description={`${data.base_currency} Â· ${formatNumber(data.total_quantity)} units Â· ${formatCurrency(data.total_revenue)}`}
+      description={`${data.base_currency} · ${formatNumber(data.total_quantity)} units · ${formatCurrency(data.total_revenue)}`}
       flush
       action={
         <ExportCsvButton
