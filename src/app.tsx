@@ -49,6 +49,9 @@ const SalesOrdersPage = lazy(() =>
 const PurchaseOrdersPage = lazy(() =>
   import("@/pages/purchase-orders").then((module) => ({ default: module.PurchaseOrdersPage })),
 );
+const NotificationsPage = lazy(() =>
+  import("@/pages/notifications").then((module) => ({ default: module.NotificationsPage })),
+);
 const SettingsPage = lazy(() =>
   import("@/pages/settings").then((module) => ({ default: module.SettingsPage })),
 );
@@ -91,6 +94,7 @@ export default function App() {
               <Route path="/warehouses" element={<WarehousesPage />} />
               <Route path="/sales-orders" element={<SalesOrdersPage />} />
               <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>

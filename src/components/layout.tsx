@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import {
   Activity,
   BarChart3,
+  Bell,
   Building2,
   CreditCard,
   LayoutDashboard,
@@ -18,6 +19,7 @@ import {
   Zap,
 } from "lucide-react";
 
+import { NotificationBell } from "@/components/notification-bell";
 import { getAddons } from "@/lib/api";
 import { cn } from "@/lib/cn";
 import { useAuth } from "@/lib/use-auth";
@@ -60,7 +62,10 @@ const SECTIONS: NavSection[] = [
   },
   {
     label: "System",
-    items: [{ name: "Settings", href: "/settings", icon: Settings }],
+    items: [
+      { name: "Notifications", href: "/notifications", icon: Bell },
+      { name: "Settings", href: "/settings", icon: Settings },
+    ],
   },
 ];
 
@@ -116,6 +121,7 @@ export function Layout({ children }: { children: ReactNode }) {
             N
           </span>
           <h1 className="app-sidebar__title">Nexi ERP</h1>
+          <NotificationBell />
         </div>
 
         <nav className="app-sidebar__nav" aria-label="Main">

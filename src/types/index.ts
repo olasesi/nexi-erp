@@ -1010,3 +1010,29 @@ export interface BookingSummary {
     active_resources: number;
   };
 }
+
+// --- Notifications -------------------------------------
+
+export interface AppNotification {
+  id: number;
+  company_id: number | null;
+  user_id: number | null;
+  type: string;
+  title: string;
+  body: string | null;
+  payload: unknown;
+  read_at: string | null;
+  is_read: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NotificationListResponse {
+  data: AppNotification[];
+  meta?: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+}

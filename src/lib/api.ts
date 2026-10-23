@@ -6,6 +6,7 @@ import type {
   AgingResponse,
   AnalyticsEnvelope,
   AnalyticsTab,
+  AppNotification,
   BalanceSheetResponse,
   BookingSummary,
   CashFlowResponse,
@@ -21,6 +22,7 @@ import type {
   GymMemberSummary,
   HrmSummaryResponse,
   LaundryOrderSummary,
+  NotificationListResponse,
   OperationsData,
   PaginatedResponse,
   PaymentDueResponse,
@@ -207,6 +209,33 @@ export const products = createCrud<Product>("products");
 export const warehouses = createCrud<Warehouse>("warehouses");
 export const salesOrders = createCrud<SalesOrder>("sales-orders");
 export const purchaseOrders = createCrud<PurchaseOrder>("purchase-orders");
+
+// --- Notifications -------------------------------------
+
+export function getNotifications(
+  params: { unread?: boolean; perPage?: number } = {},
+): Promise<NotificationListResponse> {
+  const search = new URLSearchParams();
+  if (params.unread) search.set("unread", "1");
+  if (params.perPage) search.set("per_page", String(params.perPage));
+  const qs = search.toString();
+  return request<NotificationListResponse>(`/api/v1/notifications${qs ? `?${qs}` : ""}`);
+}
+
+export function getUnreadNotificationCount(): Promise<{ unread_count: number }> {
+  return request<{ unread_count: number }>("/api/v1/notifications/unread-count");
+}
+
+export function markAllNotificationsRead(): Promise<{ updated: number }> {
+  return request<{ updated: number }>("/api/v1/notifications/read-all", { method: "POST" });
+}
+
+export function markNotificationRead(id: number): Promise<{ data: AppNotification }> {
+  return request<{ data: AppNotification }>(`/api/v1/notifications/${id}`, {
+    method: "PUT",
+    body: JSON.stringify({ is_read: true }),
+  });
+}
 
 // ─── Health ───────────────────────────────────────────
 

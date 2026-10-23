@@ -6,6 +6,7 @@ import {
   formatMonth,
   formatNumber,
   formatPercent,
+  formatRelative,
   prettifySlug,
   toCsv,
 } from "./format";
@@ -29,6 +30,16 @@ describe("formatters", () => {
   it("formats month slugs", () => {
     expect(formatMonth("2026-10")).toBe("Oct 26");
     expect(formatMonth("not-a-date")).toBe("not-a-date");
+  });
+
+  it("formats timestamps relative to now", () => {
+    const now = new Date("2026-10-23T12:00:00Z").getTime();
+    expect(formatRelative("2026-10-23T11:59:40Z", now)).toBe("just now");
+    expect(formatRelative("2026-10-23T11:30:00Z", now)).toBe("30m ago");
+    expect(formatRelative("2026-10-23T08:00:00Z", now)).toBe("4h ago");
+    expect(formatRelative("2026-10-20T12:00:00Z", now)).toBe("3d ago");
+    expect(formatRelative("2026-09-01T12:00:00Z", now)).toMatch(/2026/);
+    expect(formatRelative(null, now)).toBe("\u2014");
   });
 
   it("prettifies snake_case slugs", () => {
