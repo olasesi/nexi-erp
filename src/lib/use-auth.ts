@@ -18,6 +18,7 @@ export function useAuth() {
     isAuthenticated: status === "authenticated",
     login: useAuthStore((state) => state.login),
     logout: useAuthStore((state) => state.logout),
+    updateUser: useAuthStore((state) => state.updateUser),
     clearError: useAuthStore((state) => state.clearError),
   };
 }

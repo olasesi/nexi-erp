@@ -140,6 +140,11 @@
   background-color: var(--gray-50);
 }
 
+/* Password-reset screens have no marketing panel. */
+.auth--single {
+  grid-template-columns: 1fr;
+}
+
 /* ---- Brand / marketing panel ---- */
 
 .auth__brand {

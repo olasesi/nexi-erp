@@ -28,6 +28,7 @@ interface AuthState {
   bootstrap: () => Promise<void>;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  updateUser: (user: User) => void;
   clearError: () => void;
 }
 
@@ -89,6 +90,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       window.localStorage.removeItem("auth_token");
       set({ user: null, status: "unauthenticated", pending: false, error: null });
     }
+  },
+
+  updateUser(user) {
+    set({ user });
   },
 
   clearError() {

@@ -182,7 +182,24 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  username?: string | null;
+  phone?: string | null;
+  roles?: string[];
+  permissions?: string[];
   company: Company | null;
+}
+
+export interface AuditLogRow {
+  id: number;
+  company_id: number | null;
+  user_id: number | null;
+  event: string;
+  auditable_type: string;
+  auditable_id: number | null;
+  old_values: Record<string, unknown> | null;
+  new_values: Record<string, unknown> | null;
+  ip_address: string | null;
+  created_at: string | null;
 }
 
 export interface PaginatedResponse<T> {

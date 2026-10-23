@@ -14,6 +14,7 @@ import {
   Settings,
   ShoppingCart,
   Sparkles,
+  User,
   Users,
   Warehouse,
   Zap,
@@ -64,6 +65,7 @@ const SECTIONS: NavSection[] = [
     label: "System",
     items: [
       { name: "Notifications", href: "/notifications", icon: Bell },
+      { name: "Profile", href: "/profile", icon: User },
       { name: "Settings", href: "/settings", icon: Settings },
     ],
   },

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { BarChart3, Lock, Mail, ShieldCheck, Eye, EyeOff } from "lucide-react";
 
 import { useAuth } from "@/lib/use-auth";
@@ -157,10 +157,9 @@ export function LoginPage() {
           </form>
 
           <p className="auth-card__footer">
-            Trouble signing in?{" "}
-            <a className="auth-card__link" href="mailto:support@nexi-erp.test">
-              Contact your administrator
-            </a>
+            <Link className="auth-card__link" to="/forgot-password">
+              Forgot your password?
+            </Link>
           </p>
         </div>
       </main>

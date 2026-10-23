@@ -24,6 +24,15 @@ const HealthPage = lazy(() =>
 const ReceivablesPage = lazy(() =>
   import("@/pages/receivables").then((module) => ({ default: module.ReceivablesPage })),
 );
+const ProfilePage = lazy(() =>
+  import("@/pages/profile").then((module) => ({ default: module.ProfilePage })),
+);
+const ForgotPasswordPage = lazy(() =>
+  import("@/pages/forgot-password").then((module) => ({ default: module.ForgotPasswordPage })),
+);
+const ResetPasswordPage = lazy(() =>
+  import("@/pages/reset-password").then((module) => ({ default: module.ResetPasswordPage })),
+);
 const ReportsPage = lazy(() =>
   import("@/pages/reports").then((module) => ({ default: module.ReportsPage })),
 );
@@ -77,6 +86,8 @@ export default function App() {
           <Routes>
             {/* Public: the sign-in screen sits outside the app shell. */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
 
             {/* Everything below requires a session. */}
             <Route element={<AppShell />}>
@@ -95,6 +106,7 @@ export default function App() {
               <Route path="/sales-orders" element={<SalesOrdersPage />} />
               <Route path="/purchase-orders" element={<PurchaseOrdersPage />} />
               <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>

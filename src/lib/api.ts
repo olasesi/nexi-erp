@@ -7,6 +7,7 @@ import type {
   AnalyticsEnvelope,
   AnalyticsTab,
   AppNotification,
+  AuditLogRow,
   BalanceSheetResponse,
   BookingSummary,
   CashFlowResponse,
@@ -166,6 +167,72 @@ export async function logout(): Promise<void> {
 
 export async function getUser(): Promise<User> {
   return request<User>("/api/v1/user");
+}
+
+export function updateProfile(data: {
+  name?: string;
+  username?: string | null;
+  phone?: string | null;
+}): Promise<User> {
+  return request<User>("/api/v1/user", { method: "PUT", body: JSON.stringify(data) });
+}
+
+export function changePassword(data: {
+  current_password: string;
+  password: string;
+  password_confirmation: string;
+}): Promise<{ message: string }> {
+  return request<{ message: string }>("/api/v1/password/change", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function forgotPassword(email: string): Promise<{ message: string }> {
+  return request<{ message: string }>("/api/v1/password/forgot", {
+    method: "POST",
+    body: JSON.stringify({ email }),
+  });
+}
+
+export function resetPassword(data: {
+  token: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+}): Promise<{ message: string }> {
+  return request<{ message: string }>("/api/v1/password/reset", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+// ─── Audit trail ──────────────────────────────────────
+
+export function getAuditLogs(
+  params: {
+    event?: string;
+    auditableType?: string;
+    userId?: number;
+    perPage?: number;
+    page?: number;
+  } = {},
+): Promise<{
+  data: AuditLogRow[];
+  meta?: { current_page: number; last_page: number; total: number };
+}> {
+  const search = new URLSearchParams();
+  if (params.event) search.set("event", params.event);
+  if (params.auditableType) search.set("auditable_type", params.auditableType);
+  if (params.userId) search.set("user_id", String(params.userId));
+  if (params.perPage) search.set("per_page", String(params.perPage));
+  if (params.page) search.set("page", String(params.page));
+  const qs = search.toString();
+  return request(`/api/v1/audit-logs${qs ? `?${qs}` : ""}`);
+}
+
+export function getAuditLog(id: number): Promise<{ data: AuditLogRow }> {
+  return request<{ data: AuditLogRow }>(`/api/v1/audit-logs/${id}`);
 }
 
 // ─── Generic CRUD helper ──────────────────────────────
