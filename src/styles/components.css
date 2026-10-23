@@ -78,6 +78,16 @@
   width: 100%;
 }
 
+.skeleton--table {
+  height: 10rem;
+  width: 100%;
+}
+
+.skeleton--chart {
+  height: 16rem;
+  width: 100%;
+}
+
 .skeleton-list {
   display: flex;
   flex-direction: column;

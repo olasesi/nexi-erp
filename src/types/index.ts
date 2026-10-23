@@ -632,7 +632,7 @@ export interface PendingShipmentRow {
   payment_status: string;
   total: number;
   balance_due: number;
-  customer: { id: number; name: string; phone: string | null };
+  customer: { id: number; name: string; phone: string | null } | null;
   service_staff: string | null;
 }
 

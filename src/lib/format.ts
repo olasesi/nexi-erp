@@ -25,6 +25,19 @@ export function formatMonth(ym: string): string {
   return date.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
 }
 
+export function formatDate(value: string | null | undefined): string {
+  if (!value) return "—";
+  const date = value.length === 10 ? new Date(`${value}T00:00:00`) : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 export function prettifySlug(slug: string): string {
   return slug
     .split("_")
