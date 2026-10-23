@@ -74,12 +74,29 @@ metadata:
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
 spec:
   rules:
     - host: nexi-erp.com
       http:
         paths:
+          # Same-origin API ingress: the SPA is built with an empty
+          # VITE_API_URL and calls /api/* (and /storage/*) on this host, so the
+          # ingress must send those to the Laravel Service, not to Nginx.
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: nexi-erp
+                port:
+                  number: 80
+          - path: /storage
+            pathType: Prefix
+            backend:
+              service:
+                name: nexi-erp
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:
