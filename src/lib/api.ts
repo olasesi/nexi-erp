@@ -47,6 +47,70 @@ import type {
   User,
   VatSummaryResponse,
   Warehouse,
+  Invoice,
+  Payment,
+  Quotation,
+  CreditNote,
+  DebitNote,
+  PurchaseReceipt,
+  Expense,
+  ExpenseCategory,
+  Income,
+  IncomeCategory,
+  ChartOfAccount,
+  JournalEntry,
+  BankAccount,
+  BankTransaction,
+  Reconciliation,
+  Lead,
+  CrmStage,
+  Deal,
+  HrmDepartment,
+  HrmDesignation,
+  HrmEmployee,
+  HrmAttendance,
+  HrmLeave,
+  Project,
+  ProjectTask,
+  ProjectMilestone,
+  StockAdjustment,
+  StockTransfer,
+  Role,
+  User,
+  Ticket,
+  Asset,
+  Budget,
+  Goal,
+  Training,
+  Notice,
+  Announcement,
+  Todo,
+  Event,
+  Document,
+  Form,
+  Proposal,
+  Award,
+  CoworkingUnit,
+  CoworkingBooking,
+  LaundryOrder,
+  GymMember,
+  RentalAgreement,
+  SalesTarget,
+  SalesReturn,
+  PerformanceReview,
+  JobPosting,
+  JobCandidate,
+  Conversation,
+  Message,
+  KbCategory,
+  KbArticle,
+  CompanyPolicy,
+  Timesheet,
+  TimeEntry,
+  Commission,
+  Note,
+  Reminder,
+  Booking,
 } from "@/types";
 
 // Empty by default so browser requests are same-origin: the Vite dev server
@@ -571,3 +635,91 @@ export function getRentalSummary(companyId: number): Promise<RentalAgreementSumm
 export function getBookingSummary(companyId: number): Promise<BookingSummary> {
   return request<BookingSummary>(`/api/v1/bookings/summary?company_id=${companyId}`);
 }
+
+// --- Invoices, Payments, Quotations -------------------
+
+export const invoices = createCrud<Invoice>("invoices");
+export const payments = createCrud<Payment>("payments");
+export const quotations = createCrud<Quotation>("quotations");
+export const creditNotes = createCrud<CreditNote>("credit-notes");
+export const debitNotes = createCrud<DebitNote>("debit-notes");
+export const purchaseReceipts = createCrud<PurchaseReceipt>("purchase-receipts");
+
+// --- Accounting ---
+
+export const chartOfAccounts = createCrud<ChartOfAccount>("chart-of-accounts");
+export const journalEntries = createCrud<JournalEntry>("journal-entries");
+export const expenses = createCrud<Expense>("expenses");
+export const expenseCategories = createCrud<ExpenseCategory>("expense-categories");
+export const incomes = createCrud<Income>("incomes");
+export const incomeCategories = createCrud<IncomeCategory>("income-categories");
+
+// --- Banking ---
+
+export const bankAccounts = createCrud<BankAccount>("bank-accounts");
+export const bankTransactions = createCrud<BankTransaction>("bank-transactions");
+export const reconciliations = createCrud<Reconciliation>("reconciliations");
+
+// --- CRM ---
+
+export const leads = createCrud<Lead>("leads");
+export const crmStages = createCrud<CrmStage>("crm-stages");
+export const deals = createCrud<Deal>("deals");
+
+// --- HRM ---
+
+export const hrmDepartments = createCrud<HrmDepartment>("hrm-departments");
+export const hrmDesignations = createCrud<HrmDesignation>("hrm-designations");
+export const hrmEmployees = createCrud<HrmEmployee>("hrm-employees");
+export const hrmAttendance = createCrud<HrmAttendance>("hrm-attendance");
+export const hrmLeaves = createCrud<HrmLeave>("hrm-leaves");
+
+// --- Projects ---
+
+export const projects = createCrud<Project>("projects");
+export const projectTasks = createCrud<ProjectTask>("project-tasks");
+export const projectMilestones = createCrud<ProjectMilestone>("project-milestones");
+
+// --- Inventory Operations ---
+
+export const stockAdjustments = createCrud<StockAdjustment>("stock-adjustments");
+export const stockTransfers = createCrud<StockTransfer>("stock-transfers");
+
+// --- Access Control & Support ---
+
+export const users = createCrud<User>("users");
+export const roles = createCrud<Role>("roles");
+export const tickets = createCrud<Ticket>("tickets");
+export const assets = createCrud<Asset>("assets");
+export const budgets = createCrud<Budget>("budgets");
+export const goals = createCrud<Goal>("goals");
+export const trainings = createCrud<Training>("trainings");
+export const notices = createCrud<Notice>("notices");
+export const announcements = createCrud<Announcement>("announcements");
+export const todos = createCrud<Todo>("todos");
+export const events = createCrud<Event>("events");
+export const documents = createCrud<Document>("documents");
+export const forms = createCrud<Form>("forms");
+export const proposals = createCrud<Proposal>("proposals");
+export const awards = createCrud<Award>("awards");
+export const coworkingUnits = createCrud<CoworkingUnit>("coworking-units");
+export const coworkingBookings = createCrud<CoworkingBooking>("coworking-bookings");
+export const laundryOrders = createCrud<LaundryOrder>("laundry-orders");
+export const gymMembers = createCrud<GymMember>("gym-members");
+export const rentalAgreements = createCrud<RentalAgreement>("rental-agreements");
+export const salesTargets = createCrud<SalesTarget>("sales-targets");
+export const salesReturns = createCrud<SalesReturn>("sales-returns");
+export const performanceReviews = createCrud<PerformanceReview>("performance-reviews");
+export const jobPostings = createCrud<JobPosting>("job-postings");
+export const jobCandidates = createCrud<JobCandidate>("job-candidates");
+export const conversations = createCrud<Conversation>("conversations");
+export const messages = createCrud<Message>("messages");
+export const kbCategories = createCrud<KbCategory>("kb-categories");
+export const kbArticles = createCrud<KbArticle>("kb-articles");
+export const companyPolicies = createCrud<CompanyPolicy>("company-policies");
+export const timesheets = createCrud<Timesheet>("timesheets");
+export const timeEntries = createCrud<TimeEntry>("time-entries");
+export const commissions = createCrud<Commission>("commissions");
+export const notes = createCrud<Note>("notes");
+export const reminders = createCrud<Reminder>("reminders");
+export const bookings = createCrud<Booking>("bookings");

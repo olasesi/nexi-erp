@@ -1053,3 +1053,852 @@ export interface NotificationListResponse {
     total: number;
   };
 }
+
+export interface InvoiceItem {
+  id: number;
+  product_id: number | null;
+  product_name: string;
+  product_sku: string | null;
+  description: string | null;
+  quantity: number;
+  unit_price: number;
+  tax_rate: number;
+  tax_amount: number;
+  discount_amount: number;
+  subtotal: number;
+  total: number;
+}
+
+export interface Invoice {
+  id: number;
+  company_id: number;
+  contact_id: number | null;
+  contact: Contact | null;
+  sales_order_id: number | null;
+  invoice_number: string;
+  type: "invoice" | "bill" | "credit_note" | "debit_note";
+  status: "draft" | "sent" | "partial" | "paid" | "overdue" | "cancelled";
+  issue_date: string;
+  due_date: string | null;
+  currency: string;
+  subtotal: number;
+  tax_amount: number;
+  discount_amount: number;
+  total: number;
+  paid_amount: number;
+  balance_due: number;
+  notes: string | null;
+  terms: string | null;
+  items: InvoiceItem[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Payment {
+  id: number;
+  company_id: number;
+  invoice_id: number | null;
+  contact_id: number | null;
+  contact: Contact | null;
+  invoice: Invoice | null;
+  payment_number: string;
+  type: "receipt" | "payment";
+  method: string | null;
+  amount: number;
+  currency: string;
+  payment_date: string;
+  reference: string | null;
+  notes: string | null;
+  status: "pending" | "completed" | "cancelled" | "refunded";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface QuotationItem {
+  id: number;
+  product_id: number | null;
+  product_name: string;
+  product_sku: string | null;
+  description: string | null;
+  quantity: number;
+  unit_price: number;
+  tax_rate: number;
+  tax_amount: number;
+  discount_amount: number;
+  subtotal: number;
+  total: number;
+}
+
+export interface Quotation {
+  id: number;
+  company_id: number;
+  contact_id: number | null;
+  contact: Contact | null;
+  quotation_number: string;
+  status: "draft" | "sent" | "accepted" | "rejected" | "expired" | "converted";
+  issue_date: string;
+  expiry_date: string | null;
+  currency: string;
+  subtotal: number;
+  tax_amount: number;
+  discount_amount: number;
+  total: number;
+  notes: string | null;
+  terms: string | null;
+  items: QuotationItem[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreditNote {
+  id: number;
+  company_id: number;
+  invoice_id: number | null;
+  invoice?: Invoice | null;
+  contact_id: number | null;
+  contact?: Contact | null;
+  credit_note_number: string;
+  status: "draft" | "pending" | "approved" | "applied" | "cancelled";
+  issue_date: string;
+  currency: string;
+  subtotal: number;
+  tax_amount: number;
+  discount_amount: number;
+  total: number;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DebitNote {
+  id: number;
+  company_id: number;
+  invoice_id: number | null;
+  invoice?: Invoice | null;
+  contact_id: number | null;
+  contact?: Contact | null;
+  debit_note_number: string;
+  status: "draft" | "pending" | "approved" | "applied" | "cancelled";
+  issue_date: string;
+  currency: string;
+  subtotal: number;
+  tax_amount: number;
+  discount_amount: number;
+  total: number;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PurchaseReceipt {
+  id: number;
+  company_id: number;
+  purchase_order_id: number | null;
+  purchase_order?: PurchaseOrder | null;
+  receipt_number: string;
+  status: string;
+  receipt_date: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ExpenseCategory {
+  id: number;
+  company_id: number;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface Expense {
+  id: number;
+  company_id: number;
+  expense_category_id: number | null;
+  expense_category?: ExpenseCategory | null;
+  expense_number: string;
+  title: string;
+  amount: number;
+  currency: string;
+  expense_date: string;
+  status: "draft" | "pending" | "approved" | "paid" | "rejected";
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface IncomeCategory {
+  id: number;
+  company_id: number;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface Income {
+  id: number;
+  company_id: number;
+  income_category_id: number | null;
+  income_category?: IncomeCategory | null;
+  income_number: string;
+  title: string;
+  amount: number;
+  currency: string;
+  income_date: string;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChartOfAccount {
+  id: number;
+  company_id: number;
+  code: string;
+  name: string;
+  type: "asset" | "liability" | "equity" | "revenue" | "expense";
+  parent_id: number | null;
+  is_active: boolean;
+  description: string | null;
+  created_at: string;
+}
+
+export interface JournalEntryLine {
+  id: number;
+  chart_of_account_id: number | null;
+  chart_of_account?: ChartOfAccount | null;
+  debit: number;
+  credit: number;
+  description: string | null;
+}
+
+export interface JournalEntry {
+  id: number;
+  company_id: number;
+  entry_number: string;
+  entry_date: string;
+  reference: string | null;
+  description: string | null;
+  status: "draft" | "posted" | "void";
+  total_debit: number;
+  total_credit: number;
+  lines?: JournalEntryLine[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BankAccount {
+  id: number;
+  company_id: number;
+  account_name: string;
+  account_number: string | null;
+  bank_name: string | null;
+  currency: string;
+  opening_balance: number;
+  current_balance: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface BankTransaction {
+  id: number;
+  company_id: number;
+  bank_account_id: number;
+  bank_account?: BankAccount | null;
+  transaction_date: string;
+  type: "credit" | "debit";
+  amount: number;
+  description: string | null;
+  reference: string | null;
+  status: "unmatched" | "matched" | "reconciled";
+  created_at: string;
+}
+
+export interface Reconciliation {
+  id: number;
+  company_id: number;
+  bank_account_id: number;
+  bank_account?: BankAccount | null;
+  reconciliation_number: string;
+  statement_date: string;
+  starting_balance: number;
+  ending_balance: number;
+  status: "draft" | "in_progress" | "completed" | "cancelled";
+  created_at: string;
+}
+
+export interface Lead {
+  id: number;
+  company_id: number;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  email: string | null;
+  phone: string | null;
+  company_name: string | null;
+  source: string | null;
+  status: "new" | "contacted" | "qualified" | "unqualified" | "converted";
+  assigned_to_id: number | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface CrmStage {
+  id: number;
+  company_id: number;
+  name: string;
+  sort_order: number;
+  color: string | null;
+  is_default: boolean;
+  created_at: string;
+}
+
+export interface Deal {
+  id: number;
+  company_id: number;
+  lead_id: number | null;
+  contact_id: number | null;
+  contact?: Contact | null;
+  title: string;
+  stage_id: number | null;
+  stage?: CrmStage | null;
+  value: number;
+  currency: string;
+  probability: number;
+  expected_close_date: string | null;
+  status: "open" | "won" | "lost" | "abandoned";
+  assigned_to_id: number | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface HrmDepartment {
+  id: number;
+  company_id: number;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface HrmDesignation {
+  id: number;
+  company_id: number;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface HrmEmployee {
+  id: number;
+  company_id: number;
+  employee_id: string | null;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  email: string | null;
+  phone: string | null;
+  department_id: number | null;
+  department?: HrmDepartment | null;
+  designation_id: number | null;
+  designation?: HrmDesignation | null;
+  status: "active" | "inactive" | "terminated";
+  hire_date: string | null;
+  created_at: string;
+}
+
+export interface HrmAttendance {
+  id: number;
+  company_id: number;
+  employee_id: number;
+  employee?: HrmEmployee | null;
+  date: string;
+  check_in: string | null;
+  check_out: string | null;
+  status: "present" | "absent" | "late" | "half_day" | "leave";
+  notes: string | null;
+  created_at: string;
+}
+
+export interface HrmLeave {
+  id: number;
+  company_id: number;
+  employee_id: number;
+  employee?: HrmEmployee | null;
+  leave_type: string;
+  start_date: string;
+  end_date: string;
+  days: number;
+  reason: string | null;
+  status: "pending" | "approved" | "rejected" | "cancelled";
+  created_at: string;
+}
+
+export interface Project {
+  id: number;
+  company_id: number;
+  name: string;
+  code: string | null;
+  description: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  status: "planning" | "in_progress" | "on_hold" | "completed" | "cancelled";
+  priority: string | null;
+  budget: number | null;
+  created_at: string;
+}
+
+export interface ProjectTask {
+  id: number;
+  project_id: number;
+  project?: Project | null;
+  title: string;
+  description: string | null;
+  assigned_to_id: number | null;
+  status: "todo" | "in_progress" | "review" | "done" | "cancelled";
+  priority: string | null;
+  due_date: string | null;
+  created_at: string;
+}
+
+export interface ProjectMilestone {
+  id: number;
+  project_id: number;
+  project?: Project | null;
+  title: string;
+  due_date: string | null;
+  status: "pending" | "in_progress" | "completed" | "overdue";
+  created_at: string;
+}
+
+export interface StockAdjustment {
+  id: number;
+  company_id: number;
+  warehouse_id: number | null;
+  warehouse?: Warehouse | null;
+  adjustment_number: string;
+  adjustment_date: string;
+  type: "increase" | "decrease";
+  reason: string | null;
+  status: "draft" | "approved" | "rejected";
+  notes: string | null;
+  created_at: string;
+}
+
+export interface StockTransfer {
+  id: number;
+  company_id: number;
+  from_warehouse_id: number | null;
+  from_warehouse?: Warehouse | null;
+  to_warehouse_id: number | null;
+  to_warehouse?: Warehouse | null;
+  transfer_number: string;
+  transfer_date: string;
+  status: "draft" | "pending" | "in_transit" | "completed" | "cancelled";
+  notes: string | null;
+  created_at: string;
+}
+
+export interface Role {
+  id: number;
+  company_id: number | null;
+  name: string;
+  guard_name: string;
+  permissions?: string[];
+  created_at: string;
+}
+
+export interface Ticket {
+  id: number;
+  company_id: number;
+  ticket_number: string;
+  subject: string;
+  description: string | null;
+  priority: "low" | "medium" | "high" | "urgent";
+  status: "open" | "in_progress" | "resolved" | "closed" | "on_hold";
+  assigned_to_id: number | null;
+  requester_contact_id: number | null;
+  requester_contact?: Contact | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Asset {
+  id: number;
+  company_id: number;
+  asset_code: string;
+  name: string;
+  category_id: number | null;
+  status: "available" | "in_use" | "under_maintenance" | "retired" | "lost";
+  purchase_date: string | null;
+  purchase_cost: number | null;
+  location: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface Budget {
+  id: number;
+  company_id: number;
+  name: string;
+  fiscal_year: string;
+  start_date: string | null;
+  end_date: string | null;
+  status: "draft" | "pending" | "approved" | "closed" | "rejected";
+  total_amount: number;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface Goal {
+  id: number;
+  company_id: number;
+  title: string;
+  description: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  status: "not_started" | "in_progress" | "completed" | "on_hold" | "cancelled";
+  priority: string | null;
+  progress: number;
+  created_at: string;
+}
+
+export interface Training {
+  id: number;
+  company_id: number;
+  title: string;
+  description: string | null;
+  trainer: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  location: string | null;
+  status: "planned" | "in_progress" | "completed" | "cancelled";
+  created_at: string;
+}
+
+export interface Notice {
+  id: number;
+  company_id: number;
+  title: string;
+  content: string | null;
+  publish_date: string | null;
+  status: "draft" | "published" | "archived";
+  created_at: string;
+}
+
+export interface Announcement {
+  id: number;
+  company_id: number;
+  title: string;
+  content: string | null;
+  publish_date: string | null;
+  status: "draft" | "published" | "archived";
+  created_at: string;
+}
+
+export interface Todo {
+  id: number;
+  company_id: number | null;
+  title: string;
+  description: string | null;
+  due_date: string | null;
+  priority: "low" | "medium" | "high";
+  status: "pending" | "in_progress" | "completed" | "cancelled";
+  created_at: string;
+}
+
+export interface Event {
+  id: number;
+  company_id: number;
+  title: string;
+  description: string | null;
+  start_date: string;
+  end_date: string | null;
+  location: string | null;
+  status: "scheduled" | "ongoing" | "completed" | "cancelled";
+  created_at: string;
+}
+
+export interface Document {
+  id: number;
+  company_id: number;
+  name: string;
+  file_name: string | null;
+  mime_type: string | null;
+  size: number | null;
+  folder_id: number | null;
+  created_at: string;
+}
+
+export interface Form {
+  id: number;
+  company_id: number;
+  title: string;
+  description: string | null;
+  status: "draft" | "published" | "archived";
+  created_at: string;
+}
+
+export interface Proposal {
+  id: number;
+  company_id: number;
+  proposal_number: string;
+  contact_id: number | null;
+  contact?: Contact | null;
+  status: "draft" | "sent" | "accepted" | "rejected" | "expired" | "converted";
+  issue_date: string;
+  expiry_date: string | null;
+  total: number;
+  currency: string;
+  created_at: string;
+}
+
+export interface Award {
+  id: number;
+  company_id: number;
+  title: string;
+  description: string | null;
+  award_date: string | null;
+  recipient_name: string | null;
+  created_at: string;
+}
+
+export interface CoworkingUnit {
+  id: number;
+  company_id: number;
+  name: string;
+  type: string | null;
+  capacity: number | null;
+  price_per_hour: number | null;
+  price_per_day: number | null;
+  status: string;
+  created_at: string;
+}
+
+export interface CoworkingBooking {
+  id: number;
+  company_id: number;
+  unit_id: number;
+  unit?: CoworkingUnit | null;
+  contact_id: number | null;
+  contact?: Contact | null;
+  start_time: string;
+  end_time: string;
+  status: "pending" | "confirmed" | "checked_in" | "checked_out" | "cancelled" | "no_show";
+  total_amount: number | null;
+  created_at: string;
+}
+
+export interface LaundryOrder {
+  id: number;
+  company_id: number;
+  order_number: string;
+  contact_id: number | null;
+  contact?: Contact | null;
+  status: "received" | "washing" | "ironing" | "ready" | "delivered" | "cancelled";
+  total_amount: number | null;
+  due_date: string | null;
+  created_at: string;
+}
+
+export interface GymMember {
+  id: number;
+  company_id: number;
+  member_number: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  email: string | null;
+  phone: string | null;
+  status: "active" | "inactive" | "suspended";
+  join_date: string | null;
+  expiry_date: string | null;
+  created_at: string;
+}
+
+export interface RentalAgreement {
+  id: number;
+  company_id: number;
+  agreement_number: string;
+  contact_id: number | null;
+  contact?: Contact | null;
+  start_date: string;
+  end_date: string | null;
+  status: "draft" | "active" | "completed" | "cancelled";
+  total_amount: number | null;
+  created_at: string;
+}
+
+export interface SalesTarget {
+  id: number;
+  company_id: number;
+  name: string;
+  target_amount: number;
+  achieved_amount: number;
+  period_start: string | null;
+  period_end: string | null;
+  status: string;
+  created_at: string;
+}
+
+export interface SalesReturn {
+  id: number;
+  company_id: number;
+  return_number: string;
+  sales_order_id: number | null;
+  status: "pending" | "approved" | "completed" | "cancelled";
+  total_amount: number | null;
+  return_date: string | null;
+  created_at: string;
+}
+
+export interface PerformanceReview {
+  id: number;
+  company_id: number;
+  employee_id: number;
+  employee?: HrmEmployee | null;
+  review_period: string | null;
+  status: "draft" | "in_progress" | "completed" | "approved";
+  overall_rating: number | null;
+  review_date: string | null;
+  created_at: string;
+}
+
+export interface JobPosting {
+  id: number;
+  company_id: number;
+  title: string;
+  description: string | null;
+  status: "draft" | "published" | "closed";
+  publish_date: string | null;
+  closing_date: string | null;
+  created_at: string;
+}
+
+export interface JobCandidate {
+  id: number;
+  company_id: number;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  email: string | null;
+  phone: string | null;
+  status: "applied" | "screening" | "interview" | "offered" | "hired" | "rejected";
+  applied_date: string | null;
+  created_at: string;
+}
+
+export interface Conversation {
+  id: number;
+  company_id: number;
+  subject: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Message {
+  id: number;
+  conversation_id: number;
+  sender_id: number | null;
+  body: string | null;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface KbCategory {
+  id: number;
+  company_id: number;
+  name: string;
+  description: string | null;
+  created_at: string;
+}
+
+export interface KbArticle {
+  id: number;
+  company_id: number;
+  category_id: number | null;
+  category?: KbCategory | null;
+  title: string;
+  content: string | null;
+  status: "draft" | "published" | "archived";
+  created_at: string;
+}
+
+export interface CompanyPolicy {
+  id: number;
+  company_id: number;
+  title: string;
+  content: string | null;
+  status: "draft" | "published" | "archived";
+  created_at: string;
+}
+
+export interface Timesheet {
+  id: number;
+  company_id: number;
+  employee_id: number | null;
+  employee?: HrmEmployee | null;
+  period_start: string | null;
+  period_end: string | null;
+  status: "draft" | "submitted" | "approved" | "rejected";
+  total_hours: number | null;
+  created_at: string;
+}
+
+export interface TimeEntry {
+  id: number;
+  company_id: number;
+  employee_id: number | null;
+  employee?: HrmEmployee | null;
+  project_id: number | null;
+  project?: Project | null;
+  start_time: string | null;
+  end_time: string | null;
+  duration_minutes: number | null;
+  description: string | null;
+  created_at: string;
+}
+
+export interface Commission {
+  id: number;
+  company_id: number;
+  sales_agent_id: number | null;
+  amount: number;
+  status: "pending" | "approved" | "paid" | "rejected";
+  commission_date: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface Note {
+  id: number;
+  company_id: number | null;
+  title: string | null;
+  content: string | null;
+  created_at: string;
+}
+
+export interface Reminder {
+  id: number;
+  company_id: number | null;
+  title: string;
+  description: string | null;
+  remind_at: string | null;
+  is_completed: boolean;
+  created_at: string;
+}
+
+export interface Booking {
+  id: number;
+  company_id: number;
+  booking_number: string;
+  contact_id: number | null;
+  contact?: Contact | null;
+  start_time: string;
+  end_time: string | null;
+  status: string;
+  created_at: string;
+}

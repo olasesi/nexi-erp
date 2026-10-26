@@ -60,6 +60,117 @@ const SECTIONS: NavSection[] = [
       { name: "Warehouses", href: "/warehouses", icon: Warehouse },
       { name: "Sales Orders", href: "/sales-orders", icon: ShoppingCart },
       { name: "Purchase Orders", href: "/purchase-orders", icon: MapPin },
+      { name: "Purchase Receipts", href: "/purchase-receipts", icon: Receipt },
+    ],
+  },
+  {
+    label: "Sales",
+    items: [
+      { name: "Invoices", href: "/invoices", icon: Receipt },
+      { name: "Payments", href: "/payments", icon: CreditCard },
+      { name: "Quotations", href: "/quotations", icon: ScrollText },
+      { name: "Credit Notes", href: "/credit-notes", icon: Receipt },
+      { name: "Debit Notes", href: "/debit-notes", icon: Receipt },
+      { name: "Leads", href: "/leads", icon: Users },
+      { name: "Deals", href: "/deals", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Accounting",
+    items: [
+      { name: "Chart of Accounts", href: "/chart-of-accounts", icon: ScrollText },
+      { name: "Journal Entries", href: "/journal-entries", icon: ScrollText },
+      { name: "Expenses", href: "/expenses", icon: Receipt },
+      { name: "Income", href: "/income", icon: Receipt },
+      { name: "Bank Accounts", href: "/bank-accounts", icon: CreditCard },
+      { name: "Bank Transactions", href: "/bank-transactions", icon: CreditCard },
+      { name: "Reconciliations", href: "/reconciliations", icon: ScrollText },
+    ],
+  },
+  {
+    label: "HRM",
+    items: [
+      { name: "Employees", href: "/employees", icon: Users },
+      { name: "Departments", href: "/departments", icon: Building2 },
+      { name: "Designations", href: "/designations", icon: Users },
+      { name: "Attendance", href: "/attendance", icon: ScrollText },
+      { name: "Leaves", href: "/leaves", icon: ScrollText },
+    ],
+  },
+  {
+    label: "Projects",
+    items: [
+      { name: "Projects", href: "/projects", icon: BarChart3 },
+      { name: "Project Tasks", href: "/project-tasks", icon: ScrollText },
+    ],
+  },
+  {
+    label: "Inventory",
+    items: [
+      { name: "Stock Adjustments", href: "/stock-adjustments", icon: Package },
+      { name: "Stock Transfers", href: "/stock-transfers", icon: Package },
+    ],
+  },
+  {
+    label: "Performance",
+    items: [
+      { name: "Budgets", href: "/budgets", icon: BarChart3 },
+      { name: "Goals", href: "/goals", icon: BarChart3 },
+      { name: "Trainings", href: "/trainings", icon: Users },
+      { name: "Proposals", href: "/proposals", icon: ScrollText },
+      { name: "Awards", href: "/awards", icon: Sparkles },
+      { name: "Sales Targets", href: "/sales-targets", icon: BarChart3 },
+      { name: "Sales Returns", href: "/sales-returns", icon: Receipt },
+      { name: "Performance Reviews", href: "/performance-reviews", icon: ScrollText },
+    ],
+  },
+  {
+    label: "Recruitment",
+    items: [
+      { name: "Job Postings", href: "/job-postings", icon: Users },
+      { name: "Job Candidates", href: "/job-candidates", icon: Users },
+    ],
+  },
+  {
+    label: "Collaboration",
+    items: [
+      { name: "Notices", href: "/notices", icon: Bell },
+      { name: "Announcements", href: "/announcements", icon: Bell },
+      { name: "Todos", href: "/todos", icon: ScrollText },
+      { name: "Events", href: "/events", icon: MapPin },
+      { name: "Documents", href: "/documents", icon: ScrollText },
+      { name: "Forms", href: "/forms", icon: ScrollText },
+      { name: "Conversations", href: "/conversations", icon: Bell },
+      { name: "Knowledge Base", href: "/kb-articles", icon: ScrollText },
+      { name: "Company Policies", href: "/company-policies", icon: ScrollText },
+      { name: "Notes", href: "/notes", icon: ScrollText },
+      { name: "Bookings", href: "/bookings", icon: MapPin },
+    ],
+  },
+  {
+    label: "Time & Sales",
+    items: [
+      { name: "Timesheets", href: "/timesheets", icon: ScrollText },
+      { name: "Time Entries", href: "/time-entries", icon: ScrollText },
+      { name: "Commissions", href: "/commissions", icon: CreditCard },
+    ],
+  },
+  {
+    label: "Verticals",
+    items: [
+      { name: "Coworking", href: "/coworking", icon: Building2 },
+      { name: "Laundry", href: "/laundry", icon: Package },
+      { name: "Gym", href: "/gym", icon: Users },
+      { name: "Rental", href: "/rental", icon: Building2 },
+    ],
+  },
+  {
+    label: "Admin",
+    items: [
+      { name: "Users", href: "/users", icon: Users },
+      { name: "Roles", href: "/roles", icon: Users },
+      { name: "Tickets", href: "/tickets", icon: Bell },
+      { name: "Assets", href: "/assets", icon: Package },
     ],
   },
   {
