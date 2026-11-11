@@ -1,0 +1,74 @@
+// Local-lab variant of the root Jenkinsfile: the same stages, but it pushes
+// to the private registry bundled in deploy/jenkins/docker-compose.yml and
+// deploys to the local Docker Desktop Kubernetes cluster (namespace nexi-erp)
+// instead of a production registry/cluster. It also skips the Slack posts so
+// no external credentials are needed.
+//
+// Create a Pipeline job with "Pipeline script from SCM", point it at this
+// repository (branch develop) and set Script Path to:
+//   deploy/jenkins/Jenkinsfile.local
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY = 'localhost:5000'
+        IMAGE = 'nexi-erp-frontend'
+        // Two tags: one for the registry (production-shaped), one plain name
+        // the cluster can find in the local image store.
+        TAG = "jenkins-${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+        stage('Lint & Format') {
+            parallel {
+                stage('TypeScript') {
+                    steps { sh 'npm run typecheck' }
+                }
+                stage('ESLint') {
+                    steps { sh 'npm run lint' }
+                }
+                stage('Prettier') {
+                    steps { sh 'npm run format:check' }
+                }
+            }
+        }
+        stage('Unit Tests') {
+            steps {
+                sh 'npm run test -- --coverage'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+        stage('Build & Push Docker Image') {
+            steps {
+                sh 'docker build -t $REGISTRY/$IMAGE:$TAG -t $IMAGE:$TAG .'
+                sh 'docker push $REGISTRY/$IMAGE:$TAG'
+            }
+        }
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl -n nexi-erp set image deployment/frontend app=$IMAGE:$TAG'
+                sh 'kubectl -n nexi-erp rollout status deployment/frontend --timeout=120s'
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

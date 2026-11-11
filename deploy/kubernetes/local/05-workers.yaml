@@ -1,0 +1,75 @@
+# Background workers, mirroring the queue/scheduler services of
+# docker-compose.prod.yml.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: queue
+  namespace: nexi-erp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: queue
+  template:
+    metadata:
+      labels:
+        app: queue
+    spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox:1.36
+          command: ["sh", "-c", "until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done"]
+        - name: wait-for-redis
+          image: busybox:1.36
+          command: ["sh", "-c", "until nc -z redis 6379; do echo waiting for redis; sleep 2; done"]
+      containers:
+        - name: queue
+          image: nexi-erp-api:lab
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: nexi-erp-config
+            - secretRef:
+                name: nexi-erp-secrets
+          command: ["php", "artisan", "queue:work", "--tries=3", "--timeout=90", "--sleep=1"]
+          volumeMounts:
+            - name: storage
+              mountPath: /var/www/html/storage
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: app-storage
+---
+# The scheduler runs `php artisan schedule:run` once a minute (cron-driven,
+# same idea as the scheduler container / the k8s cronjob.yaml mentioned in
+# docs/DEPLOY.md).
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: scheduler
+  namespace: nexi-erp
+spec:
+  schedule: "* * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: scheduler
+              image: nexi-erp-api:lab
+              imagePullPolicy: IfNotPresent
+              envFrom:
+                - configMapRef:
+                    name: nexi-erp-config
+                - secretRef:
+                    name: nexi-erp-secrets
+              command: ["php", "artisan", "schedule:run"]
+              volumeMounts:
+                - name: storage
+                  mountPath: /var/www/html/storage
+          volumes:
+            - name: storage
+              persistentVolumeClaim:
+                claimName: app-storage

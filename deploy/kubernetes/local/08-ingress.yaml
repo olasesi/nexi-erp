@@ -1,0 +1,51 @@
+# The ingress is the entry point / load balancer of the cluster. The NGINX
+# ingress controller (installed separately, see README.md) exposes it on
+# http://localhost and distributes requests across the pods behind each
+# Service (frontend/web deployments run 2 replicas each).
+#
+# No host rule is set, so any hostname matches - http://localhost just works.
+# To use a nicer name, add `host: erp.local` under `rules:` and map
+# 127.0.0.1 erp.local in C:\Windows\System32\drivers\etc\hosts.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nexi-erp
+  namespace: nexi-erp
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 64m
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          # API traffic -> Laravel (nginx web -> php-fpm app).
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80
+          # Uploaded files served through Laravel's storage symlink.
+          - path: /storage
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80
+          - path: /graphql
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80
+          # Everything else -> React SPA.
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80

@@ -1,0 +1,50 @@
+# Nginx front for the API (built from api/Dockerfile.web): serves Laravel's
+# public/ assets directly and forwards PHP requests to the "app" php-fpm
+# service over FastCGI. 2 replicas so the ingress load-balances between pods.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: nexi-erp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nexi-erp-web:lab
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+          readinessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: storage
+              mountPath: /var/www/html/storage
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: app-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: nexi-erp
+spec:
+  selector:
+    app: web
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

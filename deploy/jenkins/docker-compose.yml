@@ -1,0 +1,56 @@
+# Local CI/CD lab: Jenkins (see Dockerfile for the extra CLIs) plus a private
+# Docker registry on localhost:5000.
+#
+#   cd deploy/jenkins
+#   docker compose up -d --build
+#
+#   Jenkins UI : http://localhost:8080
+#   Registry   : localhost:5000 (insecure, local machine only)
+#
+# The Jenkins container mounts the host docker socket so `docker build` /
+# `docker push` run against the host engine - the same engine the local
+# Kubernetes cluster uses - and mounts your host kubeconfig so `kubectl`
+# stages reach the cluster.
+#
+# Requires the Docker Desktop Kubernetes cluster to be enabled FIRST (the
+# kubeconfig must exist before this compose file is started).
+name: nexi-erp-ci
+
+services:
+  jenkins:
+    build: .
+    container_name: nexi-erp-jenkins
+    restart: unless-stopped
+    ports:
+      - "8080:8080" # web UI
+      - "50000:50000" # agent port
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      # Docker socket: lets Jenkins build/push images using the host engine.
+      # Works with the Docker Desktop WSL2 backend; if `docker version` fails
+      # inside Jenkins, enable "Expose daemon on tcp://localhost:2375 without
+      # TLS" in Docker Desktop settings and use DOCKER_HOST below instead.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Host kubeconfig so `kubectl` reaches the Docker Desktop cluster.
+      # ${USERPROFILE} resolves to C:\Users\<you> on Windows; hard-code the
+      # path if it does not resolve on your machine.
+      - ${USERPROFILE}/.kube:/var/jenkins_home/.kube
+    environment:
+      KUBECONFIG: /var/jenkins_home/.kube/config
+      # Fallback for the socket mount (see comment above):
+      # DOCKER_HOST: tcp://host.docker.internal:2375
+
+  # Private registry the pipeline pushes to - the production-shaped stand-in
+  # for registry.example.com / Docker Hub / ECR.
+  registry:
+    image: registry:2
+    container_name: nexi-erp-registry
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - registry_data:/var/lib/registry
+
+volumes:
+  jenkins_home:
+  registry_data:
